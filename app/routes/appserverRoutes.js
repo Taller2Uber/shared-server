@@ -13,5 +13,9 @@ module.exports = function(server){
     appservCtrl.create( req.body.name, res );
   });
 
+  server.delete("/api/users/:userId", function( req, res, err){
+    appservCtrl.deleteUser(req.params.userId, req.body.token);
+  });
+
 
 };

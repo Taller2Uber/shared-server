@@ -14,3 +14,10 @@ exports.create = function( name, res ){
 
     res.send('name: '+ name + ', token: ' + token );
 };
+
+
+exports.deleteUser = function(userId, token){
+
+  clientDb.deleteUser(userId, token);
+
+};
