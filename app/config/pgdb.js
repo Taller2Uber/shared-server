@@ -5,6 +5,12 @@
 * @description Objetivo: abstraer la URL de acceso a la base de datos del resto de la aplicacion
 */
 
+function testFunction(a, b){
+  return (a+b);
+};
+
 module.exports = {
-        url : "pg://grupo7:7552@localhost:5432/LlevameDb"
+        url : "pg://grupo7:7552@localhost:5432/LlevameDb",
+        testFunction
+
 }

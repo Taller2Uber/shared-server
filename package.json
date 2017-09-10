@@ -3,8 +3,12 @@
   "main": "server.js",
   "dependencies": {
     "body-parser": "~1.4.2",
+    "chai": "^4.1.2",
+    "codecov": "^2.3.0",
     "express": "~4.5.1",
+    "istanbul": "^0.4.5",
     "method-override": "~2.0.2",
+    "mocha": "^3.5.1",
     "moment": "^2.18.1",
     "pg": "~7.2.0",
     "rand-token": "^0.3.0",
@@ -13,5 +17,9 @@
   },
   "devDependencies": {
     "jsdoc": "^3.5.4"
+  },
+  "scripts": {
+    "test": "mocha",
+    "test-cov": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && export CODECOV_TOKEN=f338b1d5-cee2-48ac-87da-df6e4d9e2aa5 && codecov "
   }
 }
