@@ -1,9 +1,10 @@
-module.exports = {
-        //url : 'postgresql://grupo7@7552:localhost:5432/LlevameDb'
+/**
+* @module
+* @name pgdb
+* @author Gustavo Adrian Gimenez
+* @description Objetivo: abstraer la URL de acceso a la base de datos del resto de la aplicacion
+*/
 
-        /*user: 'grupo7',
-        host: 'localhost',
-        database: 'LlevameDb',
-        password: '7552',
-        port: 5432,*/
+module.exports = {
+        url : "pg://grupo7:7552@localhost:5432/LlevameDb"
 }
