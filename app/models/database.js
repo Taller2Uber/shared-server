@@ -1,5 +1,6 @@
 const { Client } = require('pg')
 const db = require('../config/pgdb')
+var logger = require('../config/logger')
 
 
 /** @name createUser
@@ -10,12 +11,19 @@ const db = require('../config/pgdb')
 */
 exports.createUser = function( name, token ){
   client = new Client(db.url);
-  client.connect(); // Se conecta el cliente
+  client.connect((err) => {
+    if(err){
+      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
+    }
+    else{
+      logger.info('Se conecto a la base de datos correctamente.')
+    }
+  }); // Se conecta el cliente
   var fecha = new Date().toLocaleString();
   client.query('INSERT INTO appservers (name, token, lastconnection) VALUES ($1, $2, $3) RETURNING name', [name, token, fecha],(err, res) => {
     console.log(err, res)
   })
-  client.end();
+  //client.end();
 };
 
 
@@ -28,7 +36,14 @@ exports.createUser = function( name, token ){
 */
 exports.getAllUsers = function(response, results){
   client = new Client(db.url);
-  client.connect();
+  client.connect((err) => {
+    if(err){
+      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
+    }
+    else{
+      logger.info('Se conecto a la base de datos correctamente.')
+    }
+  });
 
   var query = client.query('SELECT * FROM appservers', (err, res) =>{
     res.rows.forEach(row =>{
@@ -50,16 +65,21 @@ exports.getAllUsers = function(response, results){
 */
 exports.deleteUser = function( userId, tokenToCheck ){
   client = new Client(db.url);
-  client.connect();
+  client.connect((err) => {
+    if(err){
+      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
+    }
+    else{
+      logger.info('Se conecto a la base de datos correctamente.')
+    }
+  });
   var query = client.query('DELETE FROM appservers WHERE id =  $1 AND token =  $2',[userId, tokenToCheck], ( err, res) =>{
     //checkear errores
         if(err){
-          console.log('Error en la query' + tokenToCheck);
+          console.log('Error en la query');
           console.log(err);
           client.end();
         }else{
-          console.log('paso la query');
-          console.log('Se borro correctamente');
           client.end();
         }
   });

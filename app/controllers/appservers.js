@@ -17,8 +17,10 @@ exports.create = function( name, res ){
 };
 
 
-exports.deleteUser = function(userId, token){
+exports.deleteUser = function(userId, token, res){
 
   clientDb.deleteUser(userId, token);
+
+  res.send('Fin de la operacion');
 
 };

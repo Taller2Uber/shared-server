@@ -10,12 +10,14 @@ module.exports = function(server){
   });
 
   server.post("/api/users", function( req, res, err){
-    console.log("El nombre recibido es: ",req.body.name);
+    logger.info('Solicitud de alta de appserver')
+    logger.info("El nombre recibido es: ",req.body.name);
     appservCtrl.create( req.body.name, res );
   });
 
   server.delete("/api/users/:userId", function( req, res, err){
-    appservCtrl.deleteUser(req.params.userId, req.body.token);
+    logger.info('Solicitud de baja de appserver')
+    appservCtrl.deleteUser(req.params.userId, req.body.token, res);
   });
 
 
