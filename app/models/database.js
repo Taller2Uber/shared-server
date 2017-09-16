@@ -1,6 +1,6 @@
 const { Client } = require('pg')
 const db = require('../config/pgdb')
-var logger = require('../config/logger')
+var logger = require('../config/herokuLogger')
 
 
 /** @name createUser
@@ -10,7 +10,7 @@ var logger = require('../config/logger')
 * @param token Clave unica de acceso para el nuevo appserver
 */
 exports.createUser = function( name, token ){
-  client = new Client(db.url);
+  client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
       logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
@@ -19,8 +19,8 @@ exports.createUser = function( name, token ){
       logger.info('Se conecto a la base de datos correctamente.')
     }
   }); // Se conecta el cliente
-  var fecha = new Date().toLocaleString();
-  client.query('INSERT INTO appservers (name, token, lastconnection) VALUES ($1, $2, $3) RETURNING name', [name, token, fecha],(err, res) => {
+  var fecha = new Date();
+  client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
     console.log(err, res)
   })
   //client.end();
@@ -35,7 +35,7 @@ exports.createUser = function( name, token ){
 * @return {List} results Lista de appservers en la base de datos
 */
 exports.getAllUsers = function(response, results){
-  client = new Client(db.url);
+  client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
       logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
@@ -64,7 +64,7 @@ exports.getAllUsers = function(response, results){
 * @param tokenToCheck Clave enviada que debera matchear con el userId para ejecutar la baja
 */
 exports.deleteUser = function( userId, tokenToCheck ){
-  client = new Client(db.url);
+  client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
       logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)

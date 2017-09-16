@@ -1,7 +1,7 @@
 module.exports = function(server){
 
   var appservCtrl = require ( '../controllers/appservers' );
-  var logger = require('../config/logger.js');
+  var logger = require('../config/herokuLogger.js');
 
   server.get("/api/users", function( req, res, err ){
     logger.info('Solicitud de obtener todos los appservers');

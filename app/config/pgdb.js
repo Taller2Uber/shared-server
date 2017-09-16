@@ -10,7 +10,7 @@ function testFunction(a, b){
 };
 
 module.exports = {
-        url : "pg://grupo7:7552@localhost:5432/LlevameDb",
+        url: "postgres://yaholwwedufvfk:fedbb72f52839ff52bba98223c057bddd0652e851876158009099daf78231b7d@ec2-184-72-248-8.compute-1.amazonaws.com:5432/d9v0pdccnsqeju",
         testFunction
 
 }
