@@ -13,7 +13,7 @@ exports.create = function( name, res ){
 
     clientDb.createUser( name, token );
 
-    res.send('name: '+ name + ', token: ' + token );
+    res.status(201).send('Alta correcta');
 };
 
 

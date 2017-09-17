@@ -23,7 +23,6 @@ exports.createUser = function( name, token ){
   client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
     console.log(err, res)
   })
-  //client.end();
 };
 
 
@@ -38,7 +37,7 @@ exports.getAllUsers = function(response, results){
   client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
-      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
+      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err);
     }
     else{
       logger.info('Se conecto a la base de datos correctamente.')
@@ -51,7 +50,7 @@ exports.getAllUsers = function(response, results){
     });
     console.log(results);
     client.end();
-    response.json(results);
+    response.status(200).send(results);
     return(results);
   })
 };
