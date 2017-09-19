@@ -9,18 +9,16 @@ exports.getAll = function( req, res ) {
 
 exports.create = function( name, res ){
     var token = randtoken.generate(32);
-
-
-    clientDb.createUser( name, token );
-
-    res.status(201).send('Alta correcta');
+    if(name){
+      clientDb.createUser( res, name, token );
+    }else {
+      res.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
+    }
 };
 
 
 exports.deleteUser = function(userId, token, res){
 
-  clientDb.deleteUser(userId, token);
-
-  res.send('Fin de la operacion');
+  clientDb.deleteUser( res, userId, token);
 
 };

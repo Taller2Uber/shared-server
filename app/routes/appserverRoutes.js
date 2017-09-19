@@ -12,7 +12,6 @@ module.exports = function(server){
 
   server.post("/servers", function( req, res, err){
     logger.info('Solicitud de alta de appserver')
-    logger.info("El nombre recibido es: ",req.body.name);
     appservCtrl.create( req.body.name, res );
   });
 
