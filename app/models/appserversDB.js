@@ -14,21 +14,23 @@ function appserverDB(){}
 appserverDB.prototype.createServer = function( response, name, token ){
   if(!name)
     response.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
+  else{
 
-  client = new Client({connectionString: db.url, ssl:true});
-  client.connect((err) => {
-    if(err){
-      logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
-    }
-    else{
-      logger.info('Se conecto a la base de datos correctamente.')
-    }
-  }); // Se conecta el cliente
-  var fecha = new Date();
-  client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
-    console.log(err, res)
-  })
-  response.status(201).send('Alta correcta');
+    client = new Client({connectionString: db.url, ssl:true});
+    client.connect((err) => {
+      if(err){
+        logger.error('Error critico. No se pudo conectar a la base de datos. Error: ' + err)
+      }
+      else{
+        logger.info('Se conecto a la base de datos correctamente.')
+      }
+    }); // Se conecta el cliente
+    var fecha = new Date();
+    client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
+      console.log(err, res)
+    })
+    response.status(201).send('Alta correcta');
+  }
 };
 
 
