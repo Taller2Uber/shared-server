@@ -15,7 +15,6 @@ appserverDB.prototype.createServer = function( response, name, token ){
   if(!name)
     response.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
   else{
-
     client = new Client({connectionString: db.url, ssl:true});
     client.connect((err) => {
       if(err){

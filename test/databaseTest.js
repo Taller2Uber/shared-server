@@ -6,8 +6,7 @@ var should = chai.should();
 
 chai.use(chaiHttp);
 
-
-describe('Database', () => {
+describe('AppserversDatabase', () => {
   describe('Creo correctamente un appserver', ()=> {
     it('Devuelve Alta correcta', (done) => {
       let appserverJson = {
@@ -21,10 +20,9 @@ describe('Database', () => {
         });
     })
   })
-
 });
 
-describe('Database', () => {
+describe('AppserversDatabase', () => {
   describe('Intento crear appserver sin nombre',() => {
     it('Devuelve parametros faltantes...', (done) => {
       let appserverJson = {
@@ -34,13 +32,13 @@ describe('Database', () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.text.should.be.eql('Incumplimiento de precondiciones (parámetros faltantes)');
-      done()
+      done();
       })
     })
   });
 });
 
-describe('Database', () => {
+describe('AppserversDatabase', () => {
   describe('Obtener todos los appservers',() => {
     it('Devuelve un array de Json', (done) => {
       chai.request(server).get('/servers')
@@ -48,8 +46,28 @@ describe('Database', () => {
         res.should.have.status(200);
         res.should.be.json;
         res.body.should.be.a('array');
-      done()
+      done();
       })
     })
   });
+});
+
+describe('BusinessUsersDatabase', () => {
+  describe('Creo correctamente un usuario de negocio', ()=> {
+    it('Devuelve Alta correcta', (done) => {
+      let businessUserJson = {
+        name: "Gustavo",
+        username: "Gus",
+        password: "1234",
+        surname: "Gimenez",
+        role: "Admin"
+        }
+      chai.request(server).post('/business-users').send(businessUserJson)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.text.should.be.eql('Alta correcta');
+        done();
+        });
+    })
+  })
 });
