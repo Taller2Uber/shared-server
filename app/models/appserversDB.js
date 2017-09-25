@@ -2,6 +2,8 @@ const { Client } = require('pg')
 const db = require('../config/pgdb')
 var logger = require('../config/herokuLogger')
 
+function appserverDB(){}
+
 
 /** @name createUser
 * @function createUser
@@ -9,7 +11,10 @@ var logger = require('../config/herokuLogger')
 * @param name Nombre del nuevo appserver
 * @param token Clave unica de acceso para el nuevo appserver
 */
-exports.createUser = function( res, name, token ){
+appserverDB.prototype.createServer = function( response, name, token ){
+  if(!name)
+    response.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
+
   client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
@@ -23,7 +28,7 @@ exports.createUser = function( res, name, token ){
   client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
     console.log(err, res)
   })
-  res.status(201).send('Alta correcta');
+  response.status(201).send('Alta correcta');
 };
 
 
@@ -34,7 +39,7 @@ exports.createUser = function( res, name, token ){
 * @param results Lista para guardar a los users
 * @return {List} results Lista de appservers en la base de datos
 */
-exports.getAllUsers = function(response, results){
+appserverDB.prototype.getAllServers = function(response, results){
   client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
@@ -63,7 +68,7 @@ exports.getAllUsers = function(response, results){
 * @param userId Numero de usuario a borrar
 * @param tokenToCheck Clave enviada que debera matchear con el userId para ejecutar la baja
 */
-exports.deleteUser = function( response, userId, tokenToCheck ){
+appserverDB.prototype.deleteServer = function( response, userId, tokenToCheck ){
   client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
@@ -83,5 +88,6 @@ exports.deleteUser = function( response, userId, tokenToCheck ){
           client.end();
         }
   });
-
 };
+
+module.exports = appserverDB;

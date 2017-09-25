@@ -1,29 +1,25 @@
 module.exports = function(server){
 
-  var appservCtrl = require ( '../controllers/appservers' );
   var logger = require('../config/herokuLogger.js');
+  var appserverDB = require('../models/appserversDB');
+  var randtoken = require('rand-token');
 
 
   server.get("/servers", function( req, res, err ){
     logger.info('Solicitud de obtener todos los appservers');
-    appservCtrl.getAll( req, res );
-
+    var results = [];
+    appserverDB.prototype.getAllServers(res, results);
   });
 
-  server.post("/servers", function( req, res, err){
+  server.post("/servers", function( req, res, err ){
     logger.info('Solicitud de alta de appserver')
-    appservCtrl.create( req.body.name, res );
+    var token = randtoken.generate(32);
+    appserverDB.prototype.createServer(res, req.body.name, token );
   });
 
-  server.delete("/servers/:userId", function( req, res, err){
+  server.delete("/servers/:userId", function( req, res, err ){
     logger.info('Solicitud de baja de appserver')
-    appservCtrl.deleteUser(req.params.userId, req.body.token, res);
+    appserverDB.prototype.deleteServer(res, req.params.userId, req.body.token);
   });
-
-
-  server.use(function( req, res, err ){
-    res.status(404).send('La pagina solicitada no existe');
-  });
-
 
 };
