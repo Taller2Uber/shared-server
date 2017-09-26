@@ -51,7 +51,7 @@ appserverDB.prototype.getAllServers = function(response, results){
       logger.info('Se conecto a la base de datos correctamente.')
     }
   });
-
+  
   var query = client.query('SELECT * FROM appservers', (err, res) =>{
     res.rows.forEach(row =>{
       results.push(row);

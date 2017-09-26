@@ -71,3 +71,41 @@ describe('BusinessUsersDatabase', () => {
     })
   })
 });
+
+describe('BusinessUsersDatabase', () => {
+  describe('Creo usuario de negocio sin un parametro', ()=> {
+    it('Devuelve error en precondiciones', (done) => {
+      let businessUserJson = {
+        name: "",
+        username: "Gus",
+        password: "1234",
+        surname: "Gimenez",
+        role: "Admin"
+        }
+      chai.request(server).post('/business-users').send(businessUserJson)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.text.should.be.eql('Incumplimiento de precondiciones (parámetros faltantes)');
+        done();
+        });
+    })
+  })
+});
+
+
+describe('BusinessUsersDatabase', () => {
+  describe('Loggin correcto', ()=> {
+    it('Devuelve inicio de sesion correcta', (done) => {
+      let businessUserJson = {
+        username: "Gus",
+        password: "1234",
+        }
+      chai.request(server).post('/login').send(businessUserJson)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.text.should.be.eql('Inicio de sesion correcta');
+        done();
+        });
+    })
+  })
+});

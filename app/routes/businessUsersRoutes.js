@@ -20,4 +20,15 @@ module.exports = function(server){
     databaseObject.prototype.checkAuth( res, req, session );
   });
 
+  server.get("/business-users/me", function( req, res, err ){
+    logger.info('Solicitud de informacion personal');
+
+    if( !req.session.authenticated ){
+      logger.info('Unauthorized. Usted no esta loggeado');
+      res.status(401).send('Unauthorized');
+    }else {
+      databaseObject.prototype.getPersonalInfo( res, req );
+    }
+  });
+
 };
