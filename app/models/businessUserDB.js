@@ -130,5 +130,27 @@ buDB.prototype.getPersonalInfo = function( response, request ){
   })
 }
 
+buDB.prototype.updateInfo = function( response, request ){
+  client = new Client({connectionString: db.url, ssl:true});
+  client.connect( (err) =>{
+    if( err ){
+      logger.info('Error critico. No se pudo conectar a la base de datos. Error: ' + err);
+      response.status(500).send('Unexpected error');
+      return;
+    }else{
+      client.query('UPDATE businessusers SET name = $1, username = $2, password = $3, surname = $4, role = $5 WHERE id = $6',
+          [ request.body.name, request.body.username, request.body.password, request.body.surname, request.body.role ,request.session.userId ], (err, res) =>{
+        if( err ){
+          logger.info('Error al realizar la actualizacion: ' + err);
+          response.status(500).send('Unexpected error');
+        } else {
+          logger.info('Actualización de información del usuario de negocio conectado');
+          response.status(200).send('Actualización de información del usuario de negocio conectado');
+        }
+      });
+    }
+  });
+}
+
 
 module.exports = buDB;

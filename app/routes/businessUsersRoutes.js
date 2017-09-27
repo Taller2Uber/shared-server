@@ -24,11 +24,23 @@ module.exports = function(server){
     logger.info('Solicitud de informacion personal');
 
     if( !req.session.authenticated ){
-      logger.info('Unauthorized. Usted no esta loggeado');
+      logger.info('Unauthorized');
       res.status(401).send('Unauthorized');
     }else {
       databaseObject.prototype.getPersonalInfo( res, req );
     }
+  });
+
+  server.put("/business-users/me", function( req, res, err ){
+    logger.info('Solicitud de actualizacion de informacion personal');
+
+    if( !req.session.authenticated ){
+      logger.info("Unauthorized");
+      res.status(401).send('Unauthorized');
+    }else{
+      databaseObject.prototype.updateInfo( res, req );
+    }
+
   });
 
 };
