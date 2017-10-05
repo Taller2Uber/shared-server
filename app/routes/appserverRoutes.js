@@ -22,4 +22,23 @@ module.exports = function(server){
     appserverDB.prototype.deleteServer(res, req.params.userId, req.body.token);
   });
 
+  server.get("/servers/:userId", function( req, res, err ){
+    logger.info('Solicitud de informacion de un appserver');
+    appserverDB.getServerInfo( res, req.params.userId);
+  });
+
+    server.put("/servers/:userId", function( req, res, err ){
+      logger.info('Solicitud de modificacion de un appserver');
+      appserverDB.updateServerInfo(res, req, req.params.userId);
+    });
+
+    server.post("/servers/:userId", function( req, res, err ){
+      logger.info('Solicitud de renovacion de token de un appserver');
+      var newToken = randtoken.generate(32);
+      appserverDB.renewToken( res, newToken, req.body._ref, req.params.userId );
+    });
+
+    server.get("/servers/ping", function( req, res, err ){
+      logger.info('Solicitud de notificacion de vida del servidor');
+      });
 };

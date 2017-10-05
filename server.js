@@ -21,6 +21,7 @@ server.use(methodOverride('X-HTTP-Method-Override'));
 
 require('./app/routes/appserverRoutes')(server);
 require('./app/routes/businessUsersRoutes')(server);
+require('./app/routes/appuserRoutes')(server);
 require('./app/routes/noWayRoute')(server);
 
 

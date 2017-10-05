@@ -65,7 +65,7 @@ describe('BusinessUsersDatabase', () => {
       chai.request(server).post('/business-users').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(201);
-          res.text.should.be.eql('Alta correcta');
+          res.body.should.have.property("description", 'Alta correcta');
         done();
         });
     })
@@ -85,7 +85,7 @@ describe('BusinessUsersDatabase', () => {
       chai.request(server).post('/business-users').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(400);
-          res.text.should.be.eql('Incumplimiento de precondiciones (parámetros faltantes)');
+          res.body.error.should.have.property("message", 'Incumplimiento de precondiciones');
         done();
         });
     })

@@ -2,6 +2,7 @@
   "name": "shared-server",
   "main": "server.js",
   "dependencies": {
+    "asyncawait": "^1.0.6",
     "body-parser": "~1.4.2",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
@@ -10,6 +11,7 @@
     "express-session": "^1.15.5",
     "heroku-logger": "^0.1.4",
     "istanbul": "^0.4.5",
+    "json-hash": "^1.2.0",
     "method-override": "~2.0.2",
     "mocha": "^3.5.1",
     "moment": "^2.18.1",
