@@ -1,17 +1,15 @@
 var usersDB = require('../models/appusersdb')
 var respuesta = require('../models/respuesta')
 var carsDB = require('../models/carsDb')
+var loginCheck = require('../models/loginCheck')
 
 module.exports = function(server){
   var logger = require('../config/herokuLogger.js')
 
   server.get('/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
-    var respuestaJson = {};
-    if( !req.session.authenticated ){
-      respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
-      res.status(401).json(respuestaJson);
-    }else{
+
+    if( loginCheck.check(req, res) == true){
       var results = [];
       usersDB.getAllUsers( res, results );
     }
@@ -29,23 +27,16 @@ module.exports = function(server){
 
   server.delete('/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
-    if( !req.session.authenticated ){
-      var respuestaJson = {};
-      respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
-      res.status(401).json(respuestaJson);
-    }else{
+
+    if(loginCheck.check(req, res) == true){
       usersDB.deleteUser( res, req, req.params.userId );
     }
-
 });
 
   server.get('/users/:userId', function(req, res, err){
     logger.info('Solicitud para obtener informacion de un usuario');
-    if( !req.session.authenticated ){
-      var respuestaJson = {};
-      respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
-      res.status(401).json(respuestaJson);
-    }else{
+
+    if(loginCheck.check(req, res) == true){
       usersDB.getUser( res, req.params.userId );
     }
 });
@@ -58,14 +49,9 @@ module.exports = function(server){
   server.get('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para obtener los autos asociados a un usuario');
 
-    if( !req.session.authenticated ){
-      var respuestaJson = {};
-      respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
-      res.status(401).json(respuestaJson);
-    }else{
+    if(loginCheck.check(req, res) == true){
       carsDB.getAllCarsFromId( res, req.params.userId );
     }
-
 });
 
   server.post('/users/:userId/cars', function(req, res, err){

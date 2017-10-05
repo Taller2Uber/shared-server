@@ -27,7 +27,7 @@ appserverDB.prototype.createServer = function( response, name, token ){
       }
     }); // Se conecta el cliente
     var fecha = new Date();
-    client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5) RETURNING name', [name, 'me', fecha, fecha, token],(err, res) => {
+    client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection, token) VALUES ($1, $2, $3, $4, $5)', [name, 'me', fecha, fecha, token],(err, res) => {
       console.log(err, res)
     })
     response.status(201).send('Alta correcta');
