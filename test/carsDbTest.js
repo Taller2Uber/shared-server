@@ -32,12 +32,47 @@ describe('CarsDatabase', () => {
         owner: 3,
         properties: [{name:"color", value:"rojo"}]
       };
+        chai.request(server).post('/users/3/cars').send(carJson)
+          .end((err, res) => {
+            res.should.have.status(201);
+          });
+        done();
+  })
+})});
+
+
+describe('CarsDatabase', () => {
+  describe('Intento obtener un auto inexistente', ()=> {
+    it('Devuelve Auto inexistente 404', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
       var session = chai.request.agent(server);
       session.post('/login').send(loginJson)
       .then( function(res){
-        session.post('/users/3/cars').send(carJson)
+        session.get('/users/3/cars/2')
           .end((err, res) => {
-            res.should.have.status(201);
+            res.should.have.status(404);
+          });
+        done();
+    })
+  })
+})});
+
+describe('CarsDatabase', () => {
+  describe('Intento obtener todos los auto de un usuario', ()=> {
+    it('Devuelve 200', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/users/3/cars')
+          .end((err, res) => {
+            res.should.have.status(200);
           });
         done();
     })

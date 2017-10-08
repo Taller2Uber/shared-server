@@ -80,9 +80,7 @@ var logger = require('../config/herokuLogger.js')
   server.post('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
 
-    if(loginCheck.check(req, res) ==  true){
-      carsDB.createCar(res, req);
-    }
+    carsDB.createCar(res, req);
 
   });
 
