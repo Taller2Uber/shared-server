@@ -109,7 +109,7 @@ appserverDB.getServerInfo = function( response, userId ){
       var results = [];
       client.query('SELECT * FROM appservers WHERE id = $1', [userId], (err, res) =>{
         if( err )
-          response.error('Error en la query');
+          logger.error('Error en la query');
         else {
             res.rows.forEach(row =>{
             results.push(row);
