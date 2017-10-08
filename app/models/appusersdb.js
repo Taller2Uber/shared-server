@@ -24,7 +24,6 @@ appusers.getAllUsers = function( response, results ){
       respuestaJson = respuesta.addResult(respuestaJson, results);
       logger.info('Obteniendo listado de usuarios');
       response.status(200).json(respuestaJson);
-      return(results);
     })
   }else{
     logger.error('Unexpected error');

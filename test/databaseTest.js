@@ -49,3 +49,58 @@ describe('AppserversDatabase', () => {
     })
   });
 });
+
+
+describe('AppserversDatabase', () => {
+  describe('Obtener appserver inexistente',() => {
+    it('Devuelve status 404 server inexistente', (done) => {
+      chai.request(server).get('/servers/1')
+      .end((err, res) => {
+        res.should.have.status(404);
+      done();
+      })
+    })
+  });
+});
+
+describe('AppserversDatabase', () => {
+  describe('Obtener appserver',() => {
+    it('Devuelve status 200 Informacion del server', (done) => {
+      chai.request(server).get('/servers/26')
+      .end((err, res) => {
+        res.should.have.status(200);
+      done();
+      })
+    })
+  });
+});
+
+describe('AppserversDatabase', () => {
+  describe('Intento actualizar server con ref incorrecto',() => {
+    it('Devuelve status 409 Ref incorrecto', (done) => {
+      let updateServerJson = {
+        _ref:''
+      }
+      chai.request(server).put('/servers/26').send(updateServerJson)
+      .end((err, res) => {
+        res.should.have.status(409);
+      done();
+      })
+    })
+  });
+});
+
+describe('AppserversDatabase', () => {
+  describe('Intento renovar token con ref incorrecto',() => {
+    it('Devuelve status 409 Ref incorrecto', (done) => {
+      let updateServerJson = {
+        _ref:''
+      }
+      chai.request(server).put('/servers/26').send(updateServerJson)
+      .end((err, res) => {
+        res.should.have.status(409);
+      done();
+      })
+    })
+  });
+});

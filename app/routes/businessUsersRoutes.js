@@ -3,8 +3,25 @@ var loginCheck = require('../models/loginCheck')
 var logger = require('../config/herokuLogger.js')
 var databaseObject = require('../models/businessUserDB.js')
 
-module.exports = function(server){
+/**
+ * @namespace businessUsersRoutes
+ */
 
+/**
+ * @constructor
+ * @param {Object} server Servidor express.
+ */
+
+businessUsersRoutes = function(server){
+
+
+/**
+ * @name get all business users
+ * @memberof businessUsersRoutes
+ * @function GET businessUsers
+ * @param request
+ *
+ */
 server.get("/business-users", function( req, res, err ){
     logger.info('Solicitud de obtencion de todos los usuarios de negocio');
 
@@ -81,3 +98,5 @@ server.put("/business-users/:userId", function( req, res, err ){
   });
 
 }
+
+module.exports = businessUsersRoutes;

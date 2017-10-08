@@ -6,8 +6,24 @@ var path = require('path')
 var logger = require('../config/herokuLogger.js')
 
 
+/**
+ * @namespace appUsersRoutes
+ */
 
- module.exports = function(server){
+/**
+ * @constructor
+ * @param {Object} server Servidor express.
+ */
+
+ appUsersRoutes = function(server){
+
+   /**
+    * @name get all app users
+    * @memberof appUsersRoutes
+    * @function GET appUsers
+    * @param request
+    *
+    */
 
   server.get('/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
@@ -97,3 +113,5 @@ var logger = require('../config/herokuLogger.js')
     res.sendfile(path.resolve('./app/components/appusers/usersList.html'));
   })
 }
+
+module.exports = appUsersRoutes;

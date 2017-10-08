@@ -40,8 +40,8 @@ appserverDB.prototype.createServer = function( response, name, token ){
 };
 
 
-/** @name getAllUsers
-* @function getAllUsers
+/** @name getAllServers
+* @function getAllServers
 * @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto para responder al cliente que solicito la informacion
@@ -68,6 +68,7 @@ appserverDB.prototype.getAllServers = function(response, results){
     client.end();
     respuestaJson = respuesta.addResult(respuestaJson, results);
     response.status(200).json(results);
+    return(results);
   })
 };
 

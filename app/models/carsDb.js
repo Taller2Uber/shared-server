@@ -41,7 +41,6 @@ carsDB.createCar = function( response, request ){
     return;
   }
   var propiedades = request.body.properties;
-  logger.info('Array de propiedades: ' + propiedades[0].name );
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
     client.query('INSERT INTO cars (owner) VALUES ($1) RETURNING *', [request.params.userId], (err, results) =>{
@@ -55,18 +54,20 @@ carsDB.createCar = function( response, request ){
           logger.info('name: '+ propiedad.name);
           logger.info('value: ' + propiedad.value);
 
-          client.query('INSERT INTO CarProperties (name, value, carId) VALUES ($1, $2, $3)', [propiedad.name, propiedad.value, results.rows[0].id], (err, res) =>{
+          client.query('INSERT INTO carProperties (name, value, carid) VALUES ($1, $2, $3)', [propiedad.name, propiedad.value, results.rows[0].id], (err, res) =>{
             if(err){
-              responseJson = respuesta.addError(responseJson, 500, 'Error al ingresar una propiedad');
-              response.status(500).json(responseJson);
+              logger.info(err);
+              respuestaJson = respuesta.addError(respuestaJson, 500, 'Error al ingresar una propiedad');
+              response.status(500).json(respuestaJson);
+              client.end()
               return;
+            }else{
+              logger.info('Alta correcta: ' + results.rows[0].id );
+              respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
+              response.status(201).json(respuestaJson);
             }
           })
         }
-
-        logger.info('Alta correcta: ' + results.rows[0].id );
-        respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
-        response.status(201).json(respuestaJson);
       }
     })
 
