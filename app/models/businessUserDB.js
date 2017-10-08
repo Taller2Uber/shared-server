@@ -1,4 +1,4 @@
-const { Client } = require('pg')
+const {Client}  = require('pg')
 const db = require('../config/pgdb')
 var logger = require('../config/herokuLogger')
 var refCheck = require('./refCheck')

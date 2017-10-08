@@ -41,4 +41,5 @@ module.exports = function(server){
     server.get("/servers/ping", function( req, res, err ){
       logger.info('Solicitud de notificacion de vida del servidor');
       });
+
 };

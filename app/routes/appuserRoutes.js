@@ -2,9 +2,12 @@ var usersDB = require('../models/appusersdb')
 var respuesta = require('../models/respuesta')
 var carsDB = require('../models/carsDb')
 var loginCheck = require('../models/loginCheck')
+var path = require('path')
+var logger = require('../config/herokuLogger.js')
 
-module.exports = function(server){
-  var logger = require('../config/herokuLogger.js')
+
+
+ module.exports = function(server){
 
   server.get('/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
@@ -44,6 +47,10 @@ module.exports = function(server){
   server.put('/users/:userId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un usuario');
 
+    if(loginCheck.check( req, res ) == true){
+      usersDB.updateUser(res, req);
+    }
+
 });
 
   server.get('/users/:userId/cars', function(req, res, err){
@@ -57,15 +64,27 @@ module.exports = function(server){
   server.post('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
 
+    if(loginCheck.check(req, res) ==  true){
+      carsDB.createCar(res, req);
+    }
+
   });
 
   server.get('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para obtener un auto asociado a un usuario');
 
+    if(loginCheck.check(req, res) == true){
+      carsDB.getCar( res, req );
+    }
+
   });
 
   server.delete('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para dar de baja un auto asociado a un usuario');
+
+    if(loginCheck.check( req, res ) == true){
+      carsDB.deleteCar( res, req );
+    }
 
   });
 
@@ -73,4 +92,8 @@ module.exports = function(server){
     logger.info('Solicitud para modificar informacion de un auto asociado a un usuario');
 
   });
+
+  server.get("/front/users", function(req, res, err){
+    res.sendfile(path.resolve('./app/components/appusers/usersList.html'));
+  })
 }

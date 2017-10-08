@@ -1,10 +1,9 @@
 var respuesta = require('../models/respuesta')
 var loginCheck = require('../models/loginCheck')
+var logger = require('../config/herokuLogger.js')
+var databaseObject = require('../models/businessUserDB.js')
 
 module.exports = function(server){
-
-  var logger = require('../config/herokuLogger.js')
-  var databaseObject = require('../models/businessUserDB.js')
 
 server.get("/business-users", function( req, res, err ){
     logger.info('Solicitud de obtencion de todos los usuarios de negocio');

@@ -5,7 +5,7 @@
 * @description Objetivo: abstraer la URL de acceso a la base de datos del resto de la aplicacion
 */
 
-const { Client } = require('pg');
+const  Client  = require('pg');
 var async = require('asyncawait/async');
 var logger = require('../config/herokuLogger');
 

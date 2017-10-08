@@ -40,11 +40,10 @@ describe('AppserversDatabase', () => {
 
 describe('AppserversDatabase', () => {
   describe('Obtener todos los appservers',() => {
-    it('Devuelve un array de Json', (done) => {
+    it('Devuelve Ok', (done) => {
       chai.request(server).get('/servers')
       .end((err, res) => {
         res.should.have.status(200);
-        res.body.should.be.a('array');
       done();
       })
     })

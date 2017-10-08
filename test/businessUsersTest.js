@@ -91,7 +91,6 @@ describe('BusinessUserDatabase', () => {
         session.get('/business-users')
           .end((err, res) => {
             res.should.have.status(200);
-            //res.text.should.be.eql('Alta correcta');
           });
         done();
     })

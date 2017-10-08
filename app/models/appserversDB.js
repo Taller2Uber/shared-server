@@ -1,14 +1,19 @@
-const { Client } = require('pg')
+const  {Client}  = require('pg')
 const db = require('../config/pgdb')
 var logger = require('../config/herokuLogger')
 var respuesta = require('../models/respuesta')
 var refCheck = require('../models/refCheck')
 
+
+/**
+ * @class Clase para definir las llamadas a la base de datos de appservers
+ */
 function appserverDB(){}
 
 
 /** @name createUser
 * @function createUser
+* @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param name Nombre del nuevo appserver
 * @param token Clave unica de acceso para el nuevo appserver
@@ -37,12 +42,14 @@ appserverDB.prototype.createServer = function( response, name, token ){
 
 /** @name getAllUsers
 * @function getAllUsers
+* @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto para responder al cliente que solicito la informacion
 * @param results Lista para guardar a los users
 * @return {List} results Lista de appservers en la base de datos
 */
 appserverDB.prototype.getAllServers = function(response, results){
+  var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
   client.connect((err) => {
     if(err){
@@ -59,14 +66,15 @@ appserverDB.prototype.getAllServers = function(response, results){
       results.push(row);
     });
     client.end();
-    response.status(200).send(results);
-    return(results);
+    respuestaJson = respuesta.addResult(respuestaJson, results);
+    response.status(200).json(results);
   })
 };
 
 
 /** @name deleteUser
 * @function deleteUser
+* @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param userId Numero de usuario a borrar
 * @param tokenToCheck Clave enviada que debera matchear con el userId para ejecutar la baja

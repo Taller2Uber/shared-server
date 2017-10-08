@@ -1,4 +1,4 @@
-const { Client } = require('pg')
+const {Client}  = require('pg')
 const db = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
@@ -6,6 +6,10 @@ var logger = require('../config/herokuLogger')
 
 
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
+
+/**
+ * @class Clase para definir las llamadas a la base de datos de usuarios de la aplicacion.
+ */
 function appusers(){}
 
 appusers.getAllUsers = function( response, results ){
@@ -112,6 +116,35 @@ appusers.getUser = function( response, userId ){
         response.status(200).json(respuestaJson);
       }
     });
+  }else{
+    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
+    response.status(500).json(respuestaJson);
+  }
+}
+
+appusers.updateUser = function( response, request ){
+  var respuestaJson = {};
+  client = new Client({connectionString: db.url, ssl:true});
+  if( db.connectClient( client, response ) ){
+    if( !request.body.username || !request.body.firstname || !request.body.password || !request.body.birthdate || !request.body.country || !request.body.lastname
+          || !request.body.type || !request.body.email){
+            respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones');
+            response.status(400).json(respuestaJson);
+    }else{
+      client.query('UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, type = $5, email = $6, birthdate = $7, country = $8 WHERE id = $9',
+                [ request.body.username, request.body.password, request.body.firstname, request.body.lastname, request.body.type, request.body.email, request.body.birthdate,
+                request.body.country, request.params.userId], (err, res) => {
+        if(err){
+          respuestaJson = respuesta.addDescription(respuestaJson, 500, 'Unexpected error');
+          response.status(500).json(respuestaJson);
+        }else{
+          respuestaJson = respuesta.addDescription(respuestaJson, 'Modificacion correcta');
+          response.status(200).json(respuestaJson);
+        }
+    })
+
+    }
+
   }else{
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
