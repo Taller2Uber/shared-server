@@ -30,6 +30,7 @@ carsDB.getAllCarsFromId = function( response, userId ){
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
   }
+  client.end();
 }
 
 carsDB.createCar = function( response, request ){
@@ -75,7 +76,7 @@ carsDB.createCar = function( response, request ){
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
   }
-
+  client.end();
 }
 
 carsDB.getCar = function( response, request ){
@@ -102,6 +103,7 @@ carsDB.getCar = function( response, request ){
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
   }
+  client.end();
 }
 
 carsDB.deleteCar = function( response, request ){
@@ -123,6 +125,7 @@ carsDB.deleteCar = function( response, request ){
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
   }
+  client.end();
 }
 
 

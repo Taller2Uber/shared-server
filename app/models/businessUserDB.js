@@ -32,6 +32,7 @@ buDB.prototype.createBU = function ( res, username, password, name, surname, rol
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     res.status(500).json(respuestaJson);
   }
+  //client.end();
 }
 
 buDB.prototype.getAllBU = function( response, results ){
@@ -52,6 +53,7 @@ buDB.prototype.getAllBU = function( response, results ){
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
   }
+  //client.end();
 }
 
 buDB.prototype.checkAuth = function( response, request , session){
@@ -78,6 +80,7 @@ buDB.prototype.checkAuth = function( response, request , session){
         }
       });
     }
+    //client.end();
 }
 
 function checkLogin(results, response, request, session){
@@ -97,6 +100,7 @@ function checkLogin(results, response, request, session){
     response.status(200).send('Inicio de sesion correcta')
     client.end();
   }
+  //client.end();
 }
 
 buDB.prototype.getPersonalInfo = function( response, request, userId ){
@@ -128,6 +132,7 @@ buDB.prototype.getPersonalInfo = function( response, request, userId ){
       respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
       response.status(500).json(respuestaJson);
     }
+    //client.end();
 }
 
 buDB.prototype.updateInfo = function( response, request, userId ){
@@ -170,7 +175,9 @@ buDB.prototype.updateInfo = function( response, request, userId ){
       logger.info('Unexpected error');
       respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
       response.status(500).send(respuestaJson);
-}}
+    }
+    //client.end();
+}
 
 buDB.prototype.delete = function( response, request ){
   var respuestaJson = {};
@@ -188,7 +195,7 @@ buDB.prototype.delete = function( response, request ){
           }
     });
   }
-
+  //client.end();
 }
 
 

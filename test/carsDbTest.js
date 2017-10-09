@@ -61,8 +61,28 @@ describe('CarsDatabase', () => {
 })});
 
 describe('CarsDatabase', () => {
-  describe('Intento obtener todos los auto de un usuario', ()=> {
-    it('Devuelve 200', (done) => {
+  describe('Intento obtener informacion de un auto en particular', ()=> {
+    it('Devuelve status 200 Informacion del auto', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/users/3/cars/3')
+          .end((err, res) => {
+            res.should.have.status(200);
+          });
+        done();
+    })
+  })
+})});
+
+
+describe('CarsDatabase', () => {
+  describe('Intento obtener todos los autos de un usuario', ()=> {
+    it('Devuelve 201', (done) => {
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -72,7 +92,7 @@ describe('CarsDatabase', () => {
       .then( function(res){
         session.get('/users/3/cars')
           .end((err, res) => {
-            res.should.have.status(200);
+            res.should.have.status(201);
           });
         done();
     })

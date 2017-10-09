@@ -77,6 +77,33 @@ describe('BusinessUsersDatabase', () => {
   })
 });
 
+describe('BusinessUsersDatabase', () => {
+  describe('Intento obtener un usuario de negocio sin estar loggeado', ()=> {
+    it('Devuelve Unauthorized', (done) => {
+
+      chai.request(server).get('/business-users/2')
+        .end((err, res) => {
+          res.should.have.status(401);
+        done();
+        });
+    })
+  })
+});
+
+describe('BusinessUsersDatabase', () => {
+  describe('Intento borrar un usuario de negocio sin estar loggeado', ()=> {
+    it('Devuelve Unauthorized', (done) => {
+
+      chai.request(server).delete('/business-users/2')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.error.should.have.property("message",'Unauthorized');
+        done();
+        });
+    })
+  })
+});
+
 
 describe('BusinessUserDatabase', () => {
   describe('Obtengo todos los usuarios de negocio luego del login', ()=> {
