@@ -42,13 +42,16 @@ var logger = require('../config/herokuLogger.js')
   server.post('/users/validate', function(req, res, err){
     logger.info('Validar las credenciales del usuario');
     //CASI HECHO, FALTA TERMINAR.
+    if(loginCheck.check(req, res) == true){
+      usersDB.validateUser( res, req, req.params.userId );
+    }
 });
 
   server.delete('/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
 
     if(loginCheck.check(req, res) == true){
-      usersDB.deleteUser( res, req, req.params.userId );
+      usersDB.deleteUser( res, req);
     }
 });
 

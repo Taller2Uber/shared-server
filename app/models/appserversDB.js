@@ -173,7 +173,8 @@ appserverDB.updateServerInfo = function( response, request, userId ){
       logger.info('Unexpected error');
       respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
       response.status(500).send(respuestaJson);
-}}
+    }
+}
 
 appserverDB.renewToken = function( response, newToken, oldRef, userId ){
   var respuestaJson = {};
@@ -215,6 +216,7 @@ appserverDB.renewToken = function( response, newToken, oldRef, userId ){
       logger.info('Unexpected error');
       respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
       response.status(500).send(respuestaJson);
-}}
+    }
+}
 
 module.exports = appserverDB;

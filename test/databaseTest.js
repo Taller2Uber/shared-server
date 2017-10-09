@@ -97,7 +97,7 @@ describe('AppserversDatabase', () => {
       let updateServerJson = {
         _ref:''
       }
-      chai.request(server).put('/servers/26').send(updateServerJson)
+      chai.request(server).post('/servers/26').send(updateServerJson)
       .end((err, res) => {
         res.should.have.status(409);
       done();
