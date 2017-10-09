@@ -18,11 +18,13 @@ var logger = require('../config/herokuLogger.js')
  appUsersRoutes = function(server){
 
    /**
-    * @name get all app users
+    * @name get(/users)
+    * @description obtener todos los usuarios de la aplicacion.
     * @memberof appUsersRoutes
     * @function GET appUsers
-    * @param request
-    *
+    * @param request object
+    * @param results object
+    * @param error object
     */
 
   server.get('/users', function(req, res, err){
@@ -34,11 +36,29 @@ var logger = require('../config/herokuLogger.js')
     }
 });
 
+/**
+ * @name post(/users)
+ * @description dar de alta un usuario de aplicacion
+ * @memberof appUsersRoutes
+ * @function POST appUsers
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.post('/users', function(req, res, err){
     logger.info('Solicitud para dar de alta un usuario');
     usersDB.createUser( res, req );
 });
 
+/**
+ * @name post(/users/validate)
+ * @description validar credenciales de un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function POST validation
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.post('/users/validate', function(req, res, err){
     logger.info('Validar las credenciales del usuario');
     //CASI HECHO, FALTA TERMINAR.
@@ -47,6 +67,15 @@ var logger = require('../config/herokuLogger.js')
     }
 });
 
+/**
+ * @name delete(/users/:userId)
+ * @description dar de baja un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function DELETE appUsers
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.delete('/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
 
@@ -55,6 +84,16 @@ var logger = require('../config/herokuLogger.js')
     }
 });
 
+
+/**
+ * @name get(/users/:userId)
+ * @description obtener un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function GET appUser
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.get('/users/:userId', function(req, res, err){
     logger.info('Solicitud para obtener informacion de un usuario');
 
@@ -63,6 +102,15 @@ var logger = require('../config/herokuLogger.js')
     }
 });
 
+/**
+ * @name put(/users/:userId)
+ * @description modificar informacion de un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function PUT appUser
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.put('/users/:userId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un usuario');
 
@@ -72,6 +120,15 @@ var logger = require('../config/herokuLogger.js')
 
 });
 
+/**
+ * @name get(/users/:userId/cars)
+ * @description obtener todos los autos de un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function GET cars
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.get('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para obtener los autos asociados a un usuario');
 
@@ -80,6 +137,16 @@ var logger = require('../config/herokuLogger.js')
     }
 });
 
+
+/**
+ * @name post(/users/:userId/cars)
+ * @description dar de alta auto de un usuario de la aplicacion.
+ * @memberof appUsersRoutes
+ * @function POST car
+ * @param request object
+ * @param results object
+ * @param error object
+ */
   server.post('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
 
@@ -87,6 +154,15 @@ var logger = require('../config/herokuLogger.js')
 
   });
 
+  /**
+   * @name get(/users/:userId/cars/:carID)
+   * @description obtener un  auto de un usuario de la aplicacion.
+   * @memberof appUsersRoutes
+   * @function GET car
+   * @param request object
+   * @param results object
+   * @param error object
+   */
   server.get('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para obtener un auto asociado a un usuario');
 
@@ -96,6 +172,15 @@ var logger = require('../config/herokuLogger.js')
 
   });
 
+  /**
+   * @name delete(/users/:userId/cars/:carId)
+   * @description dar de baja auto de un usuario de la aplicacion.
+   * @memberof appUsersRoutes
+   * @function DELETE car
+   * @param request object
+   * @param results object
+   * @param error object
+   */
   server.delete('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para dar de baja un auto asociado a un usuario');
 
@@ -105,6 +190,16 @@ var logger = require('../config/herokuLogger.js')
 
   });
 
+
+  /**
+   * @name put(/users/:userId/cars/:carId)
+   * @description modificar informacion de un auto de un usuario de la aplicacion.
+   * @memberof appUsersRoutes
+   * @function PUT car
+   * @param request object
+   * @param results object
+   * @param error object
+   */
   server.put('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un auto asociado a un usuario');
 
