@@ -124,6 +124,25 @@ describe('BusinessUserDatabase', () => {
   })
 })});
 
+describe('BusinessUserDatabase', () => {
+  describe('Obtengo un usuario de negocio luego del login', ()=> {
+    it('Devuelve Status 200', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/business-users/17')
+          .end((err, results) => {
+            results.should.have.status(200);
+          });
+        done();
+    })
+  })
+})});
+
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener informacion personal sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
