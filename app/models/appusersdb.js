@@ -81,8 +81,8 @@ appusers.deleteUser = function( response, request, userId){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
-    client.query('DELETE FROM users where id = $1 IS TRUE RETURNING *', [userId],(err, res)=>{
-      if(err || res.length <= 0 ){
+    client.query('DELETE FROM users where id = $1 RETURNING *', [userId],(err, res)=>{
+      if(err || res.rows.length <= 0 ){
         respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
         response.status(404).json(respuestaJson);
       }else{
@@ -103,7 +103,7 @@ appusers.getUser = function( response, userId ){
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
     client.query('SELECT * FROM users WHERE id = $1', [userId], (err, res)=>{
-      if(err || res.length <= 0){
+      if(err || res.rows.length <= 0){
         respuestaJson = respuesta.addError(respuestaJson, 404, 'User inexistente');
         response.status(404).json(respuestaJson);
       }else{

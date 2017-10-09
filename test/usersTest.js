@@ -103,6 +103,26 @@ describe('App Users database', () => {
 })});
 
 describe('App Users database', () => {
+  describe('Intento borrar un usuario de negocio inexistente', ()=> {
+    it('Devuelve Status 404 No existe el recurso', (done) => {
+      let appserverJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(appserverJson)
+      .then( function(res){
+        session.get('/users/1')
+          .end((err, res) => {
+            res.should.have.status(404);
+          });
+          done();
+    })
+  })
+})});
+
+
+describe('App Users database', () => {
   describe('Intento dar de alta un usuario', ()=> {
     it('Devuelve Status 201 Alta correcta', (done) => {
       let appserverJson = {

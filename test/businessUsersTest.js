@@ -64,6 +64,21 @@ describe('BusinessUsersDatabase', () => {
 });
 
 describe('BusinessUsersDatabase', () => {
+  describe('Loggin incorrecto (sin password)', ()=> {
+    it('Devuelve status 500 Informacion faltante', (done) => {
+      let businessUserJson = {
+        username: "Gus"
+        }
+      chai.request(server).post('/login').send(businessUserJson)
+        .end((err, res) => {
+          res.should.have.status(500);
+        done();
+        });
+    })
+  })
+});
+
+describe('BusinessUsersDatabase', () => {
   describe('Intento obtener usuarios de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
@@ -137,6 +152,7 @@ describe('BusinessUserDatabase', () => {
         session.get('/business-users/17')
           .end((err, results) => {
             results.should.have.status(200);
+            results.body.description.should.be('Informacion del usuario');
           });
         done();
     })

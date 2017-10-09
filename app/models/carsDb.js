@@ -14,7 +14,7 @@ carsDB.getAllCarsFromId = function( response, userId ){
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
     client.query('SELECT * FROM cars WHERE  owner = $1', [userId], (err, res) =>{
-      if(err || res.length <=0 ){
+      if(err || res.rows.length <=0 ){
         respuestaJson = respuesta.addError(respuestaJson, 404, 'El recurso solicitado no existe');
         response.status(404).json(respuestaJson);
       }else{
