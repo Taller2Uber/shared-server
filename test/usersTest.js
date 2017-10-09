@@ -112,7 +112,7 @@ describe('App Users database', () => {
       var session = chai.request.agent(server);
       session.post('/login').send(appserverJson)
       .then( function(res){
-        session.get('/users/1')
+        session.delete('/users/1')
           .end((err, res) => {
             res.should.have.status(404);
           });
@@ -145,6 +145,34 @@ describe('App Users database', () => {
         session.post('/users').send(userJson)
           .end((err, res) => {
             res.should.have.status(201);
+          });
+          done();
+    })
+  })
+})});
+
+describe('App Users database', () => {
+  describe('Intento actualizar usuario con parametros faltantes', ()=> {
+    it('Devuelve Status 400 Incumplimiento de precondiciones', (done) => {
+      let appserverJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+        let userJson = {
+          lastname : "Mercado",
+          email : "gabi@gmail.com",
+          birthdate : "1/1/1986",
+          type : "passenger",
+          country : "Argentina",
+          username : "Gabi",
+          password : "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(appserverJson)
+      .then( function(res){
+        session.put('/users/3').send(userJson)
+          .end((err, res) => {
+            res.should.have.status(400);
           });
           done();
     })
