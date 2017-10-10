@@ -99,7 +99,6 @@ describe('BusinessUsersDatabase', () => {
       chai.request(server).put('/business-users/3')
         .end((err, res) => {
           res.should.have.status(401);
-          res.body.error.should.have.property("message",'Unauthorized');
         done();
         });
     })

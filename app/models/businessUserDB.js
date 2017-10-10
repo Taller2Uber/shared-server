@@ -7,10 +7,19 @@ var await = require('asyncawait/await')
 var respuesta = require('./respuesta')
 
 
-
+/**
+ * @class Clase para definir las llamadas a la base de datos de appservers
+ */
 function buDB(){}
 
-
+/**
+* @name createUser
+* @function createUser
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param name Nombre del nuevo appserver
+* @param token Clave unica de acceso para el nuevo appserver
+*/
 buDB.prototype.createBU = function ( res, username, password, name, surname, role ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -35,6 +44,14 @@ buDB.prototype.createBU = function ( res, username, password, name, surname, rol
   //client.end();
 }
 
+
+/**
+* @name getAllBU
+* @function getAllBU
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param results array para guardar los resultados
+*/
 buDB.prototype.getAllBU = function( response, results ){
 
   client = new Client({connectionString: db.url, ssl:true});
@@ -56,6 +73,13 @@ buDB.prototype.getAllBU = function( response, results ){
   //client.end();
 }
 
+/**
+* @name checkAuth
+* @function checkAuth
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param session Objeto que contiene informacion sobre la sesion actual
+*/
 buDB.prototype.checkAuth = function( response, request , session){
   if ( !request.body.username || !request.body.password ){
     logger.info('Informacion faltante');
@@ -83,6 +107,15 @@ buDB.prototype.checkAuth = function( response, request , session){
     //client.end();
 }
 
+
+/**
+* @name checkLogin
+* @function checkLogin
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param session Objeto que contiene informacion sobre la sesion actual
+* @param results array que contiene el usuario a checkear en la primera posicion.
+*/
 function checkLogin(results, response, request, session){
   if( results.length <= 0 ){
     logger.info('Usuario y password incorrectos');
@@ -103,6 +136,13 @@ function checkLogin(results, response, request, session){
   //client.end();
 }
 
+/**
+* @name getPersonalInfo
+* @function getPersonalInfo
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param userID Id del usuario del cual se quiere obtener la informacion
+*/
 buDB.prototype.getPersonalInfo = function( response, request, userId ){
   client = new Client({connectionString: db.url, ssl:true});
   var respuestaJson = {};
@@ -132,9 +172,16 @@ buDB.prototype.getPersonalInfo = function( response, request, userId ){
       respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
       response.status(500).json(respuestaJson);
     }
-    //client.end();
 }
 
+
+/**
+* @name updateInfo
+* @function updateInfo
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param userId Id del usuario del cual se quiere modificar la informacion
+*/
 buDB.prototype.updateInfo = function( response, request, userId ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -179,6 +226,14 @@ buDB.prototype.updateInfo = function( response, request, userId ){
     //client.end();
 }
 
+
+/**
+* @name delete
+* @function delete
+* @memberof buDB
+* @author Gustavo Adrian Gimenez
+* @param request Objeto que debe contener el id del usuario a dar baja.
+*/
 buDB.prototype.delete = function( response, request ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});

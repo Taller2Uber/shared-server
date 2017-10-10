@@ -12,6 +12,13 @@ var logger = require('../config/herokuLogger')
  */
 function appusers(){}
 
+
+/** @name getAllUsers
+* @function getAllUsers
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param results array para guardar los usuarios obtenidos
+*/
 appusers.getAllUsers = function( response, results ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -32,6 +39,13 @@ appusers.getAllUsers = function( response, results ){
   }
 }
 
+
+/** @name createUser
+* @function createUser
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param request debe contener todos los datos necesarios para dar de alta un usuario.
+*/
 appusers.createUser = function( response, req ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -61,6 +75,12 @@ appusers.createUser = function( response, req ){
   }
 }
 
+/** @name validateUser
+* @function validateUser
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param request debe contener password o facebookAuthToken
+*/
 appusers.validateUser = function( response, request ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -77,6 +97,12 @@ appusers.validateUser = function( response, request ){
   }
 }
 
+/** @name deleteUser
+* @function deleteUser
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param userId id del usuario que va a ser dado de baja
+*/
 appusers.deleteUser = function( response, request, userId){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -97,6 +123,13 @@ appusers.deleteUser = function( response, request, userId){
   }
 }
 
+
+/** @name getUser
+* @function getUser
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param userID id del usuario del cual se quiere obtener la informacion
+*/
 appusers.getUser = function( response, userId ){
   var respuestaJson = {};
   var results = [];
@@ -121,6 +154,13 @@ appusers.getUser = function( response, userId ){
   }
 }
 
+
+/** @name updateUser
+* @function updateUser
+* @memberof appusers
+* @author Gustavo Adrian Gimenez
+* @param request Debe contener todos los datos de un usuario incluyendo los no modificados.
+*/
 appusers.updateUser = function( response, request ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});

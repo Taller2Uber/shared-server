@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 app/routes/doc/
+app/models/doc/
 
 logs
 *.log

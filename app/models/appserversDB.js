@@ -11,8 +11,8 @@ var refCheck = require('../models/refCheck')
 function appserverDB(){}
 
 
-/** @name createUser
-* @function createUser
+/** @name createServer
+* @function createServer
 * @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param name Nombre del nuevo appserver
@@ -73,8 +73,8 @@ appserverDB.prototype.getAllServers = function(response, results){
 };
 
 
-/** @name deleteUser
-* @function deleteUser
+/** @name deleteServer
+* @function deleteServer
 * @memberof appserverDB
 * @author Gustavo Adrian Gimenez
 * @param userId Numero de usuario a borrar
@@ -102,6 +102,13 @@ appserverDB.prototype.deleteServer = function( response, userId, tokenToCheck ){
   });
 };
 
+
+/** @name getServerInfo
+* @function createServer
+* @memberof appserverDB
+* @author Gustavo Adrian Gimenez
+* @param userId Id del appserver del cual se quiere obtener la informacion
+*/
 appserverDB.getServerInfo = function( response, userId ){
   client = new Client({connectionString: db.url, ssl:true});
   var respuestaJson = {};
@@ -133,6 +140,13 @@ appserverDB.getServerInfo = function( response, userId ){
     }
 }
 
+
+/** @name updateServerInfo
+* @function updateServerInfo
+* @memberof appserverDB
+* @author Gustavo Adrian Gimenez
+* @param userId Id del appserver del cual se quiere modificar la informacion
+*/
 appserverDB.updateServerInfo = function( response, request, userId ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
@@ -176,6 +190,15 @@ appserverDB.updateServerInfo = function( response, request, userId ){
     }
 }
 
+
+/** @name renewToken
+* @function renewToken
+* @memberof appserverDB
+* @author Gustavo Adrian Gimenez
+* @param newToken token nuevo par ael appserver
+* @param oldRef codigo de hash viejo del server
+* @param userId id del server al cual se le va a modificar el Token
+*/
 appserverDB.renewToken = function( response, newToken, oldRef, userId ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
