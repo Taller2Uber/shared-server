@@ -21,11 +21,10 @@ carsDB.getAllCarsFromId = function( response, userId ){
         res.rows.forEach(row =>{
           results.push(row);
         })
-      }
-      respuestaJson = respuesta.addDescription(respuestaJson, 'Informacion de autos de un usuario');
-      respuestaJson = respuesta.addResult(respuestaJson, results);
-      response.status(200).json(respuestaJson);
-    });
+        respuestaJson = respuesta.addDescription(respuestaJson, 'Informacion de autos de un usuario');
+        respuestaJson = respuesta.addResult(respuestaJson, results);
+        response.status(200).json(respuestaJson);
+      }});
   }else{
     respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
     response.status(500).json(respuestaJson);
@@ -36,11 +35,6 @@ carsDB.getAllCarsFromId = function( response, userId ){
 carsDB.createCar = function( response, request ){
   var respuestaJson = {};
 
-  if( request.params.userId == null ){
-    respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones');
-    response.status(400).json(respuestaJson);
-    return;
-  }
   var propiedades = request.body.properties;
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
@@ -60,8 +54,6 @@ carsDB.createCar = function( response, request ){
               logger.info(err);
               respuestaJson = respuesta.addError(respuestaJson, 500, 'Error al ingresar una propiedad');
               response.status(500).json(respuestaJson);
-              client.end()
-              return;
             }else{
               logger.info('Alta correcta: ' + results.rows[0].id );
               respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');

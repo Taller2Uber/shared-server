@@ -26,20 +26,17 @@ buDB.prototype.createBU = function ( res, username, password, name, surname, rol
   if( db.connectClient( client, res ) ){
     if( !username || !password || !name || !surname || !role ){
       logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
-      respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones');
-      res.status(400).json(respuestaJson);
+      res.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
     }else{
       var jsonBU = {"username":username, "password":password, "name":name, "surname":surname, "role":role };
       var ref =  refCheck.generate( jsonBU );
       client.query('INSERT INTO businessusers (username, password, name, surname, _ref, role) VALUES ($1, $2, $3, $4, $5, $6)', [username, password, name, surname, ref, role],(err, res) => {
         console.log(err, res)
       })
-      respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
-      res.status(201).json(respuestaJson);
+      res.status(201).json(respuesta.addDescription(respuestaJson, 'Alta correcta'));
     }
   }else{
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    res.status(500).json(respuestaJson);
+    res.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
   }
   //client.end();
 }
@@ -62,13 +59,11 @@ buDB.prototype.getAllBU = function( response, results ){
         results.push(row);
       });
       client.end();
-      respuestaJson = respuesta.addResult(respuestaJson, results);
-      response.status(200).json(respuestaJson);
+      response.status(200).json(respuesta.addResult(respuestaJson, results));
       return(results);
     })
   }else{
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
+    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
   }
   //client.end();
 }
@@ -120,8 +115,7 @@ function checkLogin(results, response, request, session){
   if( results.length <= 0 ){
     logger.info('Usuario y password incorrectos');
     var respuestaJson = {};
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Username y password incorrectos');
-    response.status(500).json(respuestaJson);
+    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Username y password incorrectos'));
     client.end();
   } else {
     logger.info('Inicio de sesion correcta');
@@ -158,19 +152,17 @@ buDB.prototype.getPersonalInfo = function( response, request, userId ){
             });
             if( results.length <= 0 ){
               logger.info('User inexistente');
-              respuestaJson = respuesta.addError(respuestaJson, 404, 'User inexistente');
-              response.status(404).json(respuestaJson);
+              //respuestaJson = respuesta.addError(respuestaJson, 404, 'User inexistente');
+              response.status(404).json(respuesta.addError(respuestaJson, 404, 'User inexistente'));
             } else {
               logger.info('Informacion del usuario');
               respuestaJson = respuesta.addDescription(respuestaJson, 'Informacion del usuario');
-              respuestaJson = respuesta.addResult(respuestaJson, results[0]);
-              response.status(200).json(respuestaJson);
+              response.status(200).json(respuesta.addResult(respuestaJson, results[0]));
             }
           }
       });
     }else{
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).json(respuestaJson);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
 }
 
@@ -201,27 +193,23 @@ buDB.prototype.updateInfo = function( response, request, userId ){
                 [ request.body.name, request.body.username, request.body.password, request.body.surname, request.body.role ,newRef, userId ], (err, res) =>{
               if( err ){
                 logger.info('No existe el recurso solicitado');
-                respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
-                response.status(404).json(respuestaJson);
+                response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
               } else {
                 logger.info('Actualización de información del usuario de negocio conectado');
                 respuestaJson = respuesta.addDescription(respuestaJson, 'Modificacion correcta');
                 jsonBU._ref = newRef;
-                respuestaJson = respuesta.addResult(respuestaJson, jsonBU);
-                response.status(200).json(respuestaJson);
+                response.status(200).json(respuesta.addResult(respuestaJson, jsonBU));
               }
           })
         }else{
           logger.info('Ref incorrecto');
-          respuestaJson = respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref');
-          response.status(409).json(respuestaJson);
+          response.status(409).json(respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref'));
         }});
       }
     });
     }else{
       logger.info('Unexpected error');
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).send(respuestaJson);
+      response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
     //client.end();
 }
@@ -241,12 +229,10 @@ buDB.prototype.delete = function( response, request ){
     var query = client.query('DELETE FROM businessusers WHERE id =  $1',[request.params.userId], ( err, res) =>{
           if(err){
             logger.info('No existe el recurso solicitado');
-            respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
-            response.status(404).json(respuestaJson);
+            response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
           }else{
             logger.info('Baja correcta');
-            respuestaJson = respuesta.addDescription(respuestaJson, 'Baja correcta');
-            response.status(200).json(respuestaJson);
+            response.status(200).json(respuesta.addDescription(respuestaJson, 'Baja correcta'));
           }
     });
   }

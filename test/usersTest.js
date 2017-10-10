@@ -103,7 +103,7 @@ describe('App Users database', () => {
 })});
 
 describe('App Users database', () => {
-  describe('Intento borrar un usuario de negocio inexistente', ()=> {
+  describe('Intento borrar un usuario inexistente', ()=> {
     it('Devuelve Status 404 No existe el recurso', (done) => {
       let appserverJson = {
         username: "GAGimenez",

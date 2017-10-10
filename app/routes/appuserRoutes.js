@@ -205,9 +205,6 @@ var logger = require('../config/herokuLogger.js')
 
   });
 
-  server.get("/front/users", function(req, res, err){
-    res.sendfile(path.resolve('./app/components/appusers/usersList.html'));
-  })
 }
 
 module.exports = appUsersRoutes;

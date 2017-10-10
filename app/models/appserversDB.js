@@ -66,8 +66,7 @@ appserverDB.prototype.getAllServers = function(response, results){
       results.push(row);
     });
     client.end();
-    respuestaJson = respuesta.addResult(respuestaJson, results);
-    response.status(200).json(results);
+    response.status(200).json(respuesta.addResult(respuestaJson, results));
     return(results);
   })
 };
@@ -124,19 +123,16 @@ appserverDB.getServerInfo = function( response, userId ){
             });
             if( results.length <= 0 ){
               logger.info('Server inexistente');
-              respuestaJson = respuesta.addError(respuestaJson, 404, 'Server inexistente');
-              response.status(404).json(respuestaJson);
+              response.status(404).json(respuesta.addError(respuestaJson, 404, 'Server inexistente'));
             } else {
               logger.info('Informacion del server');
               respuestaJson = respuesta.addDescription(respuestaJson, 'Informacion del server');
-              respuestaJson = respuesta.addResult(respuestaJson, results[0]);
-              response.status(200).json(respuestaJson);
+              response.status(200).json(respuesta.addResult(respuestaJson, results[0]));
             }
           }
       });
     }else{
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).json(respuestaJson);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
 }
 
@@ -166,27 +162,23 @@ appserverDB.updateServerInfo = function( response, request, userId ){
                 [ request.body.name, newRef, userId ], (err, res) =>{
               if( err ){
                 logger.info('No existe el recurso solicitado');
-                respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
-                response.status(404).json(respuestaJson);
+                response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
               } else {
                 logger.info('Actualización de información del server conectado');
                 respuestaJson = respuesta.addDescription(respuestaJson, 'Modificacion correcta');
                 jsonSV._ref = newRef;
-                respuestaJson = respuesta.addResult(respuestaJson, jsonSV);
-                response.status(200).json(respuestaJson);
+                response.status(200).json(respuesta.addResult(respuestaJson, jsonSV));
               }
           })
         }else{
           logger.info('Ref incorrecto');
-          respuestaJson = respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref');
-          response.status(409).json(respuestaJson);
+          response.status(409).json(respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref'));
         }});
       }
     });
     }else{
       logger.info('Unexpected error');
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).send(respuestaJson);
+      response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
 }
 
@@ -217,28 +209,24 @@ appserverDB.renewToken = function( response, newToken, oldRef, userId ){
                 [ newToken, newRef, userId ], (err, res) =>{
               if( err ){
                 logger.info('No existe el recurso solicitado');
-                respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
-                response.status(404).json(respuestaJson);
+                response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
               } else {
                 logger.info('Actualización de token del server conectado');
                 respuestaJson = respuesta.addDescription(respuestaJson, 'Modificacion de token correcta');
                 appserver._ref = newRef;
                 appserver.token = newToken;
-                respuestaJson = respuesta.addResult(respuestaJson, appserver);
-                response.status(200).json(respuestaJson);
+                response.status(200).json(respuesta.addResult(respuestaJson, appserver));
               }
           })
         }else{
           logger.info('Ref incorrecto');
-          respuestaJson = respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref');
-          response.status(409).json(respuestaJson);
+          response.status(409).json(respuesta.addError(respuestaJson, 409, 'Conflicto en el update. Mal valor de ref'));
         }});
       }
     });
     }else{
       logger.info('Unexpected error');
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).send(respuestaJson);
+      response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
 }
 

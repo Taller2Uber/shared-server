@@ -79,6 +79,22 @@ describe('BusinessUsersDatabase', () => {
 });
 
 describe('BusinessUsersDatabase', () => {
+  describe('Loggin  com password incorrecto', ()=> {
+    it('Devuelve status 500 usuario y password incorrectos', (done) => {
+      let businessUserJson = {
+        username: "Gus",
+        password: "12"
+        }
+      chai.request(server).post('/login').send(businessUserJson)
+        .end((err, res) => {
+          res.should.have.status(500);
+        done();
+        });
+    })
+  })
+});
+
+describe('BusinessUsersDatabase', () => {
   describe('Intento obtener usuarios de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
@@ -166,6 +182,25 @@ describe('BusinessUserDatabase', () => {
           .end((err, results) => {
             results.should.have.status(200);
             results.body.description.should.be('Informacion del usuario');
+          });
+        done();
+    })
+  })
+})});
+
+describe('BusinessUserDatabase', () => {
+  describe('Obtengo informacion personal luego del login', ()=> {
+    it('Devuelve Status 200', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/business-users/me')
+          .end((err, results) => {
+            results.should.have.status(200);
           });
         done();
     })
