@@ -61,6 +61,25 @@ describe('CarsDatabase', () => {
 })});
 
 describe('CarsDatabase', () => {
+  describe('Intento obtener un auto de un usuario inexistente', ()=> {
+    it('Devuelve 404 recurso solicitado no existe', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/users/1/cars/2')
+          .end((err, res) => {
+            res.should.have.status(404);
+          });
+        done();
+    })
+  })
+})});
+
+describe('CarsDatabase', () => {
   describe('Intento obtener informacion de un auto en particular', ()=> {
     it('Devuelve status 200 Informacion del auto', (done) => {
       let loginJson = {

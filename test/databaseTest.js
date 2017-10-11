@@ -105,3 +105,16 @@ describe('AppserversDatabase', () => {
     })
   });
 });
+
+
+describe('AppserversDatabase', () => {
+  describe('Intento borrar server con id incorrecto',() => {
+    it('Devuelve status 500 Error', (done) => {
+      chai.request(server).delete('/servers/q')
+      .end((err, res) => {
+        res.should.have.status(500);
+      done();
+      })
+    })
+  });
+});

@@ -189,6 +189,25 @@ describe('BusinessUserDatabase', () => {
 })});
 
 describe('BusinessUserDatabase', () => {
+  describe('Intento obtener un usuario de negocio luego del login enviando id incorrecto', ()=> {
+    it('Devuelve Status 500 Error', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.get('/business-users/q')
+          .end((err, results) => {
+            results.should.have.status(500);
+          });
+        done();
+    })
+  })
+})});
+
+describe('BusinessUserDatabase', () => {
   describe('Obtengo informacion personal luego del login', ()=> {
     it('Devuelve Status 200', (done) => {
       let loginJson = {
@@ -220,3 +239,41 @@ describe('BusinessUsersDatabase', () => {
     })
   })
 });
+
+describe('BusinessUserDatabase', () => {
+  describe('Intento actualizar un usuario de negocio enviando id incorrecto', ()=> {
+    it('Devuelve Status 500 Internal error', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.put('/business-users/q')
+          .end((err, results) => {
+            results.should.have.status(500);
+          });
+        done();
+    })
+  })
+})});
+
+describe('BusinessUserDatabase', () => {
+  describe('Intento borrar un usuario de negocio enviando id incorrecto', ()=> {
+    it('Devuelve Status 404 recurso solicitado no existente', (done) => {
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234"
+        }
+      var session = chai.request.agent(server);
+      session.post('/login').send(loginJson)
+      .then( function(res){
+        session.delete('/business-users/q')
+          .end((err, results) => {
+            results.should.have.status(404);
+          });
+        done();
+    })
+  })
+})});

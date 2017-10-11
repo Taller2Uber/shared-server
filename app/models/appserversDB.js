@@ -93,6 +93,7 @@ appserverDB.prototype.deleteServer = function( response, userId, tokenToCheck ){
     //checkear errores
         if(err){
           console.log(err);
+          response.status(500).send('Error de base de datos al borrar');
           client.end();
         }else{
           response.status(200).send('Fin de la operacion');
@@ -227,6 +228,28 @@ appserverDB.renewToken = function( response, newToken, oldRef, userId ){
     }else{
       logger.info('Unexpected error');
       response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    }
+}
+
+appserverDB.pingRequest = function( response, newToken, serverId ){
+  var respuestaJson = {};
+  logger.info('entro a la funcion ping');
+  client = new Client({connectionString: db.url, ssl:true});
+    if( db.connectClient( client, response ) ){
+      client.query('UPDATE appservers SET token = $1 WHERE id = $2',[newToken, serverId], (err, res)=>{
+        if(err){
+          logger.info('No existe el recurso solicitado');
+          response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
+        }else{
+          logger.info('Operacion correcta');
+          respuestaJson = respuesta.addDescription(respuestaJson, 'Operacion correcta');
+          respuestaJson.token = newToken;
+          response.status(200).json(respuestaJson);
+        }
+      })
+    }else{
+      logger.info('Unexpected error');
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     }
 }
 

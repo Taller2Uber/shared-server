@@ -58,6 +58,12 @@ appServerRoutes = function(server){
     appserverDB.prototype.deleteServer(res, req.params.userId, req.body.token);
   });
 
+  server.post("/servers/ping", function( req, res, err ){
+    var newToken = randtoken.generate(32);
+    logger.info('Solicitud de notificacion de vida del servidor');
+    appserverDB.pingRequest( res, newToken, req.body.id );
+    });
+
   /**
    * @name geT(/servers/:serverId)
    * @description obtener un appserver.
@@ -100,10 +106,6 @@ appServerRoutes = function(server){
       var newToken = randtoken.generate(32);
       appserverDB.renewToken( res, newToken, req.body._ref, req.params.userId );
     });
-
-    server.get("/servers/ping", function( req, res, err ){
-      logger.info('Solicitud de notificacion de vida del servidor');
-      });
 
 };
 

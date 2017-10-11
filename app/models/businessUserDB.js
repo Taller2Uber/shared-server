@@ -145,7 +145,7 @@ buDB.prototype.getPersonalInfo = function( response, request, userId ){
       var results = [];
       client.query('SELECT * FROM businessusers WHERE id = $1', [userId], (err, res) =>{
         if( err )
-          response.send('Error en la query');
+          response.status(500).send('Error en la query');
         else {
             res.rows.forEach(row =>{
             results.push(row);
@@ -181,7 +181,7 @@ buDB.prototype.updateInfo = function( response, request, userId ){
       client.query('SELECT _ref FROM businessusers WHERE id = $1',[userId], (err, res) =>{
         if(err){
           logger.info('ERROR: ' + err);
-          return false;
+          response.status(500).json(respuesta.addError(respuestaJson, 'Error interno'));
         }
         else{
           res.rows.forEach(row =>{
