@@ -22,6 +22,14 @@ server.use(session({secret: 'grupo7'}));
 
 server.use(methodOverride('X-HTTP-Method-Override'));
 
+server.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", '*');
+    res.header("Access-Control-Allow-Credentials", true);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
+    next();
+});
+
 
 require('./app/routes/appserverRoutes')(server);
 require('./app/routes/businessUsersRoutes')(server);
