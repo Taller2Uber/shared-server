@@ -137,6 +137,38 @@ appserverDB.getServerInfo = function( response, userId ){
     }
 }
 
+/** @name validateHeader
+* @function validateHeader
+* @memberof appusers
+* @author Agustin Perrotta
+* @param request debe tener un token valido
+*/
+appserverDB.validateHeader = function( response, request ){
+  var respuestaJson = {};
+  client = new Client({connectionString: db.url, ssl:true});
+  if( db.connectClient( client, response ) ){
+    if(request.headers.applicationtoken){
+      /*client.query('SELECT * FROM appservers WHERE token = $1', [request.headers.applicationtoken], (err, res) =>{
+        if( err ){
+          logger.error('Error en la query');
+          return false;
+        }else {
+          logger.error(JSON.stringify(res.rows));
+            if( res.rows.length === 1 ){
+              return true;
+            }
+            return false;
+          }
+      });*/
+      return true;
+    } else {
+      return false;
+    }
+  }else{
+    return false;
+  }
+}
+
 
 /** @name updateServerInfo
 * @function updateServerInfo

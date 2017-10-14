@@ -1,7 +1,7 @@
 var usersDB = require('../models/appusersdb')
 var respuesta = require('../models/respuesta')
 var carsDB = require('../models/carsDb')
-var loginCheck = require('../models/loginCheck')
+var appserverDB = require('../models/appserversDB')
 var path = require('path')
 var logger = require('../config/herokuLogger.js')
 
@@ -29,12 +29,9 @@ var logger = require('../config/herokuLogger.js')
 
   server.get('/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
-
-    if( loginCheck.check(req, res) == true){
-      var results = [];
-      usersDB.getAllUsers( res, results );
-    }
-});
+    var results = [];
+    usersDB.getAllUsers( res, results );
+  });
 
 /**
  * @name post(/users)
@@ -62,9 +59,13 @@ var logger = require('../config/herokuLogger.js')
   server.post('/users/validate', function(req, res, err){
     logger.info('Validar las credenciales del usuario');
     //CASI HECHO, FALTA TERMINAR.
-    if(loginCheck.check(req, res) == true){
+    validHeader = appserverDB.validateHeader( res, req, req.params.userId );
+    if (validHeader){
       usersDB.validateUser( res, req, req.params.userId );
+    } else {
+      res.status(401).json({"error": 'AppToken incorrecto/faltante en header'});
     }
+
 });
 
 /**
@@ -78,10 +79,7 @@ var logger = require('../config/herokuLogger.js')
  */
   server.delete('/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
-
-    if(loginCheck.check(req, res) == true){
-      usersDB.deleteUser( res, req);
-    }
+    usersDB.deleteUser( res, req);
 });
 
 
@@ -96,10 +94,7 @@ var logger = require('../config/herokuLogger.js')
  */
   server.get('/users/:userId', function(req, res, err){
     logger.info('Solicitud para obtener informacion de un usuario');
-
-    if(loginCheck.check(req, res) == true){
-      usersDB.getUser( res, req.params.userId );
-    }
+    usersDB.getUser( res, req.params.userId );
 });
 
 /**
@@ -113,12 +108,8 @@ var logger = require('../config/herokuLogger.js')
  */
   server.put('/users/:userId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un usuario');
-
-    if(loginCheck.check( req, res ) == true){
       usersDB.updateUser(res, req);
-    }
-
-});
+  });
 
 /**
  * @name get(/users/:userId/cars)
@@ -149,9 +140,7 @@ var logger = require('../config/herokuLogger.js')
  */
   server.post('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
-
     carsDB.createCar(res, req);
-
   });
 
   /**
@@ -183,11 +172,7 @@ var logger = require('../config/herokuLogger.js')
    */
   server.delete('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para dar de baja un auto asociado a un usuario');
-
-    if(loginCheck.check( req, res ) == true){
       carsDB.deleteCar( res, req );
-    }
-
   });
 
 

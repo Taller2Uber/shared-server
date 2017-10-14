@@ -3,6 +3,8 @@ const db = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
+const httpRequest = require('request');
+
 
 
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
@@ -37,7 +39,6 @@ appusers.getAllUsers = function( response, results ){
   }
 }
 
-
 /** @name createUser
 * @function createUser
 * @memberof appusers
@@ -56,11 +57,14 @@ appusers.createUser = function( response, req ){
                       "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country };
       var ref =  refCheck.generate( jsonUser );
       client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                    [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref],(err, res) => {
+                    [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref],(err, res, fields) => {
       if(err){
         console.log(err, res)
       }else{
+        logger.error(JSON.stringify(res));
+        logger.error(JSON.stringify(fields));
         respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
+        jsonUser.id = 9;
         jsonUser._ref = ref;
         response.status(201).json(respuesta.addResult(respuestaJson, jsonUser));
       }})}
@@ -80,10 +84,16 @@ appusers.validateUser = function( response, request ){
   var respuestaJson = {};
   client = new Client({connectionString: db.url, ssl:true});
   if( db.connectClient( client, response ) ){
-    if( !request.body.username || ( !request.body.password && !request.body.facebookAuthToken) ){
+    if( (request.body.username && request.body.password) || request.body.facebookAuthToken ){
+      if(request.body.facebookAuthToken){
+        // le pego a la api de fb a ver si el token es valido, en caso valido devuelvo la info para q generen el usuario, sino devuelvo error
+        httpRequest('https://graph.facebook.com/me?access_token=' + request.body.facebookAuthToken + '&fields=name,gender', function (fberror, fbresponse, fbbody) {
+          logger.error(fbbody);
+          response.status(fbresponse.statusCode).json(JSON.parse(fbbody));
+        });
+      }
+    } else {
       response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
-    }else{
-      //ACA TENGO QUE HACER QUERY DEL USUARIO, Y VERIFICAR SI EL PASS O EL FBTOKEN ES CORRECTO O NO.
     }
   }else{
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
