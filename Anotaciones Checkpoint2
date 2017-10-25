@@ -1,0 +1,5 @@
+Anotaciones
+- No hardcodear la url con pass y user de la base de datos.
+- Ver como uso el async/await
+- Agregar Linter
+

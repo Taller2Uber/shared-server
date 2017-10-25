@@ -1,0 +1,184 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">respuesta</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../models/respuesta'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">loginCheck</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../models/loginCheck'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>  3</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">logger</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../config/herokuLogger.js'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>  4</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">databaseObject</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../models/businessUserDB.js'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>  5</span> 
+<span class='line'>  6</span> </span><span class="COMM">/**
+<span class='line'>  7</span>  * @namespace businessUsersRoutes
+<span class='line'>  8</span>  */</span><span class="WHIT">
+<span class='line'>  9</span> 
+<span class='line'> 10</span> </span><span class="COMM">/**
+<span class='line'> 11</span>  * @constructor
+<span class='line'> 12</span>  * @param {Object} server Servidor express.
+<span class='line'> 13</span>  */</span><span class="WHIT">
+<span class='line'> 14</span> 
+<span class='line'> 15</span> </span><span class="NAME">businessUsersRoutes</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">server</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> 
+<span class='line'> 17</span> 
+<span class='line'> 18</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 19</span>    * @name get(/businessusers)
+<span class='line'> 20</span>    * @description obtener todos los usuarios de negocio.
+<span class='line'> 21</span>    * @memberof businessUsersRoutes
+<span class='line'> 22</span>    * @function GET businessUser
+<span class='line'> 23</span>    * @param request object
+<span class='line'> 24</span>    * @param results object
+<span class='line'> 25</span>    * @param error object
+<span class='line'> 26</span>    */</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="NAME">server.get</span><span class="PUNC">(</span><span class="STRN">"/business-users"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de obtencion de todos los usuarios de negocio'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 29</span> 
+<span class='line'> 30</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">loginCheck.check</span><span class="PUNC">(</span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="WHIT">      </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">results</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.getAllBU</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">results</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 34</span> 
+<span class='line'> 35</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> 
+<span class='line'> 38</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 39</span>    * @name post(/businessusers)
+<span class='line'> 40</span>    * @description dar de alta un usuario de negocio.
+<span class='line'> 41</span>    * @memberof businessUsersRoutes
+<span class='line'> 42</span>    * @function POST businessUser
+<span class='line'> 43</span>    * @param request object
+<span class='line'> 44</span>    * @param results object
+<span class='line'> 45</span>    * @param error object
+<span class='line'> 46</span>    */</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="NAME">server.post</span><span class="PUNC">(</span><span class="STRN">"/business-users"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de creacion de un usuario de negocio'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">    </span><span class="NAME">databaseObject.prototype.createBU</span><span class="PUNC">(</span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.body.username</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.body.password</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.body.name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.body.surname</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.body.role</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 51</span> 
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 54</span>    * @name post(/login)
+<span class='line'> 55</span>    * @description enviar credenciales para loggeo de usuario de negocio.
+<span class='line'> 56</span>    * @memberof businessUsersRoutes
+<span class='line'> 57</span>    * @function POST businessUserCredentials
+<span class='line'> 58</span>    * @param request object
+<span class='line'> 59</span>    * @param results object
+<span class='line'> 60</span>    * @param error object
+<span class='line'> 61</span>    */</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="NAME">server.post</span><span class="PUNC">(</span><span class="STRN">"/login"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de inicio de sesion'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">session</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">    </span><span class="NAME">databaseObject.prototype.checkAuth</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">session</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 67</span> 
+<span class='line'> 68</span> 
+<span class='line'> 69</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 70</span>    * @name get(/businessusers/me)
+<span class='line'> 71</span>    * @description obtener informacion personal.
+<span class='line'> 72</span>    * @memberof businessUsersRoutes
+<span class='line'> 73</span>    * @function GET businessUser
+<span class='line'> 74</span>    * @param request object
+<span class='line'> 75</span>    * @param results object
+<span class='line'> 76</span>    * @param error object
+<span class='line'> 77</span>    */</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="NAME">server.get</span><span class="PUNC">(</span><span class="STRN">"/business-users/me"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de informacion personal'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> 
+<span class='line'> 81</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">respuestaJson</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">loginCheck.check</span><span class="PUNC">(</span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.getPersonalInfo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.session.userId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 85</span> 
+<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> 
+<span class='line'> 88</span> 
+<span class='line'> 89</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 90</span>    * @name put(/businessusers)
+<span class='line'> 91</span>    * @description modificar informacion personal.
+<span class='line'> 92</span>    * @memberof businessUsersRoutes
+<span class='line'> 93</span>    * @function PUT businessUser
+<span class='line'> 94</span>    * @param request object
+<span class='line'> 95</span>    * @param results object
+<span class='line'> 96</span>    * @param error object
+<span class='line'> 97</span>    */</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="NAME">server.put</span><span class="PUNC">(</span><span class="STRN">"/business-users/me"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de actualizacion de informacion personal'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> 
+<span class='line'>101</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">loginCheck.check</span><span class="PUNC">(</span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.updateInfo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.session.userId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>104</span> 
+<span class='line'>105</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> 
+<span class='line'>107</span> 
+<span class='line'>108</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>109</span>    * @name delete(/businessusers/:userId)
+<span class='line'>110</span>    * @description dar de baja un usuario de negocio.
+<span class='line'>111</span>    * @memberof businessUsersRoutes
+<span class='line'>112</span>    * @function DELETE businessUser
+<span class='line'>113</span>    * @param request object
+<span class='line'>114</span>    * @param results object
+<span class='line'>115</span>    * @param error object
+<span class='line'>116</span>    */</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="NAME">server.delete</span><span class="PUNC">(</span><span class="STRN">"/business-users/:userId"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de borrado de usuario: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">req.params.userId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">respuestaJson</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req.session.role</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="STRN">'admin'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">      </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">      </span><span class="NAME">respuestaJson</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">respuesta.addError</span><span class="PUNC">(</span><span class="NAME">respuestaJson</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">401</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">      </span><span class="NAME">res.status</span><span class="PUNC">(</span><span class="NUMB">401</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">json</span><span class="PUNC">(</span><span class="NAME">respuestaJson</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="KEYW">else</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.delete</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>128</span> 
+<span class='line'>129</span> 
+<span class='line'>130</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>131</span>    * @name get(/businessusers/:userId)
+<span class='line'>132</span>    * @description obtener informacion de un usuario de negocio.
+<span class='line'>133</span>    * @memberof businessUsersRoutes
+<span class='line'>134</span>    * @function GET businessUser
+<span class='line'>135</span>    * @param request object
+<span class='line'>136</span>    * @param results object
+<span class='line'>137</span>    * @param error object
+<span class='line'>138</span>    */</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="NAME">server.get</span><span class="PUNC">(</span><span class="STRN">"/business-users/:userId"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de obtencion de usuario Id: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">req.params.userId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>141</span> 
+<span class='line'>142</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req.session.role</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="STRN">'admin'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">      </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">      </span><span class="NAME">res.status</span><span class="PUNC">(</span><span class="NUMB">401</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">send</span><span class="PUNC">(</span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="KEYW">else</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.getPersonalInfo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.params.userId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>148</span> 
+<span class='line'>149</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>150</span> 
+<span class='line'>151</span> 
+<span class='line'>152</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>153</span>    * @name put(/businessusers/:userId)
+<span class='line'>154</span>    * @description modificar informacion de un usuario de negocio.
+<span class='line'>155</span>    * @memberof businessUsersRoutes
+<span class='line'>156</span>    * @function PUT businessUser
+<span class='line'>157</span>    * @param request object
+<span class='line'>158</span>    * @param results object
+<span class='line'>159</span>    * @param error object
+<span class='line'>160</span>    */</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="NAME">server.put</span><span class="PUNC">(</span><span class="STRN">"/business-users/:userId"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">err</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">    </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Solicitud de actualizacion de informacion del usuario Id: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">req.params.userId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">req.session.role</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="STRN">'admin'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">      </span><span class="NAME">logger.info</span><span class="PUNC">(</span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">      </span><span class="NAME">res.status</span><span class="PUNC">(</span><span class="NUMB">401</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">send</span><span class="PUNC">(</span><span class="STRN">'Unauthorized'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="KEYW">else</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">      </span><span class="NAME">databaseObject.prototype.updateInfo</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">res</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">req.params.userId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>169</span> 
+<span class='line'>170</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> 
+<span class='line'>172</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>173</span> 
+<span class='line'>174</span> </span><span class="NAME">module.exports</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">businessUsersRoutes</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> 
+<span class='line'>176</span> </span><span class="NAME">module.exports</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">businessUsersRoutes</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>177</span> </span></pre></body></html>

@@ -20,19 +20,15 @@ describe('CarsDatabase', () => {
   })
 });
 
-
 describe('CarsDatabase', () => {
   describe('Creo correctamente un auto', ()=> {
     it('Devuelve Status 201', (done) => {
-      let loginJson = {
-        username: "GAGimenez",
-        password: "1234"
-        }
       let carJson = {
         owner: 3,
         properties: [{name:"color", value:"rojo"}]
       };
-        chai.request(server).post('/users/3/cars').send(carJson)
+        chai.request(server).post('/users/74/cars').set('token', 'c65fc146b6fdaf297f1ac4aa0ebca72cxU0gezu4NkaeE+KZLm5tDCNpp+jiW0OD+UPuX6A2rGE=')
+        .send(carJson)
           .end((err, res) => {
             res.should.have.status(201);
           });
@@ -48,17 +44,15 @@ describe('CarsDatabase', () => {
         username: "GAGimenez",
         password: "1234"
         }
-      var session = chai.request.agent(server);
-      session.post('/login').send(loginJson)
-      .then( function(res){
-        session.get('/users/3/cars/2')
-          .end((err, res) => {
+      chai.request(server).get('/users/72/cars').set('token', 'c65fc146b6fdaf297f1ac4aa0ebca72cxU0gezu4NkaeE+KZLm5tDCNpp+jiW0OD+UPuX6A2rGE=')
+      .end((err, res) => {
             res.should.have.status(404);
           });
         done();
     })
   })
-})});
+});
+
 
 describe('CarsDatabase', () => {
   describe('Intento obtener un auto de un usuario inexistente', ()=> {
@@ -67,53 +61,36 @@ describe('CarsDatabase', () => {
         username: "GAGimenez",
         password: "1234"
         }
-      var session = chai.request.agent(server);
-      session.post('/login').send(loginJson)
-      .then( function(res){
-        session.get('/users/1/cars/2')
-          .end((err, res) => {
+      chai.request(server).get('/users/1/cars/2').set('token', 'c65fc146b6fdaf297f1ac4aa0ebca72cxU0gezu4NkaeE+KZLm5tDCNpp+jiW0OD+UPuX6A2rGE=')
+      .end((err, res) => {
             res.should.have.status(404);
           });
         done();
     })
   })
-})});
+});
 
 describe('CarsDatabase', () => {
   describe('Intento obtener informacion de un auto en particular', ()=> {
     it('Devuelve status 200 Informacion del auto', (done) => {
-      let loginJson = {
-        username: "GAGimenez",
-        password: "1234"
-        }
-      var session = chai.request.agent(server);
-      session.post('/login').send(loginJson)
-      .then( function(res){
-        session.get('/users/3/cars/3')
-          .end((err, res) => {
+      chai.request(server).get('/users/72/cars').set('token', 'c65fc146b6fdaf297f1ac4aa0ebca72cxU0gezu4NkaeE+KZLm5tDCNpp+jiW0OD+UPuX6A2rGE=')
+      .end((err, res) => {
             res.should.have.status(200);
           });
         done();
     })
   })
-})});
+});
 
 
 describe('CarsDatabase', () => {
   describe('Intento obtener todos los autos de un usuario', ()=> {
     it('Devuelve 201', (done) => {
-      let loginJson = {
-        username: "GAGimenez",
-        password: "1234"
-        }
-      var session = chai.request.agent(server);
-      session.post('/login').send(loginJson)
-      .then( function(res){
-        session.get('/users/3/cars')
-          .end((err, res) => {
+      chai.request(server).get('/users/72/cars').set('token', 'c65fc146b6fdaf297f1ac4aa0ebca72cxU0gezu4NkaeE+KZLm5tDCNpp+jiW0OD+UPuX6A2rGE=')
+      .end((err, res) => {
             res.should.have.status(201);
           });
         done();
     })
   })
-})});
+});

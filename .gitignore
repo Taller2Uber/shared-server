@@ -3,6 +3,9 @@ coverage/
 app/routes/doc/
 app/models/doc/
 
+Anotaciones Checkpoint2
+
 logs
 *.log
 *.yaml
+*.tar.gz

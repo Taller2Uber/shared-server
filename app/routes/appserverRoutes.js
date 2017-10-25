@@ -1,6 +1,9 @@
 var logger = require('../config/herokuLogger.js');
 var appserverDB = require('../models/appserversDB');
 var randtoken = require('rand-token');
+var tokenGenerator = require('../models/tokenGenerator');
+var loginCheck = require('../models/loginCheck')
+var respuesta = require('../models/respuesta')
 
 /**
  * @namespace appServerRoutes
@@ -10,6 +13,7 @@ var randtoken = require('rand-token');
  * @constructor
  * @param {Object} server Servidor express.
  */
+
 
 appServerRoutes = function(server){
 
@@ -22,12 +26,38 @@ appServerRoutes = function(server){
    * @param results object
    * @param error object
    */
-  server.get("/servers", function( req, res, err ){
+  server.get("/api/servers", function( req, res, err ){
     logger.info('Solicitud de obtener todos los appservers');
+    var respuestaJson = {};
     var results = [];
-    appserverDB.prototype.getAllServers(res, results);
+    tokenGenerator.checkBU( req.headers.token, ['user'], function (isBU){
+        if ( isBU == true ){
+          appserverDB.getAllServers(res, results);
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          res.status(401).json(respuestaJson);
+        }
+    })
   });
 
+
+  server.post('/api/ping', function(req, res, err){
+    var respuestaJson = {}
+    if( req.headers.token ){
+      loginCheck.serverCheck( req.headers.token , function(result, serverJson){
+        if(result === true){
+          res.json(serverJson);
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
+          res.status(401).json(respuestaJson);
+        }
+      })
+  }else{
+    respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones');
+    res.status(400).json(respuestaJson);
+  }
+
+  })
 
   /**
    * @name post(/servers)
@@ -38,10 +68,17 @@ appServerRoutes = function(server){
    * @param results object
    * @param error object
    */
-  server.post("/servers", function( req, res, err ){
-    logger.info('Solicitud de alta de appserver')
-    var token = randtoken.generate(32);
-    appserverDB.prototype.createServer(res, req.body.name, token );
+  server.post("/api/servers", function( req, res, err ){
+    respuestaJson = {};
+    logger.info('Solicitud de alta de appserver');
+    tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
+        if ( isBU == true ){
+          appserverDB.createServer(res, req.body.name, token );
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          res.status(401).json(respuestaJson);
+        }
+    })
   });
 
   /**
@@ -53,19 +90,22 @@ appServerRoutes = function(server){
    * @param results object
    * @param error object
    */
-  server.delete("/servers/:userId", function( req, res, err ){
+  server.delete("/api/servers/:userId", function( req, res, err ){
+    var respuestaJson = {};
     logger.info('Solicitud de baja de appserver')
-    appserverDB.prototype.deleteServer(res, req.params.userId, req.body.token);
+    tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
+        if ( isBU == true ){
+          appserverDB.deleteServer(res, req.params.userId);
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          res.status(401).json(respuestaJson);
+        }
+    })
+
   });
 
-  server.post("/servers/ping", function( req, res, err ){
-    var newToken = randtoken.generate(32);
-    logger.info('Solicitud de notificacion de vida del servidor');
-    appserverDB.pingRequest( res, newToken, req.body.id );
-    });
-
   /**
-   * @name geT(/servers/:serverId)
+   * @name get(/servers/:serverId)
    * @description obtener un appserver.
    * @memberof appServerRoutes
    * @function GET server
@@ -73,9 +113,17 @@ appServerRoutes = function(server){
    * @param results object
    * @param error object
    */
-  server.get("/servers/:userId", function( req, res, err ){
+  server.get("/api/servers/:userId", function( req, res, err ){
+    var respuestaJson = {};
     logger.info('Solicitud de informacion de un appserver');
-    appserverDB.getServerInfo( res, req.params.userId);
+    tokenGenerator.checkBU( req.headers.token, ['user'], function (isBU){
+        if ( isBU == true ){
+          appserverDB.getServerInfo( res, req.params.userId);
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          res.status(401).json(respuestaJson);
+        }
+    })
   });
 
   /**
@@ -87,9 +135,17 @@ appServerRoutes = function(server){
    * @param results object
    * @param error object
    */
-    server.put("/servers/:userId", function( req, res, err ){
+    server.put("/api/servers/:userId", function( req, res, err ){
+      var respuestaJson = {};
       logger.info('Solicitud de modificacion de un appserver');
-      appserverDB.updateServerInfo(res, req, req.params.userId);
+      tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
+          if ( isBU == true ){
+            appserverDB.updateServerInfo(res, req, req.params.userId);
+          }else{
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+            res.status(401).json(respuestaJson);
+          }
+      })
     });
 
     /**
@@ -101,12 +157,18 @@ appServerRoutes = function(server){
      * @param results object
      * @param error object
      */
-    server.post("/servers/:userId", function( req, res, err ){
+    server.post("/api/servers/:userId", function( req, res, err ){
+      var respuestaJson = {};
       logger.info('Solicitud de renovacion de token de un appserver');
-      var newToken = randtoken.generate(32);
-      appserverDB.renewToken( res, newToken, req.body._ref, req.params.userId );
+      tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
+          if ( isBU == true ){
+            appserverDB.renewToken( res, req.body._ref, req.params.userId );
+          }else{
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+            res.status(401).json(respuestaJson);
+          }
+      })
     });
-
 };
 
 module.exports = appServerRoutes;

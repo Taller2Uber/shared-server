@@ -1,8 +1,12 @@
-const {Client}  = require('pg')
+const pg  = require('pg')
 const db = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
+var async = require('asyncawait/async')
+var await = require('asyncawait/await')
 var logger = require('../config/herokuLogger')
+var Pool = require('pg-pool')
+var refHash = require('./refCheck')
 
 
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
@@ -19,22 +23,36 @@ function appusers(){}
 * @author Gustavo Adrian Gimenez
 * @param results array para guardar los usuarios obtenidos
 */
-appusers.getAllUsers = function( response, results ){
+appusers.getAllUsers = async ( function( response, results ){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
-    var query = client.query('SELECT * FROM users', (err, res) =>{
-      res.rows.forEach(row =>{
-        results.push(row);
+  const pool = new Pool(db.configDB);
+  pool.connect().then(client =>{
+    client.query('SELECT * FROM users', (err, res) =>{
+      res.rows.forEach(userRow =>{
+        var cars = [];
+        getCarsFromId(userRow.id, client, function(cars){
+          userRow.cars = cars;
+        })
+        results.push(userRow);
       });
-      client.end();
       logger.info('Obteniendo listado de usuarios');
-      response.status(200).json(respuesta.addResult(respuestaJson, results));
+      respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results);
+      response.status(200).json(respuesta.addResult(respuestaJson,'users', results));
     })
-  }else{
+  }).catch(e =>{
     logger.error('Unexpected error');
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  }
+  })
+})
+
+getCarsFromId =  function( id, client, callback ){
+  var results = []
+  client.query('SELECT * FROM cars WHERE owner = $1', [id], function(err, res){
+    res.rows.forEach(row =>{
+      results.push(row);
+    }
+  )})
+  callback(results);
 }
 
 
@@ -46,27 +64,35 @@ appusers.getAllUsers = function( response, results ){
 */
 appusers.createUser = function( response, req ){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
-    if( !req.body.username || !req.body.password || !req.body.firstname || !req.body.type || !req.body.lastname || !req.body.country || !req.body.email || !req.body.birthdate ){
-      logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
-      response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
-    }else{
+  if( !req.body.username || !req.body.password || !req.body.firstname || !req.body.type || !req.body.lastname || !req.body.country || !req.body.email || !req.body.birthdate ){
+    logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
+    response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
+  }else{
+    const pool = new Pool(db.configDB);
+    pool.connect().then(client =>{
       var jsonUser = {"username": req.body.username, "password": req.body.password, "firstname": req.body.firstname, "lastname": req.body.lastname,
-                      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country };
+                      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": null, "fbtoken": null};
+
+      if( req.body.hasOwnProperty('fbuserid') && req.body.hasOwnProperty('fbtoken')){
+        jsonUser.fbuserid = req.body.fbuserid;
+        jsonUser.fbtoken = req.body.fbtoken;
+      }
       var ref =  refCheck.generate( jsonUser );
-      client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                    [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref],(err, res) => {
+      client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
+                    [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken], (err, res) => {
       if(err){
-        console.log(err, res)
+        logger.error('Unexpected error: ' + err);
+        response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
       }else{
         respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
+        respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
         jsonUser._ref = ref;
-        response.status(201).json(respuesta.addResult(respuestaJson, jsonUser));
-      }})}
-
-  }else{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+        response.status(201).json(respuesta.addEntityMetadata(respuestaJson));
+      }})
+    }).catch(e =>{
+      logger.error('Unexpected error: ' + e.message);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    })
   }
 }
 
@@ -78,15 +104,15 @@ appusers.createUser = function( response, req ){
 */
 appusers.validateUser = function( response, request ){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
-    if( !request.body.username || ( !request.body.password && !request.body.facebookAuthToken) ){
-      response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
-    }else{
-      //ACA TENGO QUE HACER QUERY DEL USUARIO, Y VERIFICAR SI EL PASS O EL FBTOKEN ES CORRECTO O NO.
-    }
+  if( !request.body.username || ( !request.body.password && !request.body.facebookAuthToken) ){
+    response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
   }else{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    const pool = new Pool(db.configDB);
+    pool.connect().then(client => {
+
+    }).catch(e =>{
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    })
   }
 }
 
@@ -96,22 +122,21 @@ appusers.validateUser = function( response, request ){
 * @author Gustavo Adrian Gimenez
 * @param userId id del usuario que va a ser dado de baja
 */
-appusers.deleteUser = function( response, request, userId){
+appusers.deleteUser = function( response, userId){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
+  const pool = new Pool(db.configDB);
+  pool.connect().then(client =>{
     client.query('DELETE FROM users where id = $1 RETURNING *', [userId],(err, res)=>{
       if(err || res.rows.length <= 0 ){
-        //respuestaJson = respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado');
         response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
       }else{
         response.status(201).json(respuesta.addDescription(respuestaJson, 'Baja correcta'));
       }
     });
-
-  }else{
+  }).catch(e =>{
+    logger.error('Unexpected error: ' + e.message);
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  }
+  })
 }
 
 
@@ -124,22 +149,20 @@ appusers.deleteUser = function( response, request, userId){
 appusers.getUser = function( response, userId ){
   var respuestaJson = {};
   var results = [];
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
+  const pool = new Pool(db.configDB);
+  pool.connect().then(client =>{
     client.query('SELECT * FROM users WHERE id = $1', [userId], (err, res)=>{
       if(err || res.rows.length <= 0){
         response.status(404).json(respuesta.addError(respuestaJson, 404, 'User inexistente'));
       }else{
-        res.rows.forEach(row =>{
-          results.push(row);
-        })
         respuestaJson = respuesta.addDescription(respuestaJson, 'Informacion del usuario');
-        response.status(200).json(respuesta.addResult(respuestaJson, results));
+        respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+        response.status(200).json(respuesta.addEntityMetadata(respuestaJson));
       }
     });
-  }else{
+  }).catch(e =>{
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  }
+  })
 }
 
 
@@ -151,26 +174,44 @@ appusers.getUser = function( response, userId ){
 */
 appusers.updateUser = function( response, request ){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
-    if( !request.body.username || !request.body.firstname || !request.body.password || !request.body.birthdate || !request.body.country || !request.body.lastname
-          || !request.body.type || !request.body.email){
-            response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
-    }else{
-      client.query('UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, type = $5, email = $6, birthdate = $7, country = $8 WHERE id = $9',
-                [ request.body.username, request.body.password, request.body.firstname, request.body.lastname, request.body.type, request.body.email, request.body.birthdate,
-                request.body.country, request.params.userId], (err, res) => {
-        if(err){
-          response.status(500).json(respuesta.addDescription(respuestaJson, 500, 'Unexpected error'));
-        }else{
-          response.status(200).json(respuesta.addDescription(respuestaJson, 'Modificacion correcta'));
-        }
-    })
-
-    }
-
+  if( !request.body.username || !request.body.firstname || !request.body.password || !request.body.birthdate || !request.body.country || !request.body.lastname
+        || !request.body.type || !request.body.email || !request.body._ref){
+          response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    const pool = new Pool(db.configDB);
+    pool.connect().then(client =>{
+      client.query('SELECT _ref FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
+        if(res.rows[0]._ref === request.body._ref ){
+          var newJsonUser = {
+            username: request.body.username,
+            password: request.body.password,
+            type: request.body.type,
+            firstname: request.body.firstname,
+            lastname: request.body.lastname,
+            country: request.body.country,
+            email: request.body.email,
+            birthdate: request.body.birthdate
+            }
+            var newHash = refHash.generate(newJsonUser);
+          client.query('UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, type = $5, email = $6, birthdate = $7, country = $8, _ref = $9 WHERE id = $10 RETURNING *',
+                    [ request.body.username, request.body.password, request.body.firstname, request.body.lastname, request.body.type, request.body.email, request.body.birthdate,
+                    request.body.country, newHash, request.params.userId], (err, res) => {
+            if(err){
+              response.status(500).json(respuesta.addDescription(respuestaJson, 500, 'Unexpected error'));
+            }else{
+              respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+              respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+              response.status(200).json(respuesta.addDescription(respuestaJson, 'Modificacion correcta'));
+            }
+          })
+        }else{
+          response.status(409).json(respuesta.addError(respuestaJson, 'Conflicto en el update (mal valor de ref)'));
+        }
+      })
+    }).catch(e =>{
+      logger.error('Unexpected error: ' + e.message);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    })
   }
 }
 

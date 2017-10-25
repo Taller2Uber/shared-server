@@ -30,10 +30,14 @@ var logger = require('../config/herokuLogger.js')
   server.get('/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
 
-    if( loginCheck.check(req, res) == true){
       var results = [];
-      usersDB.getAllUsers( res, results );
-    }
+      loginCheck.check( req.headers.token, ['user', 'admin'], function( authorized){
+        if( authorized == true ){
+          usersDB.getAllUsers( res, results );
+        }else{
+          res.status(409).json({'message':'Unauthorized'});
+        }
+      })
 });
 
 /**
@@ -47,7 +51,13 @@ var logger = require('../config/herokuLogger.js')
  */
   server.post('/users', function(req, res, err){
     logger.info('Solicitud para dar de alta un usuario');
-    usersDB.createUser( res, req );
+    loginCheck.check( req.headers.token, [''], function( authorized){
+      if( authorized == true ){
+        usersDB.createUser( res, req );
+      }else{
+        res.status(409).json({'message':'Unauthorized'});
+      }
+    })
 });
 
 /**
@@ -61,10 +71,9 @@ var logger = require('../config/herokuLogger.js')
  */
   server.post('/users/validate', function(req, res, err){
     logger.info('Validar las credenciales del usuario');
-    //CASI HECHO, FALTA TERMINAR.
-    if(loginCheck.check(req, res) == true){
+    //VALIDAR TOKEN CON FACEBOOK?.
       usersDB.validateUser( res, req, req.params.userId );
-    }
+
 });
 
 /**
@@ -78,10 +87,13 @@ var logger = require('../config/herokuLogger.js')
  */
   server.delete('/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
-
-    if(loginCheck.check(req, res) == true){
-      usersDB.deleteUser( res, req);
-    }
+    loginCheck.check( req.headers.token, ['manager'], function( authorized){
+      if( authorized == true ){
+        usersDB.deleteUser( res, req.params.userId);
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
 });
 
 
@@ -96,10 +108,14 @@ var logger = require('../config/herokuLogger.js')
  */
   server.get('/users/:userId', function(req, res, err){
     logger.info('Solicitud para obtener informacion de un usuario');
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
+      if( authorized == true ){
+        usersDB.getUser( res, req.params.userId );
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
 
-    if(loginCheck.check(req, res) == true){
-      usersDB.getUser( res, req.params.userId );
-    }
 });
 
 /**
@@ -113,10 +129,14 @@ var logger = require('../config/herokuLogger.js')
  */
   server.put('/users/:userId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un usuario');
+    loginCheck.check( req.headers.token, [''], function( authorized){
+      if( authorized == true ){
+        usersDB.updateUser(res, req);
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
 
-    if(loginCheck.check( req, res ) == true){
-      usersDB.updateUser(res, req);
-    }
 
 });
 
@@ -131,10 +151,14 @@ var logger = require('../config/herokuLogger.js')
  */
   server.get('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para obtener los autos asociados a un usuario');
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
+      if( authorized == true ){
+        carsDB.getAll( res, req.params.userId );
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
 
-    if(loginCheck.check(req, res) == true){
-      carsDB.getAllCarsFromId( res, req.params.userId );
-    }
 });
 
 
@@ -149,8 +173,13 @@ var logger = require('../config/herokuLogger.js')
  */
   server.post('/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
-
-    carsDB.createCar(res, req);
+    loginCheck.check( req.headers.token, [''], function( authorized){
+      if( authorized == true ){
+        carsDB.create(res, req);
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
 
   });
 
@@ -165,11 +194,13 @@ var logger = require('../config/herokuLogger.js')
    */
   server.get('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para obtener un auto asociado a un usuario');
-
-    if(loginCheck.check(req, res) == true){
-      carsDB.getCar( res, req );
-    }
-
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
+      if( authorized == true ){
+        carsDB.get( res, req );
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
   });
 
   /**
@@ -183,11 +214,13 @@ var logger = require('../config/herokuLogger.js')
    */
   server.delete('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para dar de baja un auto asociado a un usuario');
-
-    if(loginCheck.check( req, res ) == true){
-      carsDB.deleteCar( res, req );
-    }
-
+    loginCheck.check( req.headers.token, ['manager'], function( authorized){
+      if( authorized == true ){
+        carsDB.delete( res, req );
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
   });
 
 
@@ -202,7 +235,13 @@ var logger = require('../config/herokuLogger.js')
    */
   server.put('/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un auto asociado a un usuario');
-
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
+      if( authorized == true ){
+        carsDB.update(res, req);
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
   });
 
 }
