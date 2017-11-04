@@ -1,0 +1,15 @@
+  <form>
+    <h1>Llevame!</h1>
+    <p id="box">
+       <b id="titleBox"> Username </b>  <br>
+        <input type="text" [(ngModel)]="user" name="user" ><br>
+    </p>
+    <p id="box">
+       <b id="titleBox"> Password </b>  <br>
+        <input type="password" [(ngModel)]="password" name="password" ><br>
+    </p>
+    <p id="buttonContent">
+     <button id="button" (click)="action()" type="button">Iniciar sesion</button>
+   </p>
+          <div id="error" *ngIf="loginError" class="alert alert-danger">{{loginError}}</div>
+  </form>

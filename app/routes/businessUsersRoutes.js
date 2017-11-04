@@ -17,7 +17,7 @@ var tokenGenerator = require('../models/tokenGenerator')
 businessUsersRoutes = function(server){
 
 
-server.get("/verify", function(req, res, err){
+server.get("/api/verify", function(req, res, err){
   tokenGenerator.checkBU( req.headers.token , ['manager', 'user'], function( authroized ){
     if( authroized ){
       res.send('authroized')
@@ -37,7 +37,7 @@ server.get("/verify", function(req, res, err){
    * @param results object
    * @param error object
    */
-server.get("/business-users", function( req, res, err ){
+server.get("/api/business-users", function( req, res, err ){
     var respuestaJson = {};
     logger.info('Solicitud de obtencion de todos los usuarios de negocio');
     var results = [];
@@ -62,7 +62,7 @@ server.get("/business-users", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.post("/business-users", function( req, res, err ){
+server.post("/api/business-users", function( req, res, err ){
     var respuestaJson = {};
     logger.info('Solicitud de creacion de un usuario de negocio');
     var token = randtoken.generate(16);
@@ -86,7 +86,7 @@ server.post("/business-users", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.post("/token", function( req, res, err ){
+server.post("/api/token", function( req, res, err ){
     logger.info('Solicitud de inicio de sesion');
     databaseObject.checkAuth( res, req );
   });
@@ -101,7 +101,7 @@ server.post("/token", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.get("/business-users/me", function( req, res, err ){
+server.get("/api/business-users/me", function( req, res, err ){
   var respuestaJson = {};
     logger.info('Solicitud de informacion personal');
     tokenGenerator.checkBU( req.headers.token, ['user'], function (isBU){
@@ -124,7 +124,7 @@ server.get("/business-users/me", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.put("/business-users/me", function( req, res, err ){
+server.put("/api/business-users/me", function( req, res, err ){
   var respuestaJson = {};
     logger.info('Solicitud de actualizacion de informacion personal');
     tokenGenerator.checkBU( req.headers.token, ['admin', 'user'], function (isBU){
@@ -147,7 +147,7 @@ server.put("/business-users/me", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.delete("/business-users/:userId", function( req, res, err ){
+server.delete("/api/business-users/:userId", function( req, res, err ){
     logger.info('Solicitud de borrado de usuario: ' + req.params.userId);
     var respuestaJson = {};
     tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU){
@@ -170,7 +170,7 @@ server.delete("/business-users/:userId", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.get("/business-users/:userId", function( req, res, err ){
+server.get("/api/business-users/:userId", function( req, res, err ){
   var respuestaJson = {};
     logger.info('Solicitud de obtencion de usuario Id: ' + req.params.userId);
     tokenGenerator.checkBU( req.headers.token, ['user'], function (isBU){
@@ -194,7 +194,7 @@ server.get("/business-users/:userId", function( req, res, err ){
    * @param results object
    * @param error object
    */
-server.put("/business-users/:userId", function( req, res, err ){
+server.put("/api/business-users/:userId", function( req, res, err ){
   var respuestaJson = {};
     logger.info('Solicitud de actualizacion de informacion del usuario Id: ' + req.params.userId);
     tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU){

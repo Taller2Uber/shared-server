@@ -1,0 +1,17 @@
+<p>
+  !!!!!!!!!!
+</p>
+
+<div class="row">
+  <div class="col-md-5">
+    <h2>Servers</h2>
+    <ul class="list-group">
+      <li class="list-group-item"
+        *ngFor="let server of servers">
+        Nombre : {{server.name}} <br/>
+        Id: {{server.id}} <br/>
+        Token: {{server.token}}
+      </li>
+    </ul>
+  </div>
+</div>

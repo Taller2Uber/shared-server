@@ -6,6 +6,7 @@ var async = require('asyncawait/async')
 var await = require('asyncawait/await')
 var logger = require('../config/herokuLogger')
 var Pool = require('pg-pool')
+var request = require('request')
 var refHash = require('./refCheck')
 
 
@@ -71,11 +72,11 @@ appusers.createUser = function( response, req ){
     const pool = new Pool(db.configDB);
     pool.connect().then(client =>{
       var jsonUser = {"username": req.body.username, "password": req.body.password, "firstname": req.body.firstname, "lastname": req.body.lastname,
-                      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": null, "fbtoken": null};
+                      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": req.body.fb.userid, "fbtoken": null};
 
-      if( req.body.hasOwnProperty('fbuserid') && req.body.hasOwnProperty('fbtoken')){
-        jsonUser.fbuserid = req.body.fbuserid;
-        jsonUser.fbtoken = req.body.fbtoken;
+      if( req.body.fb.hasOwnProperty('fbuserid') && req.body.fb.hasOwnProperty('fbtoken')){
+        jsonUser.fbuserid = req.body.fb.fbuserid;
+        jsonUser.fbtoken = req.body.fb.fbtoken;
       }
       var ref =  refCheck.generate( jsonUser );
       client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
@@ -102,15 +103,51 @@ appusers.createUser = function( response, req ){
 * @author Gustavo Adrian Gimenez
 * @param request debe contener password o facebookAuthToken
 */
-appusers.validateUser = function( response, request ){
+appusers.validateUser = function( response, req ){
   var respuestaJson = {};
-  if( !request.body.username || ( !request.body.password && !request.body.facebookAuthToken) ){
+  if(  !req.body.username && !req.body.password  && !req.body.facebookAuthToken  ){
     response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
   }else{
     const pool = new Pool(db.configDB);
     pool.connect().then(client => {
-
+      if(!req.body.facebookAuthToken){
+        client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
+          if( res.rows.length <= 0 ){
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
+            response.status(401).json(respuestaJson);
+          }else{
+            respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+          }
+        })
+      }else{
+        request({
+          url: "https://graph.facebook.com/me?access_token=" + req.body.facebookAuthToken,
+          method: "GET"
+        }, function callback(err, res, body){
+          if(err){
+            response.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
+          }else{
+            var bodyResp = JSON.parse(body);
+            client.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
+              if(err){
+                logger.error('Unexpected error: ' + err);
+              }else{
+                if(res.rows.length <= 0){
+                  logger.error('Unauthorized');
+                  response.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
+                }else{
+                  logger.info('Informacion del usuario');
+                  respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+                  response.status(200).json(respuesta.addEntityMetadata(respuestaJson));
+                }
+              }
+            })
+          }
+        }
+        )
+      }
     }).catch(e =>{
+      logger.error('Unexpected error: ' + e);
       response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     })
   }

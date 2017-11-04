@@ -15,7 +15,7 @@ describe('BusinessUsersDatabase', () => {
         surname: "Gimenez",
         role: "Admin"
         }
-      chai.request(server).post('/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).post('/api/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .send(businessUserJson).end((err, res) => {
           res.should.have.status(201);
           res.body.should.have.property("description", 'Alta correcta');
@@ -36,7 +36,7 @@ describe('BusinessUsersDatabase', () => {
         surname: "Gimenez",
         role: "Admin"
         }
-      chai.request(server).post('/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).post('/api/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(400);
@@ -53,7 +53,7 @@ describe('BusinessUsersDatabase', () => {
       let businessUserJson = {
         username: "Gus"
         }
-      chai.request(server).post('/token').send(businessUserJson)
+      chai.request(server).post('/api/token').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(400);
         done();
@@ -70,7 +70,7 @@ describe('BusinessUsersDatabase', () => {
         username: "Gus",
         password: "12"
         }
-      chai.request(server).post('/token').send(businessUserJson)
+      chai.request(server).post('/api/token').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -83,7 +83,7 @@ describe('BusinessUsersDatabase', () => {
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener usuarios de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
-      chai.request(server).get('/business-users')
+      chai.request(server).get('/api/business-users')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
@@ -98,7 +98,7 @@ describe('BusinessUsersDatabase', () => {
   describe('Intento actualizar un usuario de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
-      chai.request(server).put('/business-users/3')
+      chai.request(server).put('/api/business-users/3')
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -111,7 +111,7 @@ describe('BusinessUsersDatabase', () => {
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener un usuario de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
-      chai.request(server).get('/business-users/2')
+      chai.request(server).get('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -123,7 +123,7 @@ describe('BusinessUsersDatabase', () => {
 describe('BusinessUsersDatabase', () => {
   describe('Intento borrar un usuario de negocio sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
-      chai.request(server).delete('/business-users/2')
+      chai.request(server).delete('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
@@ -142,7 +142,7 @@ describe('BusinessUserDatabase', () => {
         username: "GAGimenez",
         password: "1234"
         }
-      chai.request(server).get('/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).get('/api/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
           .end((err, res) => {
             res.should.have.status(200);
             done();
@@ -159,7 +159,7 @@ describe('BusinessUserDatabase', () => {
         username: "GAGimenez",
         password: "1234"
         }
-      chai.request(server).get('/business-users/4').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
+      chai.request(server).get('/api/business-users/4').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, results) => {
             results.should.have.status(200);
             done();
@@ -175,7 +175,7 @@ describe('BusinessUserDatabase', () => {
         username: "GAGimenez",
         password: "1234"
         }
-      chai.request(server).get('/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
+      chai.request(server).get('/api/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, results) => {
             results.should.have.status(500);
             done();
@@ -201,7 +201,7 @@ describe('BusinessUserDatabase', () => {
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener informacion personal sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
-      chai.request(server).get('/business-users/me')
+      chai.request(server).get('/api/business-users/me')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
@@ -223,7 +223,7 @@ describe('BusinessUserDatabase', () => {
         surname: 'gus',
         role: 'admin'
         }
-      chai.request(server).put('/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).put('/api/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .send().end((err, results) => {
             results.should.have.status(400);
             done();

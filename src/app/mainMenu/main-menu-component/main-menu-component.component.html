@@ -1,0 +1,40 @@
+<div class="col-md-6 col-md-offset-3">
+<header> llevame! </header>
+
+<h1>
+  Menu principal
+</h1>
+
+  <nav class="mdl-navigation">
+
+    <p>
+        <button id="button" type="button" (click)="goToUsers()" >
+            <a class="mdl-navigation__link" [routerLink]="['/users']">Users</a>
+        </button>
+    </p>
+        <br/>
+
+    <p>
+        <button id="button" type="button" >
+            <a class="mdl-navigation__link" [routerLink]="['/viajes']">Viajes</a>
+        </button>
+    </p>
+        <br/>
+
+    <p>
+        <button id="button" type="button" (click)="goToServers()" >
+            <a class="mdl-navigation__link" [routerLink]="['/servers']">Estado actual</a>
+        </button>
+    </p>
+        <br/>
+
+    <p>
+        <button id="button" type="button" >
+            <a class="mdl-navigation__link" [routerLink]="['/reglas']">Reglas</a>
+        </button>
+    </p>
+
+  </nav>
+
+    <router-outlet></router-outlet>
+</div>

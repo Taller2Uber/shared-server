@@ -1,0 +1,33 @@
+h1 {
+  font-size: 500%;
+  text-align: center;
+  font: Monospace;
+  color: blue;
+}
+
+#titleBox{
+  color: blue;
+  font-size: 150%;
+}
+
+#box{
+    padding-top: 50px; 
+    text-align: center;
+    font-size: 200;
+}
+
+#buttonContent {
+  text-align: center;
+}
+
+#button {
+  text-align: center;
+  color: blue;
+  background-color: lightblue;
+  font-size: 30px;
+  border-radius: 10px;
+}
+
+#error {
+  text-align: center;
+}

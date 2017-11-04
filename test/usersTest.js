@@ -10,7 +10,7 @@ describe('App Users database', () => {
   describe('Intento eliminar un usuario sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
-      chai.request(server).delete('/users/1')
+      chai.request(server).delete('/api/users/1')
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -23,7 +23,7 @@ describe('App Users database', () => {
   describe('Intento eliminar un auto sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
-      chai.request(server).delete('/users/1/cars/3')
+      chai.request(server).delete('/api/users/1/cars/3')
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -36,7 +36,7 @@ describe('App Users database', () => {
   describe('Intento obtener informacion de un usuario sin estar loggeado', ()=> {
     it('Devuelve Unauthorized', (done) => {
 
-      chai.request(server).get('/users/3')
+      chai.request(server).get('/api/users/3')
         .end((err, res) => {
           res.should.have.status(401);
         done();
@@ -49,7 +49,7 @@ describe('App Users database', () => {
 describe('App Users database', () => {
   describe('Obtengo todos los appusers luego del login', ()=> {
     it('Devuelve Status 200', (done) => {
-      chai.request(server).get('/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).get('/api/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .end((err, res) => {
         res.should.have.status(200);
       });
@@ -62,7 +62,7 @@ describe('App Users database', () => {
 describe('App Users database', () => {
   describe('Obtengo informacion de un usuario en particular', ()=> {
     it('Devuelve Status 200 Informacion del usuario', (done) => {
-        chai.request(server).get('/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+        chai.request(server).get('/api/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
         .end((err, res) => {
           res.should.have.status(200);
           });
@@ -79,7 +79,7 @@ describe('App Users database', () => {
         username: "GAGimenez",
         password: "1234"
         }
-        chai.request(server).delete('/users/1').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoibWFuYWdlciJ9.W7xeouAp5bshEoVvTDOg9K8OmZcCra7vJzPjomZz1JI')
+        chai.request(server).delete('/api/users/1').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoibWFuYWdlciJ9.W7xeouAp5bshEoVvTDOg9K8OmZcCra7vJzPjomZz1JI')
         .end((err, res) => {
             res.should.have.status(404);
           });
@@ -106,7 +106,7 @@ describe('App Users database', () => {
           username : "Gabi",
           password : "1234"
         }
-        chai.request(server).post('/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoibWFuYWdlciJ9.W7xeouAp5bshEoVvTDOg9K8OmZcCra7vJzPjomZz1JI')
+        chai.request(server).post('/api/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoibWFuYWdlciJ9.W7xeouAp5bshEoVvTDOg9K8OmZcCra7vJzPjomZz1JI')
         .send(userJson)
         .end((err, res) => {
             res.should.have.status(201);

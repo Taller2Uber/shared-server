@@ -1,0 +1,22 @@
+<p>
+  Llevame!
+</p>
+
+<div class="row">
+  <div class="col-md-5">
+    <h2>Usuarios de la aplicacion</h2>
+
+    <ul class="list-group">
+      <li class="list-group-item"
+        *ngFor="let user of users">
+        <b> Id:  </b> {{user.id}} <br/>
+        <b> Nombre : </b> {{user.firstname}} <br/>
+        <b> Lastname:  </b> {{user.lastname}} <br/>
+        <b> Username:  </b> {{user.username}} <br/>
+        <b> Email:  </b> {{user.email}} <br/>
+        <b> Birthdate:  </b> {{user.birthdate}} <br/>
+        <b> Type:  </b> {{user.type}}
+      </li>
+    </ul>
+  </div>
+</div>

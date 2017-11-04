@@ -3,6 +3,7 @@ var respuesta = require('../models/respuesta')
 var carsDB = require('../models/carsDb')
 var loginCheck = require('../models/loginCheck')
 var path = require('path')
+var tripsDB = require('../models/tripsDB')
 var logger = require('../config/herokuLogger.js')
 
 
@@ -27,17 +28,20 @@ var logger = require('../config/herokuLogger.js')
     * @param error object
     */
 
-  server.get('/users', function(req, res, err){
+  server.get('/api/users', function(req, res, err){
     logger.info('Informacion de todos los usuarios');
 
       var results = [];
-      loginCheck.check( req.headers.token, ['user', 'admin'], function( authorized){
-        if( authorized == true ){
+      //loginCheck.check( req.headers.token, ['user', 'admin'], function( authorized){
+        //if( authorized == true ){
+          //logger.info(JSON.stringify(req.headers));
           usersDB.getAllUsers( res, results );
-        }else{
-          res.status(409).json({'message':'Unauthorized'});
-        }
-      })
+        //}else{
+          //logger.error('Unauthorized');
+          //logger.error(JSON.stringify(req.headers));
+          //res.status(409).json({'message':'Unauthorized'});
+        //}
+      //})
 });
 
 /**
@@ -49,7 +53,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.post('/users', function(req, res, err){
+  server.post('/api/users', function(req, res, err){
     logger.info('Solicitud para dar de alta un usuario');
     loginCheck.check( req.headers.token, [''], function( authorized){
       if( authorized == true ){
@@ -69,11 +73,10 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.post('/users/validate', function(req, res, err){
+  server.post('/api/users/validate', function(req, res, err){
     logger.info('Validar las credenciales del usuario');
     //VALIDAR TOKEN CON FACEBOOK?.
-      usersDB.validateUser( res, req, req.params.userId );
-
+      usersDB.validateUser( res, req );
 });
 
 /**
@@ -85,7 +88,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.delete('/users/:userId', function(req, res, err){
+  server.delete('/api/users/:userId', function(req, res, err){
     logger.info('Solicitud para dar de baja un usuario');
     loginCheck.check( req.headers.token, ['manager'], function( authorized){
       if( authorized == true ){
@@ -106,7 +109,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.get('/users/:userId', function(req, res, err){
+  server.get('/api/users/:userId', function(req, res, err){
     logger.info('Solicitud para obtener informacion de un usuario');
     loginCheck.check( req.headers.token, ['user'], function( authorized){
       if( authorized == true ){
@@ -127,7 +130,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.put('/users/:userId', function(req, res, err){
+  server.put('/api/users/:userId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un usuario');
     loginCheck.check( req.headers.token, [''], function( authorized){
       if( authorized == true ){
@@ -149,7 +152,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.get('/users/:userId/cars', function(req, res, err){
+  server.get('/api/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para obtener los autos asociados a un usuario');
     loginCheck.check( req.headers.token, ['user'], function( authorized){
       if( authorized == true ){
@@ -171,7 +174,7 @@ var logger = require('../config/herokuLogger.js')
  * @param results object
  * @param error object
  */
-  server.post('/users/:userId/cars', function(req, res, err){
+  server.post('/api/users/:userId/cars', function(req, res, err){
     logger.info('Solicitud para dar de alta un auto de un usuario');
     loginCheck.check( req.headers.token, [''], function( authorized){
       if( authorized == true ){
@@ -192,7 +195,7 @@ var logger = require('../config/herokuLogger.js')
    * @param results object
    * @param error object
    */
-  server.get('/users/:userId/cars/:carId', function(req, res, err){
+  server.get('/api/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para obtener un auto asociado a un usuario');
     loginCheck.check( req.headers.token, ['user'], function( authorized){
       if( authorized == true ){
@@ -212,7 +215,7 @@ var logger = require('../config/herokuLogger.js')
    * @param results object
    * @param error object
    */
-  server.delete('/users/:userId/cars/:carId', function(req, res, err){
+  server.delete('/api/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para dar de baja un auto asociado a un usuario');
     loginCheck.check( req.headers.token, ['manager'], function( authorized){
       if( authorized == true ){
@@ -233,7 +236,7 @@ var logger = require('../config/herokuLogger.js')
    * @param results object
    * @param error object
    */
-  server.put('/users/:userId/cars/:carId', function(req, res, err){
+  server.put('/api/users/:userId/cars/:carId', function(req, res, err){
     logger.info('Solicitud para modificar informacion de un auto asociado a un usuario');
     loginCheck.check( req.headers.token, ['user'], function( authorized){
       if( authorized == true ){
@@ -243,6 +246,18 @@ var logger = require('../config/herokuLogger.js')
       }
     })
   });
+
+  server.get('/api/users/:userId/trips', function(req, res, err){
+    logger.info('Solicitud para obtener los viajes de un usuario');
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
+      if( authorized == true ){
+        tripsDB.getTripsFromUser(req, res);
+      }else{
+        res.status(401).json({'message':'Unauthorized'});
+      }
+    })
+  });
+
 
 }
 

@@ -1,45 +1,20 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "outDir": "./dist/out-tsc",
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "noEmit": true,
-    "noEmitHelpers": true,
-    "importHelpers": true,
-    "strictNullChecks": false,
-    "lib": [
-      "dom",
-      "es6"
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@angular/*": ["node_modules/@angular/*"]
-    },
+    "target": "es5",
     "typeRoots": [
       "node_modules/@types"
     ],
-  },
-  "files" :[
-    "./app/components/appusers/appuser.service.ts",
-    "./app/components/appusers/appuser.ts",
-    "./app/components/appusers/appuser.component.ts"
-  ],
-  "exclude": [
-    "node_modules/**",
-    "dist",
-    "typings"
-  ],
-  "awesomeTypescriptLoaderOptions": {
-    "forkChecker": true,
-    "useWebpackText": true
-  },
-  "compileOnSave": false,
-  "buildOnSave": false,
-  "atom": {
-    "rewriteTsconfig": false
+    "lib": [
+      "es2016",
+      "dom"
+    ]
   }
 }
