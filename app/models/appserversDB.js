@@ -29,7 +29,7 @@ appserverDB.createServer = function( response, name, token ){
     const pool = new Pool(db.configDB);
     pool.connect().then(client => {
       var fecha = new Date();
-      client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, $3, $4) RETURNING id', [name, 'me', fecha, fecha],(err, res) => {
+      client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, $3, $4) RETURNING id', [name, 'me', fecha, fecha.getTime()],(err, res) => {
         var hashedToken = tokenGenerator.generateSV( res.rows[0].id, name, token );
         var ref = refHash.generate( res.rows[0].id );
         client.query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3 RETURNING *', [ hashedToken, ref ,res.rows[0].id ], (err, resu) =>{

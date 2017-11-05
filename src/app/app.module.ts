@@ -8,7 +8,8 @@ import { ServerComponent } from './server/server.component';
 import { UsersListComponent } from './user/users-list.component';
 import { LoginComponentComponent } from './login/login-component.component';
 import { routing } from './app.routes';
-import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-menu-component.component'
+import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-menu-component.component';
+import { TripComponentComponent } from './trip-component/trip-component.component'
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-
     ServerComponent,
     UsersListComponent,
     LoginComponentComponent,
-    MainMenuComponentComponent
+    MainMenuComponentComponent,
+    TripComponentComponent
   ],
   imports: [
     BrowserModule,

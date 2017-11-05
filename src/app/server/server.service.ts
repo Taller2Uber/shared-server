@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Server } from './server';
 import { Http, Response } from '@angular/http';
+import { Headers } from '@angular/http'
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
@@ -10,9 +11,14 @@ export class ServerService {
   constructor (private http: Http) {}
 
   getServers(): Promise<Server[]> {
-      return(this.http.get(this.serversURL)
+      var headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      var t = localStorage.getItem("token");
+      headers.append("token", t);
+      return(this.http.get(this.serversURL, { headers : headers })
                .toPromise()
-               .then(response => response.json().resultado as Server[])
+               .then(response => response.json().servers as Server[])
                .catch(this.handleError));
   }
 

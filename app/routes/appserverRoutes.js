@@ -41,7 +41,7 @@ appServerRoutes = function(server){
   });
 
 
-  server.post('/api/ping', function(req, res, err){
+  server.post('/api/servers/ping', function(req, res, err){
     var respuestaJson = {}
     if( req.headers.token ){
       loginCheck.serverCheck( req.headers.token , function(result, serverJson){
@@ -56,7 +56,6 @@ appServerRoutes = function(server){
     respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones');
     res.status(400).json(respuestaJson);
   }
-
   })
 
   /**
@@ -157,7 +156,7 @@ appServerRoutes = function(server){
      * @param results object
      * @param error object
      */
-    server.post("/api/servers/:userId", function( req, res, err ){
+    /*server.post("/api/servers/:userId", function( req, res, err ){
       var respuestaJson = {};
       logger.info('Solicitud de renovacion de token de un appserver');
       tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
@@ -168,7 +167,7 @@ appServerRoutes = function(server){
             res.status(401).json(respuestaJson);
           }
       })
-    });
+    }); */
 };
 
 module.exports = appServerRoutes;

@@ -1,12 +1,15 @@
 FROM node:boron
 
-RUN mkdir -p /home/gustavo/Documentos/facultad/taller2/shared-server
-WORKDIR /home/gustavo/Documentos/facultad/taller2/shared-server
+LABEL version="1.0"
+LABEL description="Llevame's shared-server Docker Image"
 
-COPY package.json /home/gustavo/Documentos/facultad/taller2/shared-server/
+RUN mkdir -p /home/gustavo/Documentos/facultad/angularProject/shared-server2
+WORKDIR /home/gustavo/Documentos/facultad/angularProject/shared-server2
+
+COPY package.json /home/gustavo/Documentos/facultad/angularProject/shared-server2/
 RUN npm install
 
-COPY . /home/gustavo/Documentos/facultad/taller2/shared-server/
+COPY . /home/gustavo/Documentos/facultad/angularProject/shared-server2/
 
 EXPOSE 3000
 

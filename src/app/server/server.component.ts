@@ -17,13 +17,17 @@ export class ServerComponent implements OnInit {
   constructor(private serverService: ServerService) { }
 
   ngOnInit() {
-    console.log('ENtro al onInit');
     this.serverService
      .getServers()
      .then((servers: Server[]) => {
        this.servers = servers.map((server) => {
-         if (!server.id) {
-
+         var fecha = new Date();
+         console.log('timestamp server' + new Date(server.lastconnection).getTime())
+         console.log('timestamp now: ' + fecha.getTime())
+         if ( new Date(server.lastconnection).getTime() < fecha.getTime() && server.lastconnection != null ) {
+           server.activo = true;
+         }else{
+           server.activo = false;
          }
          return server;
        });

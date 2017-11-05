@@ -113,10 +113,11 @@ appusers.validateUser = function( response, req ){
       if(!req.body.facebookAuthToken){
         client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
           if( res.rows.length <= 0 ){
-            respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized');
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Usuario invalido');
             response.status(401).json(respuestaJson);
           }else{
             respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+            response.status(200).json(respuestaJson);
           }
         })
       }else{

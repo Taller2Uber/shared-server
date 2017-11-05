@@ -7,6 +7,7 @@ var await = require('asyncawait/await')
 var logger = require('../config/herokuLogger')
 var Pool = require('pg-pool')
 var refHash = require('./refCheck')
+var ruleFacts = require('./ruleFacts')
 
 function tripsDB(){}
 
@@ -122,9 +123,24 @@ tripsDB.estimate = function(req, response){
   }else{
     const pool = new Pool(db.configDB);
     pool.connect().then(client =>{
-      distanceInKm( req.body.start.address.lat, req.body.start.address.lon, req.body.end.address.lon, req.body.start.address.lat, function(resultado){
-        logger.info(resultado);
-      })
+      var startAddress = JSON.parse(JSON.stringify(req.body.start.address));
+      var endAddress = JSON.parse(JSON.stringify(req.body.end.address));
+      var cost = JSON.parse(JSON.stringify(req.body.cost));
+      ruleFacts.getEstimateFact( startAddress, endAddress, function(result){
+        if(result.tripOk == true){
+          console.log('Ok')
+          var cost = {}
+          cost.value = result.cost * result.discount;
+          cost.currency = cost.currency;
+          respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+          respuestaJson = respuesta.addResult(respuestaJson, 'cost', cost);
+          response.status(200).json(respuestaJson);
+        }else{
+          console.log('Rechazado')
+          respuestaJson = respuesta.addError(respuestaJson, 402, 'Viaje rechazado');
+          response.status(402).json(respuestaJson);
+        }
+      });
     }).catch(e =>{
       logger.error('Unexpected error: ' + e);
       response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -132,23 +148,5 @@ tripsDB.estimate = function(req, response){
   }
 }
 
-distanceInKm = function(lat1, lon1, lat2, lon2, callback){
-  var R = 6371; // Radio terresetre
-  var dLat = deg2rad(lat2-lat1);
-  var dLon = deg2rad(lon2-lon1);
-  console.log(lon1);
-  var a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-    ;
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  var d = R * c; //Distancia en KM
-  callback(d);
-}
-
-function deg2rad(deg) {
-  return deg * (Math.PI/180)
-}
 
 module.exports = tripsDB;

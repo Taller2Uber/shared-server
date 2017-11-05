@@ -6,12 +6,25 @@ var rules = [];
 
 var oneRules = [
 	{
+		"priority": 6,
+		"name": "Balance negativo no puede viajar",
+		"condition": function(R) {
+			R.when(this && this.balance < 0);
+		},
+		"consequence": function(R) {
+	    this.tripOk = false;
+			R.stop();
+		}
+	},
+	{
 		"priority": 5,
 		"name": "Viaja gratis por mail @llevame.com",
 		"condition": function(R) {
-			var mail = this.mail.split('@')
-			R.when(this && !this.used && (mail[1] == 'llevame.com'));
-			this.used = true;
+			var mail = []
+			if( this.mail ){
+				mail = this.mail.split('@')
+			}
+				R.when(this && (mail[1] == 'llevame.com'));
 		},
 		"consequence": function(R) {
 	    this.cost = 0;
@@ -22,8 +35,9 @@ var oneRules = [
 		"priority": 2,
 		"name": "Costo minimo debe ser $50",
 		"condition": function(R) {
-			console.log('costo minimo debe ser 50');
-			R.when(this && this.cost * this.discount < 50);
+			if( this.cost && this.discount ){
+				R.when(this && this.cost * this.discount < 50);
+			}
 		},
 		"consequence": function(R) {
 			this.tripOk = false;
@@ -34,11 +48,12 @@ var oneRules = [
 		"priority": 4,
 		"name":"Precio de $15 por KM",
 		"condition": function(R){
-			R.when(this && this.distance > 0)
+			if ( this.distance ){
+				R.when(this && this.distance > 0)
+			}
 		},
 		"consequence" : function(R){
 			this.cost = this.cost + this.distance * 15;
-			//console.log('precio de 15 por km')
 			R.next();
 		}
 	},
@@ -46,11 +61,11 @@ var oneRules = [
 		"priority": 3,
 		"name":"descuento los miercoles",
 		"condition": function(R){
-			var arrFecha = this.fecha.split('/');
-			var fechaViaje = new Date(arrFecha[2], arrFecha[1] - 1, arrFecha[0]);
-			var dia = weekdays[ fechaViaje.getDay() ];
-			//console.log(dia);
-			R.when(this && dia == 'miercoles')
+			var dia = ''
+			if ( this.fecha ){
+				dia = weekdays[ this.fecha.getDay() ];
+			}
+				R.when(this && dia == 'miercoles')
 		},
 		"consequence": function(R){
 			this.discount -= 0.05;
@@ -61,10 +76,11 @@ var oneRules = [
 		"priority": 3,
 		"name":"recargo por ser lunes",
 		"condition": function(R){
-			var arrFecha = this.fecha.split('/');
-			var fechaViaje = new Date(arrFecha[2], arrFecha[1] - 1, arrFecha[0]);
-			var dia = weekdays[ fechaViaje.getDay() ];
-			R.when(this && dia == 'lunes')
+			var dia = ''
+			if( this.fecha ){
+				dia = weekdays[ this.fecha.getDay() ];
+			}
+				R.when(this && dia == 'lunes')
 		},
 		"consequence": function(R){
 			this.discount += 0.10;
@@ -107,120 +123,7 @@ var oneRules = [
 	}
 ]
 
-var domainRule = {
-		"name": "Viaja gratis por mail @llevame.com",
-		"condition": function(R) {
-			var mail = this.mail.split('@')
-			R.when(this && (mail[1] == 'llevame.com'));
-		},
-		"consequence": function(R) {
-	    this.costo = 0;
-			R.stop();
-		}
-}
-
-//rules.push(domainRule);
-
-var minCostRule = {
-	"name": "Costo minimo debe ser $50",
-	"condition": function(R) {
-		R.when(this && this.costo < 50);
-	},
-	"consequence": function(R) {
-		this.tripOk = false;
-		R.stop();
-	}
-}
-
-//rules.push(minCostRule);
-
-var costForKmRule = {
-	"name":"Precio de $15 por KM",
-	"condition": function(R){
-		R.when(this && this.distance > 0)
-	},
-	"consequence" : function(R){
-		this.cost = this.cost + this.distance * 15;
-		R.stop();
-	}
-}
-
-//rules.push(costForKmRule);
-
-var discountWednesdayRule = {
-	"name":"descuento los miercoles",
-	"condition": function(R){
-		var arrFecha = this.fecha.split('/');
-		var fechaViaje = new Date(arrFecha[2], arrFecha[1] - 1, arrFecha[0]);
-		var dia = weekdays[ fechaViaje.getDay() ];
-		console.log(dia);
-		R.when(this && dia == 'miercoles')
-	},
-	"consequence": function(R){
-		this.discount -= 0.05;
-		R.stop();
-	}
-}
-
-//rules.push(discountWednesdayRule);
-
-var chargeMondaysRule = {
-	"name":"recargo por ser lunes",
-	"condition": function(R){
-		var arrFecha = this.fecha.split('/');
-		var fechaViaje = new Date(arrFecha[2], arrFecha[1] - 1, arrFecha[0]);
-		var dia = weekdays[ fechaViaje.getDay() ];
-		R.when(this && dia == 'lunes')
-	},
-	"consequence": function(R){
-		this.discount += 0.10;
-		R.stop();
-	}
-}
-
-//rules.push(chargeMondaysRule);
-
-var firstTripRule = {
-	"name": "descuento de $100 por ser el primer viaje",
-	"condition" : function(R){
-		R.when(this && this.cantViajes == 0);
-	},
-	"consequence" : function(R){
-		if( this.costo >= 100) this.costo -= 100;
-		else this.costo = 0;
-		R.stop();
-	}
-}
-
-//rules.push(firstTripRule);
-
-var totalTripsRule = {
-	"name" : "Recargo de 15% si hubo mas de 10 viajes en los ultimos 30 min",
-	"condition" : function(R){
-		R.when(this && this.totalTrips > 10);
-	},
-	"consequence" : function(R){
-		this.discount += 0.15;
-		R.stop();
-	}
-}
-
-//rules.push(totalTripsRule);
-
-var ownDailyTRipsRule = {
-	"name" : "Descuento de 5% a partir del 5to viaje en el dia",
-	"condition" : function(R){
-		R.when(this && this.ownDailyTrips > 4);
-	},
-	"consequence" : function(R){
-		this.discount -= 0.05;
-		R.stop();
-	}
-}
-
-//rules.push(ownDailyTRipsRule);
-
-var fact = {
+/*var fact = {
     "distance": 10,
     "mail":"gustavo@llevame.com",
 		"fecha": "20/12/2017",
@@ -230,34 +133,24 @@ var fact = {
 		"ownDailyTrips": 10,
 		"totalTrips": 30
 };
-
-var RuleDomain = new RuleEngine(domainRule);
-var RuleMinCost = new RuleEngine(minCostRule);
-var RuleCostKm = new RuleEngine(costForKmRule);
-var RuleDiscWednesday = new RuleEngine(discountWednesdayRule);
-var RuleCostForKm = new RuleEngine(costForKmRule);
+*/
 var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges : true});
-
-rules.push(RuleDomain);
-rules.push(RuleMinCost);
-rules.push(RuleCostKm);
-rules.push(RuleDiscWednesday);
-rules.push(RuleCostForKm);
-
+/*
 RuleArray.execute(fact,function(result){
 	console.log(result);
 });
 
 var otherFact = {
 	"distance": 15,
+	"tripOk": true,
   "mail":"gustavo@gmail.com",
 	"fecha": "01/11/2017",
 	"cost":0,
 	"discount" : 1,
-	"tripOk": true,
 	"ownDailyTrips": 10,
 	"totalTrips": 30,
-	"cantViajes": 1
+	"cantViajes": 1,
+	"balance": 20
 }
 
 RuleArray.execute(otherFact, function(result){
@@ -268,5 +161,30 @@ RuleArray.execute(otherFact, function(result){
 		console.log('Viaje rechazado');
 	}
 });
+*/
+
+distanceInKm = function(lat1, lon1, lat2, lon2, callback){
+  var R = 6371; // Radio terresetre
+  var dLat = deg2rad(lat2-lat1);
+  var dLon = deg2rad(lon2-lon1);
+  var a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var d = R * c; //Distancia en KM
+  callback(d);
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+/*
+distanceInKm(-34.6111362, -58.3771804, -34.578866, -58.41497, function(resultado){
+	console.log('Resultado:');
+	console.log(resultado);
+})*/
 
 module.exports = RuleArray;

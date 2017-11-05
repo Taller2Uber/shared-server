@@ -3,6 +3,7 @@ var async = require('asyncawait/async')
 var await = require('asyncawait/await')
 var tokenGenerator = require('./tokenGenerator')
 var Pool = require('pg-pool')
+var logger = require('../config/herokuLogger')
 var db = require('../config/pgdb')
 
 
@@ -37,6 +38,12 @@ loginCheck.serverCheck = function( token, callback ){
         if ( results.length <= 0 ){
           callback(false, null);
         }else{
+          var timestamp = new Date();
+          client.query('UPDATE appservers SET lastconnection = CURRENT_TIMESTAMP WHERE id = $1 RETURNING lastconnection', [ serverJson.id], function (err, res){
+            if(err){
+              logger.error('Error al actualizar el lastconnection del server : ' + err);
+            }
+          })
           respuestaJson = respuesta.addResult(respuestaJson, results[0]);
           callback(true, respuestaJson);
         }
