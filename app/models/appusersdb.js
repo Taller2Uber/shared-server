@@ -113,7 +113,7 @@ appusers.validateUser = function( response, req ){
       if(!req.body.facebookAuthToken){
         client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
           if( res.rows.length <= 0 ){
-            respuestaJson = respuesta.addError(respuestaJson, 401, 'Usuario invalido');
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Ivalid username or password');
             response.status(401).json(respuestaJson);
           }else{
             respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
@@ -124,18 +124,20 @@ appusers.validateUser = function( response, req ){
         request({
           url: "https://graph.facebook.com/me?access_token=" + req.body.facebookAuthToken,
           method: "GET"
-        }, function callback(err, res, body){
-          if(err){
-            response.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
+        }, function callback(error, res, body){
+          var result = JSON.parse(body);
+          if(result.hasOwnProperty('error')){
+            response.status(401).json(respuesta.addError(respuestaJson, 401, 'Token incorrecto'));
           }else{
+            console.log('PASO')
             var bodyResp = JSON.parse(body);
             client.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
               if(err){
                 logger.error('Unexpected error: ' + err);
               }else{
                 if(res.rows.length <= 0){
-                  logger.error('Unauthorized');
-                  response.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
+                  logger.info('Token correcto, usuario inexistente');
+                  response.status(200).json(respuesta.addDescription(respuestaJson, 'Token correcto, usuario inexistente'));
                 }else{
                   logger.info('Informacion del usuario');
                   respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
@@ -151,6 +153,7 @@ appusers.validateUser = function( response, req ){
       logger.error('Unexpected error: ' + e);
       response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
     })
+    pool.end();
   }
 }
 
