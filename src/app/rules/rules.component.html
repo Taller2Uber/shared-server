@@ -1,0 +1,42 @@
+<form>
+
+  <h1>Prueba de reglas</h1>
+  <p>
+    <b > Distancia </b>  <br>
+    <input type="number" [(ngModel)]="distance" name="distance"><br>
+  </p>
+  <p>
+    <b> fecha </b>  <br>
+    <input type="number" [(ngModel)]="fecha" name="fecha"><br>
+  </p>
+  <p>
+    <b> Cantidad de viajes propios en el dia </b>  <br>
+    <input type="number" [(ngModel)]="ownDailyTrips" name="ownDailyTrips"><br>
+  </p>
+  <p>
+    <b > Cantidad total de viajes en los ultimos 30 minutos </b>  <br>
+    <input type="number" [(ngModel)]="totalTrips" name="totalTrips"><br>
+  </p>
+  <p>
+    <b> Direccion de correo electronico </b>  <br>
+    <input type="text" [(ngModel)]="mail" name="mail"><br>
+  </p>
+
+  <p>
+    <b> Balance del pasajero </b>  <br>
+    <input type="number" [(ngModel)]="balance" name="balance"><br>
+  </p>
+
+  <p>
+    <b> Cantidad de viajes totales del pasajero </b>  <br>
+    <input type="number" [(ngModel)]="cantViajes" name="cantViajes"><br>
+  </p>
+
+  <p>
+   <button (click)="calculateCost()" type="button">Calcular costo</button>
+ </p>
+</form>
+
+<div id="CostStyle">{{cost}}</div>
+
+<div >{{matchingRules}}</div>

@@ -9,7 +9,8 @@ import { UsersListComponent } from './user/users-list.component';
 import { LoginComponentComponent } from './login/login-component.component';
 import { routing } from './app.routes';
 import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-menu-component.component';
-import { TripComponentComponent } from './trip-component/trip-component.component'
+import { TripComponentComponent } from './trip-component/trip-component.component';
+import { RulesComponent } from './rules/rules.component'
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { TripComponentComponent } from './trip-component/trip-component.componen
     UsersListComponent,
     LoginComponentComponent,
     MainMenuComponentComponent,
-    TripComponentComponent
+    TripComponentComponent,
+    RulesComponent
   ],
   imports: [
     BrowserModule,

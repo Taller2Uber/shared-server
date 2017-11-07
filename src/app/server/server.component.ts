@@ -22,9 +22,11 @@ export class ServerComponent implements OnInit {
      .then((servers: Server[]) => {
        this.servers = servers.map((server) => {
          var fecha = new Date();
+         var lastConnectionDate = new Date(server.lastconnection)
+         lastConnectionDate.setMinutes(lastConnectionDate.getMinutes() + 5);
          console.log('timestamp server' + new Date(server.lastconnection).getTime())
          console.log('timestamp now: ' + fecha.getTime())
-         if ( new Date(server.lastconnection).getTime() < fecha.getTime() && server.lastconnection != null ) {
+         if ( lastConnectionDate.getTime() > fecha.getTime() && server.lastconnection != null ) {
            server.activo = true;
          }else{
            server.activo = false;

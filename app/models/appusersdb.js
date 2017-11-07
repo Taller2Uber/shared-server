@@ -41,7 +41,7 @@ appusers.getAllUsers = async ( function( response, results ){
       response.status(200).json(respuesta.addResult(respuestaJson,'users', results));
     })
   }).catch(e =>{
-    logger.error('Unexpected error');
+    logger.error('Unexpected error: ' + e);
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
   })
 })
@@ -65,14 +65,11 @@ getCarsFromId =  function( id, client, callback ){
 */
 appusers.createUser = function( response, req ){
   var respuestaJson = {};
-  if( !req.body.username || !req.body.password || !req.body.firstname || !req.body.type || !req.body.lastname || !req.body.country || !req.body.email || !req.body.birthdate ){
-    logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
-    response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
-  }else{
+  if( ((req.body.username && req.body.password ) || req.body.fbtoken )){
     const pool = new Pool(db.configDB);
     pool.connect().then(client =>{
       var jsonUser = {"username": req.body.username, "password": req.body.password, "firstname": req.body.firstname, "lastname": req.body.lastname,
-                      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": req.body.fb.userid, "fbtoken": null};
+      "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": req.body.fb.userid, "fbtoken": null};
 
       if( req.body.fb.hasOwnProperty('fbuserid') && req.body.fb.hasOwnProperty('fbtoken')){
         jsonUser.fbuserid = req.body.fb.fbuserid;
@@ -80,20 +77,23 @@ appusers.createUser = function( response, req ){
       }
       var ref =  refCheck.generate( jsonUser );
       client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
-                    [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken], (err, res) => {
-      if(err){
-        logger.error('Unexpected error: ' + err);
+      [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken], (err, res) => {
+        if(err){
+          logger.error('Unexpected error: ' + err);
+          response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+        }else{
+          respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
+          respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
+          jsonUser._ref = ref;
+          response.status(201).json(respuesta.addEntityMetadata(respuestaJson));
+        }})
+      }).catch(e =>{
+        logger.error('Unexpected error: ' + e.message);
         response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-      }else{
-        respuestaJson = respuesta.addDescription(respuestaJson, 'Alta correcta');
-        respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
-        jsonUser._ref = ref;
-        response.status(201).json(respuesta.addEntityMetadata(respuestaJson));
-      }})
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e.message);
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
+      })
+  }else{
+    logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
+    response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }
 }
 
@@ -105,9 +105,7 @@ appusers.createUser = function( response, req ){
 */
 appusers.validateUser = function( response, req ){
   var respuestaJson = {};
-  if(  !req.body.username && !req.body.password  && !req.body.facebookAuthToken  ){
-    response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
-  }else{
+  if(  (req.body.username && req.body.password)  || req.body.facebookAuthToken  ){
     const pool = new Pool(db.configDB);
     pool.connect().then(client => {
       if(!req.body.facebookAuthToken){
@@ -129,7 +127,6 @@ appusers.validateUser = function( response, req ){
           if(result.hasOwnProperty('error')){
             response.status(401).json(respuesta.addError(respuestaJson, 401, 'Token incorrecto'));
           }else{
-            console.log('PASO')
             var bodyResp = JSON.parse(body);
             client.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
               if(err){
@@ -147,13 +144,14 @@ appusers.validateUser = function( response, req ){
             })
           }
         }
-        )
-      }
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e);
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
-    pool.end();
+      )
+    }
+  }).catch(e =>{
+    logger.error('Unexpected error: ' + e);
+    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+  })
+  }else{
+    response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
   }
 }
 

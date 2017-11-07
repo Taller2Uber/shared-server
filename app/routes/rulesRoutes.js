@@ -25,6 +25,12 @@ rulesRoutes = function(server){
     rulesDB.getOne(req, res);
   })
 
+  server.post('/api/rules/runall', function(req, res, err){
+    logger.info('Solicitud para correr todas las reglas');
+
+    rulesDB.runAll(req, res);
+  })
+
 }
 
 

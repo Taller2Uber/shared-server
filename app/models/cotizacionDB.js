@@ -36,7 +36,7 @@ var oneRules = [
 		"name": "Costo minimo debe ser $50",
 		"condition": function(R) {
 			if( this.cost && this.discount ){
-				R.when(this && this.cost * this.discount < 50);
+				R.when(this && ( this.cost * this.discount ) < 50);
 			}
 		},
 		"consequence": function(R) {
@@ -59,11 +59,12 @@ var oneRules = [
 	},
 	{
 		"priority": 3,
-		"name":"descuento los miercoles",
+		"name":"descuento del 5% los miercoles",
 		"condition": function(R){
 			var dia = ''
 			if ( this.fecha ){
-				dia = weekdays[ this.fecha.getDay() ];
+
+				dia = weekdays[ new Date(this.fecha).getDay() ];
 			}
 				R.when(this && dia == 'miercoles')
 		},
@@ -74,11 +75,11 @@ var oneRules = [
 	},
 	{
 		"priority": 3,
-		"name":"recargo por ser lunes",
+		"name":"recargo del 10% los lunes",
 		"condition": function(R){
 			var dia = ''
 			if( this.fecha ){
-				dia = weekdays[ this.fecha.getDay() ];
+				dia = weekdays[ new Date(this.fecha).getDay() ];
 			}
 				R.when(this && dia == 'lunes')
 		},
@@ -96,7 +97,7 @@ var oneRules = [
 		"consequence" : function(R){
 			if( this.cost >= 100) this.cost -= 100;
 			else this.cost = 0;
-			R.next();
+			R.stop();
 		}
 	},
 	{
@@ -135,33 +136,7 @@ var oneRules = [
 };
 */
 var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges : true});
-/*
-RuleArray.execute(fact,function(result){
-	console.log(result);
-});
 
-var otherFact = {
-	"distance": 15,
-	"tripOk": true,
-  "mail":"gustavo@gmail.com",
-	"fecha": "01/11/2017",
-	"cost":0,
-	"discount" : 1,
-	"ownDailyTrips": 10,
-	"totalTrips": 30,
-	"cantViajes": 1,
-	"balance": 20
-}
-
-RuleArray.execute(otherFact, function(result){
-	console.log(result);
-	if( result.tripOk == true){
-		console.log('Costo final: ' + result.cost * result.discount)
-	}else{
-		console.log('Viaje rechazado');
-	}
-});
-*/
 
 distanceInKm = function(lat1, lon1, lat2, lon2, callback){
   var R = 6371; // Radio terresetre
@@ -181,10 +156,5 @@ function deg2rad(deg) {
   return deg * (Math.PI/180)
 }
 
-/*
-distanceInKm(-34.6111362, -58.3771804, -34.578866, -58.41497, function(resultado){
-	console.log('Resultado:');
-	console.log(resultado);
-})*/
 
 module.exports = RuleArray;

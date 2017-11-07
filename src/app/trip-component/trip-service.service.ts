@@ -16,7 +16,7 @@ export class TripServiceService {
 
     var t = localStorage.getItem("token");
     headers.append("token", t);
-
+    this.tripsURL = 'http://localhost:3000/api/users/'
     this.tripsURL = this.tripsURL + userId + '/trips';
     console.log(this.tripsURL)
     return(this.http.get(this.tripsURL, {headers: headers})

@@ -18,6 +18,9 @@ export class TripComponentComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  buscar(){
     this.tripService
     .getTrips(this.userId)
     .then((trips : Trip[])=>{
@@ -25,6 +28,7 @@ export class TripComponentComponent implements OnInit {
         return trip;
       })
     })
+
   }
 
 }

@@ -27,12 +27,14 @@ connectClient = async (function( client , response){
 })
 
 configDB = {
-  user: process.env.DBUSER,
-  password: process.env.DBPASSWORD,
-  host: process.env.DBHOST,
-  port: process.env.DBPORT,
-  database: process.env.DBNAME,
-  ssl: true
+  user: "postgres",
+  password: '1234',
+  host: 'localhost',
+  port: '5432',
+  database: 'postgres',
+  //ssl: true,
+  idleTimeoutMillis: 2000,
+  evictionRunIntervalMillis: 1
 };
 
 module.exports = {

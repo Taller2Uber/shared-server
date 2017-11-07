@@ -25,4 +25,8 @@ export class MainMenuComponentComponent implements OnInit {
     this.router.navigate(['/trips']);
   }
 
+  goToRules(){
+    this.router.navigate(['/rules']);
+  }
+
 }

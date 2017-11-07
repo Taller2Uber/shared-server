@@ -53,7 +53,6 @@ loginCheck.serverCheck = function( token, callback ){
       client.release();
       logger.info('Error en la query')
     })
-    pool.end();
   }else{
     callback(false, null);
   }

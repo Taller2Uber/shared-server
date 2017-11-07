@@ -1,13 +1,23 @@
 <div id="body" class="row">
   <div class="col-md-5">
     <h1>Viajes</h1>
+    <p id="box">
+       <b id="titleBox"> Id del usuario: </b>  <br>
+        <input type="text" [(ngModel)]="userId" name="userId" ><br>
+    </p>
+    <p id="buttonContent">
+     <button id="button" (click)="buscar()" type="button">Buscar</button>
+   </p>
     <ul class="list-group">
         <div id="tripBox" class="list-group-item"
           *ngFor="let trip of trips">
-          passenger : {{trip.passenger}} <br/>
-          driver : {{trip.driver}} <br/>
-          Id: {{trip.id}} <br/>
-          Cost: {{trip.cost.currency}}
+          <b>passenger</b> : {{trip.passenger}} <br/>
+          <b>driver</b> : {{trip.driver}} <br/>
+          <b>Id</b>: {{trip.id}} <br/>
+          <b>Currency</b>: {{trip.cost.currency}} <br/>
+          <b>Cost</b>: {{trip.cost.value}} <br/>
+          <b>Direccion de inicio</b>: {{trip.start.address.street}} <br/>
+          <b>Direccion de fin</b>: {{trip.end.address.street}} <br/>
         </div>
     </ul>
   </div>

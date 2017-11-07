@@ -4,6 +4,7 @@ const db = require('../config/pgdb')
 var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
 var refHash = require('./refCheck')
+var RuleArray = require('./cotizacionDB')
 
 function rulesDB(){}
 //active, language, lastcommit,blob
@@ -142,7 +143,23 @@ rulesDB.update = function(req, response){
 
 }
 
-rulesDB.runAll = function(req, response){}
+rulesDB.runAll = function(req, response){
+  var fact = {}
+  fact.distance = req.body.distance;
+  fact.mail = req.body.mail;
+  fact.fecha = req.body.fecha;
+  fact.cost = 0;
+  fact.discount = 1;
+  fact.tripOk = true;
+  fact.ownDailyTrips = req.body.ownDailyTrips;
+  fact.totalTrips = req.body.totalTrips;
+  fact.balance = req.body.balance;
+
+  RuleArray.execute(fact, function(resultado){
+    response.status(200).json(resultado);
+  })
+
+}
 
 rulesDB.run = function(req, response){}
 

@@ -4,8 +4,24 @@ export class Trip {
     currency: string;
     value: number;
   };
+  start:{
+    address: {
+        street: string,
+        location: {
+          lat: number,
+          lon: number
+        }
+      }
+  }
   passenger: number;
   driver: number;
-  start: JSON;
-  end: JSON;
+  end:{
+    address: {
+        street: string,
+        location: {
+          lat: number,
+          lon: number
+        }
+      }
+  };
 }
