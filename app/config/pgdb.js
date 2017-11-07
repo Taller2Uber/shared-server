@@ -27,6 +27,19 @@ connectClient = async (function( client , response){
 })
 
 configDB = {
+  user: process.env.DBUSER,
+  password: process.env.DBPASSWORD,
+  host: process.env.DBHOST,
+  port: process.env.DBPORT,
+  database: process.env.DBNAME,
+  ssl: true,
+  idleTimeoutMillis: 2000,
+  evictionRunIntervalMillis: 1
+};
+
+
+/*
+configDB = {
   user: "postgres",
   password: '1234',
   host: 'localhost',
@@ -35,7 +48,7 @@ configDB = {
   //ssl: true,
   idleTimeoutMillis: 2000,
   evictionRunIntervalMillis: 1
-};
+};*/
 
 module.exports = {
        url: "postgres://yaholwwedufvfk:fedbb72f52839ff52bba98223c057bddd0652e851876158009099daf78231b7d@ec2-184-72-248-8.compute-1.amazonaws.com:5432/d9v0pdccnsqeju",
