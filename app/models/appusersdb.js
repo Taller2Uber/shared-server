@@ -1,5 +1,5 @@
 const pg  = require('pg')
-const db = require('../config/pgdb')
+var db = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
 var async = require('asyncawait/async')
@@ -8,7 +8,7 @@ var logger = require('../config/herokuLogger')
 var Pool = require('pg-pool')
 var request = require('request')
 var refHash = require('./refCheck')
-
+var query = require('../config/pgdb').query
 
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
 
@@ -31,9 +31,6 @@ appusers.getAllUsers = async ( function( response, results ){
     pool.query('SELECT * FROM users', (err, res) =>{
       res.rows.forEach(userRow =>{
         var cars = [];
-        getCarsFromId(userRow.id, client, function(cars){
-          userRow.cars = cars;
-        })
         results.push(userRow);
       });
       logger.info('Obteniendo listado de usuarios');
@@ -45,16 +42,6 @@ appusers.getAllUsers = async ( function( response, results ){
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
   })
 })
-
-getCarsFromId =  function( id, client, callback ){
-  var results = []
-  client.query('SELECT * FROM cars WHERE owner = $1', [id], function(err, res){
-    res.rows.forEach(row =>{
-      results.push(row);
-    }
-  )})
-  callback(results);
-}
 
 
 /** @name createUser
@@ -111,7 +98,7 @@ appusers.validateUser = function( response, req ){
       if(!req.body.facebookAuthToken){
         pool.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
           if( res.rows.length <= 0 ){
-            respuestaJson = respuesta.addError(respuestaJson, 401, 'Ivalid username or password');
+            respuestaJson = respuesta.addError(respuestaJson, 401, 'Invalid username or password');
             response.status(401).json(respuestaJson);
           }else{
             respuestaJson = respuesta.addResult(respuestaJson, 'user', res.rows[0]);
@@ -150,9 +137,12 @@ appusers.validateUser = function( response, req ){
     logger.error('Unexpected error: ' + e);
     response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
   })
+  pool.end();
   }else{
     response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
+    pool.end();
   }
+
 }
 
 /** @name deleteUser
