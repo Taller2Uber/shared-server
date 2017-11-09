@@ -24,10 +24,9 @@ export class ServerComponent implements OnInit {
          var fecha = new Date();
          var lastConnectionDate = new Date(server.lastconnection)
          lastConnectionDate.setMinutes(lastConnectionDate.getMinutes() + 5);
-         console.log('timestamp server' + new Date(server.lastconnection).getTime())
-         console.log('timestamp now: ' + fecha.getTime())
          if ( lastConnectionDate.getTime() > fecha.getTime() && server.lastconnection != null ) {
            server.activo = true;
+           var activ = server.activo;
          }else{
            server.activo = false;
          }

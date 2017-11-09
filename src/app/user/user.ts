@@ -8,4 +8,5 @@ export class User {
   lastname: string;
   country: string;
   email: string;
+  cars:[JSON];
 }

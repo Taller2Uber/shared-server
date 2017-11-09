@@ -8,6 +8,14 @@ h1 {
   text-align: center;
 }
 
-#body {
-  
+.greencircle:before {
+  content: ' \25CF';
+  font-size: 20px;
+  color: green;
+}
+
+.redcircle:before {
+  content: ' \25CF';
+  font-size: 20px;
+  color: red;
 }

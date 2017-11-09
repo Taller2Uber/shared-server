@@ -8,6 +8,7 @@ var logger = require('../config/herokuLogger')
 var Pool = require('pg-pool')
 var refHash = require('./refCheck')
 var ruleFacts = require('./ruleFacts')
+var transactionDB = require('./transactionDB')
 
 function tripsDB(){}
 
@@ -30,6 +31,7 @@ tripsDB.create = function( req, response ){
             logger.info('Alta correcta');
             respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res);
             respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+            transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
             response.status(201).json(respuestaJson);
           }
           })
@@ -131,7 +133,7 @@ tripsDB.estimate = function(req, response){
           console.log('Ok')
           var cost = {}
           cost.value = result.cost * result.discount;
-          cost.currency = cost.currency;
+          cost.currency = req.body.cost.currency;
           respuestaJson = respuesta.addEntityMetadata(respuestaJson);
           respuestaJson = respuesta.addResult(respuestaJson, 'cost', cost);
           response.status(200).json(respuestaJson);

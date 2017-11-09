@@ -8,7 +8,7 @@ var logger = require('../config/herokuLogger')
 var Pool = require('pg-pool')
 var request = require('request')
 var refHash = require('./refCheck')
-var query = require('../config/pgdb').query
+//var query = require('../config/pgdb').query
 
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
 

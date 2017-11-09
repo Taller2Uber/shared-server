@@ -8,6 +8,7 @@ var tokenGenerator = require('../models/tokenGenerator');
 tripsRoutes = function(server){
 
   server.get('/api/trips', function(req, res, err){
+    var respuestaJson = {}
     logger.info('Obtener todos los viajes');
 
     tokenGenerator.checkBU( req.headers.token, ['user'],  function(authorized){

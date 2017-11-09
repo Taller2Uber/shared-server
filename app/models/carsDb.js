@@ -53,11 +53,14 @@ carsDB.create = function( response, request ){
         return;
       }else{
         if( results.rows[0].cars != null ){
-          cars = results.rows[0].cars;
+          cars = results.rows[0].cars
+        }else{
+          results.rows[0].cars = []
         }
         var car = {};
         car.properties = request.body.properties;
         car.id = results.rows[0].cars.length + 1;
+
         car.owner = request.params.userId;
         car._ref = refHash.generate( car );
         cars.push(car);
@@ -65,9 +68,12 @@ carsDB.create = function( response, request ){
         client.query('UPDATE users SET cars = $1 WHERE id = $2', [carsToSave, request.params.userId], (err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err);
+            response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
           }else{
             logger.info('Alta correcta');
-            response.send('Alta correcta');
+            respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+            respuestaJson = respuesta.addResult(respuestaJson, 'car', car);
+            response.status(201).json(respuestaJson);
           }
         })
         }
@@ -179,7 +185,6 @@ carsDB.update = function( response, request ){
           var contador = -1;
           var index = -1;
           var autos = res.rows[0].cars;
-          console.log(autos);
           var refCorrecto = false;
           for( var auto of autos ){
             contador = contador + 1;

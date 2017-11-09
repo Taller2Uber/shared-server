@@ -2,8 +2,6 @@ var RuleEngine = require('node-rules')
 
 var weekdays = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
-var rules = [];
-
 var oneRules = [
 	{
 		"priority": 6,
@@ -92,11 +90,15 @@ var oneRules = [
 		"priority": 1,
 		"name": "descuento de $100 por ser el primer viaje",
 		"condition" : function(R){
-			R.when(this && this.cantViajes == 0);
+			R.when(this && this.cantViajes < 1);
 		},
 		"consequence" : function(R){
-			if( this.cost >= 100) this.cost -= 100;
-			else this.cost = 0;
+			if( this.cost >= 100){
+				this.cost -= 100;
+			}
+			else{
+				this.cost = 0;
+			}
 			R.stop();
 		}
 	},

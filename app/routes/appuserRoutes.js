@@ -5,7 +5,7 @@ var loginCheck = require('../models/loginCheck')
 var path = require('path')
 var tripsDB = require('../models/tripsDB')
 var logger = require('../config/herokuLogger.js')
-
+var transactionDB = require('../models/transactionDB')
 
 /**
  * @namespace appUsersRoutes
@@ -257,6 +257,18 @@ var logger = require('../config/herokuLogger.js')
       }
     })
   });
+
+  server.post('/api/users/:userId/addcost', function(req, res, err){
+    transactionDB.addCost(req.params.userId, req.body.currency, req.body.value, res);
+  })
+
+  server.post('/api/users/:userId/transactions', function(req, res, err){
+    transactionDB.create(req, res);
+  })
+
+  server.get('/api/users/:userId/transactions', function(req, res, err){
+    transactionDB.getAll(req, res);
+  })
 
 
 }

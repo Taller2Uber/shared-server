@@ -19,9 +19,6 @@ export class UsersListComponent implements OnInit {
      .getAllUsers()
      .then((users: User[]) => {
        this.users = users.map((user) => {
-         if (!user.id) {
-
-         }
          return user;
        });
      });
