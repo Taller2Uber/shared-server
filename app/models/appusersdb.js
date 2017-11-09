@@ -96,7 +96,7 @@ appusers.validateUser = function( response, req ){
     const pool = new Pool(db.configDB);
     pool.connect().then(client => {
       if(!req.body.facebookAuthToken){
-        pool.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
+        client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
           if( res.rows.length <= 0 ){
             respuestaJson = respuesta.addError(respuestaJson, 401, 'Invalid username or password');
             response.status(401).json(respuestaJson);
@@ -115,7 +115,7 @@ appusers.validateUser = function( response, req ){
             response.status(401).json(respuesta.addError(respuestaJson, 401, 'Token incorrecto'));
           }else{
             var bodyResp = JSON.parse(body);
-            pool.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
+            client.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
               if(err){
                 logger.error('Unexpected error: ' + err);
               }else{
