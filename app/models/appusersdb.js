@@ -40,7 +40,7 @@ appusers.getAllUsers = async ( function( response, results ){
 * @author Gustavo Adrian Gimenez
 * @param request debe contener todos los datos necesarios para dar de alta un usuario.
 */
-appusers.createUser = function( response, req ){
+appusers.createUser = function( response, req, serverId ){
   var respuestaJson = {};
   if( ((req.body.username && req.body.password ) || req.body.fbtoken )){
       var jsonUser = {"username": req.body.username, "password": req.body.password, "firstname": req.body.firstname, "lastname": req.body.lastname,
@@ -51,8 +51,8 @@ appusers.createUser = function( response, req ){
         jsonUser.fbtoken = req.body.fb.fbtoken;
       }
       var ref =  refCheck.generate( jsonUser );
-      connect().query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
-      [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken], (err, res) => {
+      connect().query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken, applicationowner) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING * ;',
+      [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken, serverId], (err, res) => {
         if(err){
           logger.error('Unexpected error: ' + err);
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));

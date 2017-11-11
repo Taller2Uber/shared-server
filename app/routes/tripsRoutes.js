@@ -36,9 +36,9 @@ tripsRoutes = function(server){
     var respuestaJson = {};
     logger.info('Solicitud para dar de alta un viaje');
 
-    loginCheck.check( req.headers.token, [],  function(authorized){
+    loginCheck.check( req.headers.token, [],  function(authorized, serverJson){
         if(authorized){
-          tripDB.create( req, res );
+          tripDB.create( req, res, serverJson.id );
         }else{
           res.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
         }

@@ -10,16 +10,16 @@ var transactionDB = require('./transactionDB')
 
 function tripsDB(){}
 
-tripsDB.create = function( req, response ){
+tripsDB.create = function( req, response, serverId ){
   var respuestaJson = {};
   var trip = req.body.trip;
   if(  !req.body.trip ||  !trip.start || !trip.end || !trip.cost || trip.totalTime < 0 || trip.waitTime < 0 || trip.travelTime < 0 || trip.distance < 0 || trip.route < 0 ||
-      !req.body.paymethod || !trip.applicationOwner || !trip.driver || !trip.passenger ){
+      !req.body.paymethod || !trip.driver || !trip.passenger ){
         logger.error('Incumplimiento de precondiciones');
         response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
       }else{
         connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
-          [ JSON.stringify(trip.cost), trip.applicationOwner, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end) ],(err, res)=>{
+          [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end) ],(err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err)
             response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
