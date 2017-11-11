@@ -1,9 +1,7 @@
-const pg = require('pg')
-const db = require('../config/pgdb')
+const connect = require('../config/pgdb')
 var logger = require('../config/herokuLogger')
 var respuesta = require('../models/respuesta')
 var refCheck = require('../models/refCheck')
-var Pool = require('pg-pool')
 var tokenGenerator = require('./tokenGenerator')
 var refHash = require('./refCheck')
 require('dotenv').config();
@@ -26,13 +24,11 @@ appserverDB.createServer = function( response, name, token ){
   if(!name)
     response.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
   else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client => {
       var fecha = new Date();
-      client.query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, $3, $4) RETURNING id', [name, 'me', fecha, fecha.getTime()],(err, res) => {
+      connect().query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, $3, $4) RETURNING id', [name, 'me', fecha, fecha.getTime()],(err, res) => {
         var hashedToken = tokenGenerator.generateSV( res.rows[0].id, name, token );
         var ref = refHash.generate( res.rows[0].id );
-        client.query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3 RETURNING *', [ hashedToken, ref ,res.rows[0].id ], (err, resu) =>{
+        connect().query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3 RETURNING *', [ hashedToken, ref ,res.rows[0].id ], (err, resu) =>{
           if(err){
             respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
             logger.error('Unexpected error' + err);
@@ -42,12 +38,6 @@ appserverDB.createServer = function( response, name, token ){
           }
         })
       })
-    })
-    .catch(e =>{
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      logger.error('Unexpected error: ' + e);
-    })
-    pool.end();
   }
 }
 
@@ -62,10 +52,7 @@ appserverDB.createServer = function( response, name, token ){
 */
 appserverDB.getAllServers = function(response, results){
   var respuestaJson = {};
-
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM appservers', (err, res) =>{
+    connect().query('SELECT * FROM appservers', (err, res) =>{
       res.rows.forEach(row =>{
         results.push(row);
       });
@@ -73,8 +60,6 @@ appserverDB.getAllServers = function(response, results){
       response.status(200).json(respuesta.addResult(respuestaJson, 'servers', results));
       return(results);
     })
-  })
-  pool.end();
 }
 
 
@@ -88,9 +73,7 @@ appserverDB.getAllServers = function(response, results){
 */
 appserverDB.deleteServer = function( response, userId ){
   respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('DELETE FROM appservers WHERE id =  $1 RETURNING *',[userId], ( err, res) =>{
+    connect().query('DELETE FROM appservers WHERE id =  $1 RETURNING *',[userId], ( err, res) =>{
       if(err){
         respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
         response.status(500).json(respuestaJson);
@@ -102,10 +85,6 @@ appserverDB.deleteServer = function( response, userId ){
         response.status(404).json(respuestaJson);
       }
     })
-  }).catch(e =>{
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
-  })
 };
 
 
@@ -118,10 +97,8 @@ appserverDB.deleteServer = function( response, userId ){
 appserverDB.getServerInfo = function( response, userId ){
 
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
     var results = [];
-    client.query('SELECT * FROM appservers WHERE id = $1', [userId], (err, res) =>{
+    connect().query('SELECT * FROM appservers WHERE id = $1', [userId], (err, res) =>{
       if( err )
         logger.error('Error en la query: ' + err);
       else {
@@ -139,9 +116,6 @@ appserverDB.getServerInfo = function( response, userId ){
           }
         }
     });
-  }).catch(e =>{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -153,9 +127,7 @@ appserverDB.getServerInfo = function( response, userId ){
 */
 appserverDB.updateServerInfo = function( response, request, userId ){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT _ref FROM appservers WHERE id = $1',[userId], (err, res) =>{
+    connect().query('SELECT _ref FROM appservers WHERE id = $1',[userId], (err, res) =>{
       if(err){
         logger.info('ERROR: ' + err);
         return false;
@@ -169,7 +141,7 @@ appserverDB.updateServerInfo = function( response, request, userId ){
         if( ref._ref === request.body._ref ){
           var jsonSV = {"name":request.body.name };
           var newRef = refCheck.generate(jsonSV);
-          client.query('UPDATE appservers SET name = $1, _ref = $2 WHERE id = $3',
+          connect().query('UPDATE appservers SET name = $1, _ref = $2 WHERE id = $3',
               [ request.body.name, newRef, userId ], (err, res) =>{
             if( err ){
               logger.info('No existe el recurso solicitado');
@@ -187,10 +159,6 @@ appserverDB.updateServerInfo = function( response, request, userId ){
       }});
     }
   });
-  }).catch(e =>{
-    logger.error('Unexpected error');
-    response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -204,9 +172,7 @@ appserverDB.updateServerInfo = function( response, request, userId ){
 */
 appserverDB.renewToken = function( response, token, oldRef, userId ){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM appservers WHERE id = $1',[userId], (err, res) =>{
+    connect().query('SELECT * FROM appservers WHERE id = $1',[userId], (err, res) =>{
       if(err){
         logger.info('ERROR: ' + err);
         respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
@@ -221,7 +187,7 @@ appserverDB.renewToken = function( response, token, oldRef, userId ){
           if( appserver._ref === oldRef ){
             var newRef = refCheck.generate(appserver);
             var newToken = tokenGenerator.generateSV(appserver.id, appserver.name, token);
-            client.query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3',
+            connect().query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3',
             [ newToken, newRef, userId ], (err, res) =>{
               if( err ){
                 logger.error('Error al realizar Update: ' + err);
@@ -240,17 +206,11 @@ appserverDB.renewToken = function( response, token, oldRef, userId ){
           }
       }};
     })
-  }).catch(e =>{
-    logger.info('Unexpected error');
-    response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 appserverDB.pingRequest = function( response, newToken, serverId ){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('UPDATE appservers SET token = $1 WHERE id = $2',[newToken, serverId], (err, res)=>{
+    connect().query('UPDATE appservers SET token = $1 WHERE id = $2',[newToken, serverId], (err, res)=>{
       if(err){
         logger.info('No existe el recurso solicitado');
         response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
@@ -261,10 +221,6 @@ appserverDB.pingRequest = function( response, newToken, serverId ){
         response.status(200).json(respuestaJson);
       }
     })
-  }).catch(e =>{
-    logger.error('Unexpected error');
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 module.exports = appserverDB;

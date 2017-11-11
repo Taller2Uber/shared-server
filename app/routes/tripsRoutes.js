@@ -21,8 +21,8 @@ tripsRoutes = function(server){
   })
 
   server.get('/api/trips/:tripId', function(req, res, err){
+    respuestaJson = {}
     logger.info('Obtener todos los viajes de un usuario particular');
-
     loginCheck.check( req.headers.token, ['user'],  function(authorized){
         if(authorized){
           tripDB.getOne( req, res );

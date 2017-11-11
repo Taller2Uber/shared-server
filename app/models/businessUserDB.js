@@ -1,6 +1,4 @@
-const pg = require('pg')
-var Pool = require('pg-pool')
-const db = require('../config/pgdb')
+const connect = require('../config/pgdb')
 var logger = require('../config/herokuLogger')
 var randtoken = require('rand-token');
 var refCheck = require('./refCheck')
@@ -27,9 +25,7 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
     logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client => {
-      client.query('INSERT INTO businessusers (username, password, name, surname, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [username, password, name, surname, role],(err, res) => {
+      connect().query('INSERT INTO businessusers (username, password, name, surname, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [username, password, name, surname, role],(err, res) => {
         if(err){
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
         }else{
@@ -37,7 +33,7 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
           jsonBU.id = res.rows[0].id;
           jsonBU._ref = refCheck.generate(jsonBU) //NO USO EL TOKEN PARA EL REF
           jsonBU.token = tokenGenerator.generateBU(res.rows[0].id, role, randomToken);
-          client.query('UPDATE businessusers SET _ref = $1, token = $2 WHERE id = $3', [jsonBU._ref, jsonBU.token, jsonBU.id], (err, res) =>{
+          connect().query('UPDATE businessusers SET _ref = $1, token = $2 WHERE id = $3', [jsonBU._ref, jsonBU.token, jsonBU.id], (err, res) =>{
             if(err){
               logger.error('Unexpected error: '+ err);
               response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -46,13 +42,11 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
               response.status(201).json(respuesta.addDescription(respuestaJson, 'Alta correcta'));
             }
           })
-          }
+        }
       })
-    }).catch(e =>{
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
-  }
+    }
 }
+
 
 
 /**
@@ -63,19 +57,14 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
 * @param results array para guardar los resultados
 */
 buDB.getAllBU = function( response, results ){
-  const pool = new Pool(db.configDB);
   var respuestaJson = {};
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM businessusers', (err, res) =>{
+    connect().query('SELECT * FROM businessusers', (err, res) =>{
       res.rows.forEach(row =>{
         results.push(row);
       });
       respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results);
       response.status(200).json(respuesta.addResult(respuestaJson, 'users', results));
     })
-  }).catch(e =>{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -92,9 +81,7 @@ buDB.checkAuth = function( response, request ){
     logger.info('Informacion faltante');
     response.status(400).json(respuesta.addError(respuestaJson, 400,'Incumplimiento de precondiciones (parametros faltantes)'));
   }else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client =>{
-      client.query('SELECT * FROM businessusers WHERE username = $1 AND password = $2',[request.body.username, request.body.password], (err, res) =>{
+      connect().query('SELECT * FROM businessusers WHERE username = $1 AND password = $2',[request.body.username, request.body.password], (err, res) =>{
         if(err){
           logger.error('Unexpected error: ' + err);
           respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
@@ -110,12 +97,7 @@ buDB.checkAuth = function( response, request ){
           response.status(201).json(respuestaJson);
         }
       })
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e);
-      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-      response.status(500).json(respuestaJson);
-    })
-  }
+    }
 }
 
 
@@ -128,10 +110,8 @@ buDB.checkAuth = function( response, request ){
 */
 buDB.getPersonalInfo = function( response, request, userId ){
   var respuestaJson = {};
-  var pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
     var results = [];
-    client.query('SELECT * FROM businessusers WHERE id = $1', [userId], (err, res) =>{
+    connect().query('SELECT * FROM businessusers WHERE id = $1', [userId], (err, res) =>{
       if( err ){
         response.status(500).send('Error en la query');
       }else{
@@ -149,9 +129,6 @@ buDB.getPersonalInfo = function( response, request, userId ){
           }
         }
     })
-  }).catch(e =>{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -164,24 +141,21 @@ buDB.getPersonalInfo = function( response, request, userId ){
 */
 buDB.updateInfo = function( response, request, userId ){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
   if( !request.body.name || !request.body.username || !request.body.password || !request.body.surname || !request.body.role ){
     respuestaJson = respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)');
     response.status(400).json(respuestaJson);
   }else{
-    pool.connect().then(client =>{
-      client.query('SELECT _ref FROM businessusers WHERE id = $1',[userId], (err, res) =>{
+      connect().query('SELECT _ref FROM businessusers WHERE id = $1',[userId], (err, res) =>{
         if(err){
           logger.info('ERROR: ' + err);
           response.status(500).json(respuesta.addError(respuestaJson, 'Unexpected error'));
-        }
-        else{
+        }else{
           res.rows.forEach(row =>{
             ref = JSON.parse(JSON.stringify(row, null, 2));
             if( ref._ref === request.body._ref ){
               var jsonBU = {"id": userId, "username":request.body.username, "password":request.body.password, "name":request.body.name, "surname":request.body.surname, "role":request.body.role };
               var newRef = refCheck.generate(jsonBU);
-              client.query('UPDATE businessusers SET name = $1, username = $2, password = $3, surname = $4, role = $5, _ref = $6 WHERE id = $7',
+              connect().query('UPDATE businessusers SET name = $1, username = $2, password = $3, surname = $4, role = $5, _ref = $6 WHERE id = $7',
                   [ request.body.name, request.body.username, request.body.password, request.body.surname, request.body.role ,newRef, userId ], (err, res) =>{
                 if( err ){
                   logger.info('No existe el recurso solicitado');
@@ -199,12 +173,8 @@ buDB.updateInfo = function( response, request, userId ){
         }});
       }
     });
-    }).catch(e =>{
-      logger.info('Unexpected error');
-      response.status(500).send(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
-    pool.end();
-}}
+  }
+}
 
 
 /**
@@ -216,9 +186,7 @@ buDB.updateInfo = function( response, request, userId ){
 */
 buDB.delete = function( response, request ){
   var respuestaJson = {};
-  client = new Client({connectionString: db.url, ssl:true});
-  if( db.connectClient( client, response ) ){
-    var query = client.query('DELETE FROM businessusers WHERE id =  $1',[request.params.userId], ( err, res) =>{
+    connect().query('DELETE FROM businessusers WHERE id =  $1',[request.params.userId], ( err, res) =>{
           if(err){
             logger.info('No existe el recurso solicitado');
             response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
@@ -226,9 +194,7 @@ buDB.delete = function( response, request ){
             logger.info('Baja correcta');
             response.status(200).json(respuesta.addDescription(respuestaJson, 'Baja correcta'));
           }
-    });
-  }
-  //client.end();
+  });
 }
 
 

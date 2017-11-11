@@ -1,11 +1,9 @@
-const pg  = require('pg')
-const db = require('../config/pgdb')
+const connect = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
 var async = require('asyncawait/async')
 var await = require('asyncawait/await')
 var logger = require('../config/herokuLogger')
-var Pool = require('pg-pool')
 var refHash = require('./refCheck')
 var ruleFacts = require('./ruleFacts')
 var transactionDB = require('./transactionDB')
@@ -20,36 +18,26 @@ tripsDB.create = function( req, response ){
         logger.error('Incumplimiento de precondiciones');
         response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
       }else{
-        const pool = new Pool(db.configDB);
-        pool.connect().then(client =>{
-          client.query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
+        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
           [ JSON.stringify(trip.cost), trip.applicationOwner, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end) ],(err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err)
             response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
           }else{
             logger.info('Alta correcta');
-            respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res);
+            respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res.rows[0]);
             respuestaJson = respuesta.addEntityMetadata(respuestaJson);
-            transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
+            transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
             response.status(201).json(respuestaJson);
           }
           })
-        })
-        .catch(e=>{
-          logger.error('Unexpected error: ' + e);
-          respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-          response.status(500).json(respuestaJson);
-        })
     }
 }
 
 tripsDB.getAll = function( req, response ){
   var respuestaJson = {};
   var results = [];
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM trips', (err, res)=>{
+  connect().query('SELECT * FROM trips', (err, res)=>{
       if(err){
           logger.error('Unexpected error');
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -63,19 +51,12 @@ tripsDB.getAll = function( req, response ){
         response.status(200).json(respuestaJson);
       }
     })
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 tripsDB.getOne = function( req, response ){
   var respuestaJson = {};
   var results = [];
-
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-      client.query('SELECT * FROM trips WHERE id = $1', [req.params.tripId], (err, res)=>{
+    connect().query('SELECT * FROM trips WHERE id = $1', [req.params.tripId], (err, res)=>{
         if(err){
           logger.error('Unexpected error: ' + err);
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -86,18 +67,12 @@ tripsDB.getOne = function( req, response ){
           response.status(200).json(respuestaJson);
         }
       })
-  }).catch(e =>{
-    logger.error('Unexpected error: '+ e);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 tripsDB.getTripsFromUser = function(req, response){
   var respuestaJson = {};
   var results = [];
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM trips WHERE (passenger = $1 OR driver = $1)',[req.params.userId], (err, res)=>{
+  connect().query('SELECT * FROM trips WHERE (passenger = $1 OR driver = $1)',[req.params.userId], (err, res)=>{
       if(err){
           logger.error('Unexpected error');
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -111,10 +86,6 @@ tripsDB.getTripsFromUser = function(req, response){
         response.status(200).json(respuestaJson);
       }
     })
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 tripsDB.estimate = function(req, response){
@@ -123,8 +94,6 @@ tripsDB.estimate = function(req, response){
     logger.error('Incumplimiento de precondiciones');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client =>{
       var startAddress = JSON.parse(JSON.stringify(req.body.start.address));
       var endAddress = JSON.parse(JSON.stringify(req.body.end.address));
       var cost = JSON.parse(JSON.stringify(req.body.cost));
@@ -143,10 +112,6 @@ tripsDB.estimate = function(req, response){
           response.status(402).json(respuestaJson);
         }
       });
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e);
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
   }
 }
 

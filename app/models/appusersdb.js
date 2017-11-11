@@ -1,15 +1,11 @@
-const pg  = require('pg')
-var db = require('../config/pgdb')
 var refCheck = require('./refCheck')
 var respuesta = require('./respuesta')
 var async = require('asyncawait/async')
 var await = require('asyncawait/await')
 var logger = require('../config/herokuLogger')
-var Pool = require('pg-pool')
 var request = require('request')
 var refHash = require('./refCheck')
-//var query = require('../config/pgdb').query
-
+const connect = require('../config/pgdb')
 //username, password, type, firstname, lastname, country, email, birthdate, fbtoken, fbuserid
 
 /**
@@ -26,9 +22,7 @@ function appusers(){}
 */
 appusers.getAllUsers = async ( function( response, results ){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    pool.query('SELECT * FROM users', (err, res) =>{
+    connect().query('SELECT * FROM users', (err, res) =>{
       res.rows.forEach(userRow =>{
         var cars = [];
         results.push(userRow);
@@ -37,10 +31,6 @@ appusers.getAllUsers = async ( function( response, results ){
       respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results);
       response.status(200).json(respuesta.addResult(respuestaJson,'users', results));
     })
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 })
 
 
@@ -53,8 +43,6 @@ appusers.getAllUsers = async ( function( response, results ){
 appusers.createUser = function( response, req ){
   var respuestaJson = {};
   if( ((req.body.username && req.body.password ) || req.body.fbtoken )){
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client =>{
       var jsonUser = {"username": req.body.username, "password": req.body.password, "firstname": req.body.firstname, "lastname": req.body.lastname,
       "type": req.body.type, "email": req.body.email, "birthdate": req.body.birthdate, "country": req.body.country, "fbuserid": req.body.fb.userid, "fbtoken": null};
 
@@ -63,7 +51,7 @@ appusers.createUser = function( response, req ){
         jsonUser.fbtoken = req.body.fb.fbtoken;
       }
       var ref =  refCheck.generate( jsonUser );
-      client.query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
+      connect().query('INSERT INTO users (username, password, firstname, lastname, type, email, birthdate, country, _ref, fbuserid, fbtoken) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING * ;',
       [req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.type, req.body.email, req.body.birthdate, req.body.country, ref, jsonUser.fbuserid, jsonUser.fbtoken], (err, res) => {
         if(err){
           logger.error('Unexpected error: ' + err);
@@ -74,10 +62,6 @@ appusers.createUser = function( response, req ){
           jsonUser._ref = ref;
           response.status(201).json(respuesta.addEntityMetadata(respuestaJson));
         }})
-      }).catch(e =>{
-        logger.error('Unexpected error: ' + e.message);
-        response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-      })
   }else{
     logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
@@ -93,10 +77,8 @@ appusers.createUser = function( response, req ){
 appusers.validateUser = function( response, req ){
   var respuestaJson = {};
   if(  (req.body.username && req.body.password)  || req.body.facebookAuthToken  ){
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client => {
       if(!req.body.facebookAuthToken){
-        client.query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
+        connect().query('SELECT * FROM users WHERE username = $1 AND password = $2', [req.body.username, req.body.password], (err, res) =>{
           if( res.rows.length <= 0 ){
             respuestaJson = respuesta.addError(respuestaJson, 401, 'Invalid username or password');
             response.status(401).json(respuestaJson);
@@ -115,7 +97,7 @@ appusers.validateUser = function( response, req ){
             response.status(401).json(respuesta.addError(respuestaJson, 401, 'Token incorrecto'));
           }else{
             var bodyResp = JSON.parse(body);
-            client.query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
+            connect().query('SELECT * FROM users WHERE fbuserid = $1', [bodyResp.id], (err, res) =>{
               if(err){
                 logger.error('Unexpected error: ' + err);
               }else{
@@ -133,14 +115,8 @@ appusers.validateUser = function( response, req ){
         }
       )
     }
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
-  pool.end();
   }else{
     response.status(400).json(respuesta.addError(respuestaJson,400, 'Incumplimiento de precondiciones (parámetros faltantes)'));
-    pool.end();
   }
 
 }
@@ -153,19 +129,13 @@ appusers.validateUser = function( response, req ){
 */
 appusers.deleteUser = function( response, userId){
   var respuestaJson = {};
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('DELETE FROM users where id = $1 RETURNING *', [userId],(err, res)=>{
-      if(err || res.rows.length <= 0 ){
-        response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
-      }else{
-        response.status(201).json(respuesta.addDescription(respuestaJson, 'Baja correcta'));
+  connect().query('DELETE FROM users where id = $1 RETURNING *', [userId],(err, res)=>{
+    if(err || res.rows.length <= 0 ){
+      response.status(404).json(respuesta.addError(respuestaJson, 404, 'No existe el recurso solicitado'));
+    }else{
+      response.status(201).json(respuesta.addDescription(respuestaJson, 'Baja correcta'));
       }
     });
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e.message);
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -178,9 +148,7 @@ appusers.deleteUser = function( response, userId){
 appusers.getUser = function( response, userId ){
   var respuestaJson = {};
   var results = [];
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT * FROM users WHERE id = $1', [userId], (err, res)=>{
+    connect().query('SELECT * FROM users WHERE id = $1', [userId], (err, res)=>{
       if(err || res.rows.length <= 0){
         response.status(404).json(respuesta.addError(respuestaJson, 404, 'User inexistente'));
       }else{
@@ -189,9 +157,6 @@ appusers.getUser = function( response, userId ){
         response.status(200).json(respuesta.addEntityMetadata(respuestaJson));
       }
     });
-  }).catch(e =>{
-    response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-  })
 }
 
 
@@ -207,9 +172,7 @@ appusers.updateUser = function( response, request ){
         || !request.body.type || !request.body.email || !request.body._ref){
           response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client =>{
-      client.query('SELECT _ref FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
+      connect().query('SELECT _ref FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
         if(res.rows[0]._ref === request.body._ref ){
           var newJsonUser = {
             username: request.body.username,
@@ -222,7 +185,7 @@ appusers.updateUser = function( response, request ){
             birthdate: request.body.birthdate
             }
             var newHash = refHash.generate(newJsonUser);
-          client.query('UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, type = $5, email = $6, birthdate = $7, country = $8, _ref = $9 WHERE id = $10 RETURNING *',
+          connect().query('UPDATE users SET username = $1, password = $2, firstname = $3, lastname = $4, type = $5, email = $6, birthdate = $7, country = $8, _ref = $9 WHERE id = $10 RETURNING *',
                     [ request.body.username, request.body.password, request.body.firstname, request.body.lastname, request.body.type, request.body.email, request.body.birthdate,
                     request.body.country, newHash, request.params.userId], (err, res) => {
             if(err){
@@ -237,10 +200,6 @@ appusers.updateUser = function( response, request ){
           response.status(409).json(respuesta.addError(respuestaJson, 'Conflicto en el update (mal valor de ref)'));
         }
       })
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e.message);
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
   }
 }
 

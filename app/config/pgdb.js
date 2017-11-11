@@ -10,10 +10,6 @@ var async = require('asyncawait/async');
 var logger = require('../config/herokuLogger');
 require('dotenv').config();
 
-function testFunction(a, b){
-  return (a+b);
-};
-
 connectClient = async (function( client , response){
   client.connect( (err) =>{
     if( err ){
@@ -33,9 +29,10 @@ configDB = {
   port: process.env.DBPORT,
   database: process.env.DBNAME,
   ssl: true,
-  idleTimeoutMillis: 2000,
-  evictionRunIntervalMillis: 1
+  //idleTimeoutMillis: 2000,
+  //evictionRunIntervalMillis: 1
 };
+
 
 
 /*
@@ -50,10 +47,8 @@ configDB = {
   evictionRunIntervalMillis: 1
 };*/
 
-module.exports = {
-       url: "postgres://yaholwwedufvfk:fedbb72f52839ff52bba98223c057bddd0652e851876158009099daf78231b7d@ec2-184-72-248-8.compute-1.amazonaws.com:5432/d9v0pdccnsqeju",
-       testFunction,
-       connectClient,
-       configDB
+var Pool = require('pg-pool')
 
-}
+const pool = new Pool(configDB);
+
+module.exports = () =>  { return pool };

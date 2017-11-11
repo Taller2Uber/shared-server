@@ -2,9 +2,8 @@ var respuesta = require('../models/respuesta')
 var async = require('asyncawait/async')
 var await = require('asyncawait/await')
 var tokenGenerator = require('./tokenGenerator')
-var Pool = require('pg-pool')
 var logger = require('../config/herokuLogger')
-var db = require('../config/pgdb')
+const connect = require('../config/pgdb')
 
 
 function loginCheck(){}
@@ -23,14 +22,13 @@ loginCheck.buCheck = function( req, res ){
 loginCheck.serverCheck = function( token, callback ){
 
   var serverJson = tokenGenerator.process( token );
-  const pool = new Pool(db.configDB);
+  //const pool = new Pool(db.configDB);
   var results = [];
   var respuestaJson = {};
   respuestaJson = respuesta.addToken(respuestaJson, token);
   respuestaJson = respuesta.addEntityMetadata( respuestaJson );
   if( serverJson != null ){
-    pool.connect().then(client =>{
-      client.query('SELECT * FROM appservers WHERE id = $1 AND name = $2', [serverJson.id, serverJson.name], function (err, res){
+      connect().query('SELECT * FROM appservers WHERE id = $1 AND name = $2', [serverJson.id, serverJson.name], function (err, res){
         res.rows.forEach(row =>{
           results.push(row);
         });
@@ -39,20 +37,15 @@ loginCheck.serverCheck = function( token, callback ){
           callback(false, null);
         }else{
           var timestamp = new Date();
-          client.query('UPDATE appservers SET lastconnection = CURRENT_TIMESTAMP WHERE id = $1 RETURNING lastconnection', [ serverJson.id], function (err, res){
+          connect().query('UPDATE appservers SET lastconnection = CURRENT_TIMESTAMP WHERE id = $1 RETURNING lastconnection', [ serverJson.id], function (err, res){
             if(err){
               logger.error('Error al actualizar el lastconnection del server : ' + err);
             }
           })
           respuestaJson = respuesta.addResult(respuestaJson, results[0]);
-          callback(true, respuestaJson);
+          callback(true, serverJson);
         }
       })
-    })
-    .catch(e =>{
-      client.release();
-      logger.info('Error en la query')
-    })
   }else{
     callback(false, null);
   }
@@ -61,12 +54,10 @@ loginCheck.serverCheck = function( token, callback ){
 loginCheck.businessUserCheck = function( token, callback ){
 
   var buJson = tokenGenerator.process( token );
-  const pool = new Pool(db.configDB);
   var results = [];
   var respuestaJson = {}
   if (buJson != null && buJson.hasOwnProperty('role')){
-    pool.connect().then(client =>{
-      client.query('SELECT token, role FROM businessusers WHERE id = $1', [buJson.id], function(err, res){
+      connect().query('SELECT token, role FROM businessusers WHERE id = $1', [buJson.id], function(err, res){
         if(err){
           logger.info('Unexpected error ' + err );
         }else{
@@ -83,23 +74,20 @@ loginCheck.businessUserCheck = function( token, callback ){
         }
       }
       })
-    }).catch(e =>{
-      logger.error('Unexpected error' + e);
-    })
   }else{
     callback(false, null);
   }
 }
 
 loginCheck.check = function( token, roles, callback ){
-  this.serverCheck( token, function( isServer, serverToken ){
+  this.serverCheck( token, function( isServer, serverJson ){
     if( isServer == true ){
-      callback(true);
+      callback(true, serverJson);
     }else{ tokenGenerator.checkBU( token, roles, function( isBU ){
       if (isBU == true){
-        callback(true);
+        callback(true, null);
       }else{
-        callback(false);
+        callback(false, null);
       }
     })
     }

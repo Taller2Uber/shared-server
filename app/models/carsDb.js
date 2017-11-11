@@ -1,6 +1,4 @@
-const pg = require('pg')
-var Pool = require('pg-pool')
-const db = require('../config/pgdb')
+const connect = require('../config/pgdb')
 var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
 var refHash = require('./refCheck')
@@ -13,9 +11,7 @@ function carsDB(){}
 carsDB.getAll = function( response, userId ){
   var respuestaJson = {};
   var results = [];
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT cars FROM users WHERE  id = $1', [userId], (err, res) =>{
+    connect().query('SELECT cars FROM users WHERE  id = $1', [userId], (err, res) =>{
       if(err){
         logger.error('Unexpected error: ' + err);
         response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -29,11 +25,6 @@ carsDB.getAll = function( response, userId ){
         respuestaJson = respuesta.addResult(respuestaJson, 'cars', results);
         response.status(200).json(respuestaJson);
       });
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
-  })
 }
 
 
@@ -41,12 +32,9 @@ carsDB.create = function( response, request ){
   var respuestaJson = {};
 
   var propiedades = request.body.properties;
-
-  const pool = new Pool(db.configDB);
   var cars = [];
   var properties = [];
-  pool.connect().then(client =>{
-    client.query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, results) =>{
+    connect().query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, results) =>{
       if(err){
         respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
         response.status(400).json(respuestaJson);
@@ -65,7 +53,7 @@ carsDB.create = function( response, request ){
         car._ref = refHash.generate( car );
         cars.push(car);
         var carsToSave = JSON.stringify(cars);
-        client.query('UPDATE users SET cars = $1 WHERE id = $2', [carsToSave, request.params.userId], (err, res)=>{
+        connect().query('UPDATE users SET cars = $1 WHERE id = $2', [carsToSave, request.params.userId], (err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err);
             response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -78,18 +66,12 @@ carsDB.create = function( response, request ){
         })
         }
       })
-  }).catch(e =>{
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
-  })
 }
 
 carsDB.get = function( response, request ){
   var respuestaJson = {};
   var autos = [];
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT cars FROM users WHERE id = $1',[request.params.userId],(err, results)=>{
+    connect().query('SELECT cars FROM users WHERE id = $1',[request.params.userId],(err, results)=>{
       if(err){
         respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
         response.status(500).json(respuestaJson);
@@ -114,18 +96,11 @@ carsDB.get = function( response, request ){
         }
       }
     })
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
-  })
 }
 
 carsDB.delete = function( response, request ){
-  var respuestaJson = {}
-  const pool = new Pool(db.configDB);
-  pool.connect().then(client =>{
-    client.query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
+  var respuestaJson = {};
+    connect().query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
       if(err){
         logger.error(err);
         respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
@@ -148,7 +123,7 @@ carsDB.delete = function( response, request ){
           }else{
             autos.splice(index, 1);
             var carsToSave = JSON.stringify(autos);
-            client.query('UPDATE users SET cars = $1 WHERE id = $2',[ carsToSave, request.params.userId ], (err, res) =>{
+            connect().query('UPDATE users SET cars = $1 WHERE id = $2',[ carsToSave, request.params.userId ], (err, res) =>{
               if(err){
                 logger.error(err);
                 response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -162,22 +137,15 @@ carsDB.delete = function( response, request ){
         }
       }
     })
-  }).catch(e =>{
-    logger.error('Unexpected error: ' + e);
-    respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
-    response.status(500).json(respuestaJson);
-  })
 }
 
 
 carsDB.update = function( response, request ){
   var respuestaJson = {};
-  if( !request.body.car._ref ){
+  if( !request.body._ref ){
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
   }else{
-    const pool = new Pool(db.configDB);
-    pool.connect().then(client =>{
-      client.query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
+      connect().query('SELECT cars FROM users WHERE id = $1', [request.params.userId], (err, res) =>{
         if(err){
           logger.error('Unexpected error: ' + e);
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -190,7 +158,7 @@ carsDB.update = function( response, request ){
             contador = contador + 1;
             if ( auto.id == request.params.carId ){
               index = contador;
-              if( auto._ref == request.body.car._ref ){
+              if( auto._ref == request.body._ref ){
                 refCorrecto = true;
               }
             }
@@ -201,9 +169,9 @@ carsDB.update = function( response, request ){
               response.status(409).json(respuesta.addError(respuestaJson, 409, 'Conflicto con el update (ref incorrecto)'));
           }else{
             autos.splice(index, 1);
-            autos.push(request.body.car);
+            autos.push(request.body);
             var carsToSave = JSON.stringify(autos);
-            client.query('UPDATE users SET cars = $1 WHERE id = $2',[ carsToSave, request.params.userId ], (err, res) =>{
+            connect().query('UPDATE users SET cars = $1 WHERE id = $2',[ carsToSave, request.params.userId ], (err, res) =>{
               if(err){
                 logger.error(err);
                 response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -216,10 +184,6 @@ carsDB.update = function( response, request ){
           }
         }
       })
-    }).catch(e =>{
-      logger.error('Unexpected error: ' + e);
-      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-    })
   }
 }
 

@@ -41,6 +41,7 @@ tokenGenerator.checkBU = function( token, roles, callback ){
   try{
     var decoded = jwt.decode( token, secret );
     if( roles.indexOf(decoded.role) > -1 ){
+      console.log(decoded.role)
       callback(true);
     }else{
       callback(false);
