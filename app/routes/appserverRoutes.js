@@ -146,28 +146,6 @@ appServerRoutes = function(server){
           }
       })
     });
-
-    /**
-     * @name post(/servers/:serverId)
-     * @description renovacion de token para un appserver.
-     * @memberof appServerRoutes
-     * @function POST server
-     * @param request object
-     * @param results object
-     * @param error object
-     */
-    /*server.post("/api/servers/:userId", function( req, res, err ){
-      var respuestaJson = {};
-      logger.info('Solicitud de renovacion de token de un appserver');
-      tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
-          if ( isBU == true ){
-            appserverDB.renewToken( res, req.body._ref, req.params.userId );
-          }else{
-            respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
-            res.status(401).json(respuestaJson);
-          }
-      })
-    }); */
 };
 
 module.exports = appServerRoutes;

@@ -13,6 +13,8 @@ import {Server} from './server'
 export class ServerComponent implements OnInit {
 
   servers: Server[]
+  serverName;
+  newServerToken;
 
   constructor(private serverService: ServerService) { }
 
@@ -34,6 +36,14 @@ export class ServerComponent implements OnInit {
        });
      });
 
+  }
+
+  createServer(){
+    this.serverService.createServer(this.serverName)
+        .then((server: Server) =>{
+          this.newServerToken = server.token;
+          console.log(this.newServerToken);
+        })
   }
 
 }

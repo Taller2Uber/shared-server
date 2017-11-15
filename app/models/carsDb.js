@@ -4,9 +4,21 @@ var logger = require('../config/herokuLogger')
 var refHash = require('./refCheck')
 
 
-// auto nuevo {properties: [ {name, value}, {name, value}, {name, value}]}
+
+/**
+ * @class Clase para definir las llamadas a la base de datos de autos
+ */
 
 function carsDB(){}
+
+/**
+* @name getAll
+* @function getAllCars
+* @memberof carsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param userId id del usuario del cual queremos obtener los autos
+*/
 
 carsDB.getAll = function( response, userId ){
   var respuestaJson = {};
@@ -27,6 +39,16 @@ carsDB.getAll = function( response, userId ){
       });
 }
 
+
+
+/**
+* @name create
+* @function createCar
+* @memberof carsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 carsDB.create = function( response, request ){
   var respuestaJson = {};
@@ -68,6 +90,16 @@ carsDB.create = function( response, request ){
       })
 }
 
+
+/**
+* @name get
+* @function getCar
+* @memberof carsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
+
 carsDB.get = function( response, request ){
   var respuestaJson = {};
   var autos = [];
@@ -97,6 +129,15 @@ carsDB.get = function( response, request ){
       }
     })
 }
+
+/**
+* @name delete
+* @function deleteCar
+* @memberof carsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 carsDB.delete = function( response, request ){
   var respuestaJson = {};
@@ -139,6 +180,14 @@ carsDB.delete = function( response, request ){
     })
 }
 
+/**
+* @name update
+* @function updateCar
+* @memberof carsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 carsDB.update = function( response, request ){
   var respuestaJson = {};

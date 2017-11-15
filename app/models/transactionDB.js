@@ -2,7 +2,20 @@ const connect = require('../config/pgdb')
 var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
 
+/**
+ * @class Clase para manejar la base de datos de transacciones
+ */
+
 function transactionDB(){}
+
+/**
+* @name create
+* @function createTransaction
+* @memberof transactionDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param userId id del usuario del cual queremos obtener los autos
+*/
 
 transactionDB.create = function(req, response){
   var respuestaJson = {}
@@ -26,6 +39,17 @@ transactionDB.create = function(req, response){
       })
   }
 }
+
+/**
+* @name addCost
+* @function addCost
+* @memberof transactionDB
+* @author Gustavo Adrian Gimenez
+* @param currency Moneda del costo a agregar
+* @param userId id del usuario del cual queremos obtener los autos
+* @param value Cantidad a agregar
+* @param response Objeto para devolver una respuesta a la llamada
+*/
 
 transactionDB.addCost = function(userId, currency, value, response){
   var respuestaJson = {};
@@ -72,6 +96,14 @@ transactionDB.addCost = function(userId, currency, value, response){
     })
 }
 
+/**
+* @name getAll
+* @function getAllTransactions
+* @memberof transactionDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion sobre la llamada realizada por el cliente a la api.
+*/
 
 transactionDB.getAll = function(req, response){
   var respuestaJson = {};

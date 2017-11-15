@@ -20,5 +20,21 @@
           <b>Direccion de fin</b>: {{trip.end.address.street}} <br/>
         </div>
     </ul>
+
+
+    <h2> {{lastTripsMessage}} </h2>
+    <ul class="list-group">
+        <div id="tripBox" class="list-group-item"
+          *ngFor="let lasttrip of lastTrips">
+          <b>passenger</b> : {{lasttrip.passenger}} <br/>
+          <b>driver</b> : {{lasttrip.driver}} <br/>
+          <b>Id</b>: {{lasttrip.id}} <br/>
+          <b>Currency</b>: {{lasttrip.cost.currency}} <br/>
+          <b>Cost</b>: {{lasttrip.cost.value}} <br/>
+          <b>Direccion de inicio</b>: {{lasttrip.start.address.street}} <br/>
+          <b>Direccion de fin</b>: {{lasttrip.end.address.street}} <br/>
+        </div>
+    </ul>
+
   </div>
 </div>

@@ -5,8 +5,20 @@ var tokenGenerator = require('./tokenGenerator')
 var logger = require('../config/herokuLogger')
 const connect = require('../config/pgdb')
 
+/**
+ * @class Clase para el checkeo del login de un server y de un usuario de negocio.
+ */
 
 function loginCheck(){}
+
+/**
+* @name buCheck
+* @function business user check
+* @memberof loginCheck
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param userId id del usuario del cual queremos obtener los autos
+*/
 
 loginCheck.buCheck = function( req, res ){
   if( !req.session.authenticated){
@@ -18,6 +30,15 @@ loginCheck.buCheck = function( req, res ){
     return true;
   }
 };
+
+/**
+* @name serverCheck
+* @function server check
+* @memberof loginCheck
+* @author Gustavo Adrian Gimenez
+* @param token codigo recibido por parte del appserver para checkear credenciales
+* @param callback objeto para devolver el resultado del check
+*/
 
 loginCheck.serverCheck = function( token, callback ){
 
@@ -51,6 +72,15 @@ loginCheck.serverCheck = function( token, callback ){
   }
 }
 
+/**
+* @name businessUserCheck
+* @function business user check
+* @memberof loginCheck
+* @author Gustavo Adrian Gimenez
+* @param token codigo recibido por parte del appserver para checkear credenciales
+* @param callback objeto para devolver el resultado del check
+*/
+
 loginCheck.businessUserCheck = function( token, callback ){
 
   var buJson = tokenGenerator.process( token );
@@ -78,6 +108,16 @@ loginCheck.businessUserCheck = function( token, callback ){
     callback(false, null);
   }
 }
+
+/**
+* @name check
+* @function check
+* @memberof loginCheck
+* @author Gustavo Adrian Gimenez
+* @param token codigo recibido por parte del appserver para checkear credenciales
+* @param roles array de strings conteniendo los roles que deben recibir permiso
+* @param callback objeto para devolver el resultado del check
+*/
 
 loginCheck.check = function( token, roles, callback ){
   this.serverCheck( token, function( isServer, serverJson ){

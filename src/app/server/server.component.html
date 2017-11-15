@@ -1,6 +1,9 @@
 <div id="body" class="row">
   <div class="col-md-5">
     <h1>Servers</h1>
+    <h2> Crear server </h2>
+      <input type="text" [(ngModel)]="serverName" name="serverName" ><br>
+      <button id="button"  (click)="createServer()" type="button">Crear</button>
     <h2>Estado actual</h2>
     <ul class="list-group">
         <div id="serverBox" class="list-group-item"

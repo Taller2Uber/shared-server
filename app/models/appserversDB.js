@@ -25,18 +25,25 @@ appserverDB.createServer = function( response, name, token ){
     response.status(400).send('Incumplimiento de precondiciones (parámetros faltantes)');
   else{
       var fecha = new Date();
-      connect().query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, $3, $4) RETURNING id', [name, 'me', fecha, fecha.getTime()],(err, res) => {
-        var hashedToken = tokenGenerator.generateSV( res.rows[0].id, name, token );
-        var ref = refHash.generate( res.rows[0].id );
-        connect().query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3 RETURNING *', [ hashedToken, ref ,res.rows[0].id ], (err, resu) =>{
-          if(err){
+      connect().query('INSERT INTO appservers (name, createdBy, createdTime, lastConnection) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *', [name, 'me'],(err, res) => {
+        if(err){
             respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
             logger.error('Unexpected error' + err);
             response.status(500).json(respuestaJson);
-          }else{
-          response.status(200).json(resu.rows[0]);
-          }
-        })
+        }else{
+          var hashedToken = tokenGenerator.generateSV( res.rows[0].id, name, token );
+          var ref = refHash.generate( res.rows[0].id );
+          connect().query('UPDATE appservers SET token = $1, _ref = $2 WHERE id = $3 RETURNING *', [ hashedToken, ref ,res.rows[0].id ], (err, resu) =>{
+            if(err){
+              respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
+              logger.error('Unexpected error' + err);
+              response.status(500).json(respuestaJson);
+            }else{
+              respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+              response.status(200).json( respuesta.addResult(respuestaJson,'server', resu.rows[0]));
+            }
+          })
+        }
       })
   }
 }

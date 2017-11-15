@@ -4,8 +4,20 @@ var logger = require('../config/herokuLogger')
 var refHash = require('./refCheck')
 var RuleArray = require('./cotizacionDB')
 
+/**
+ * @class Clase para manejar la base de datos de reglas
+ */
+
 function rulesDB(){}
-//active, language, lastcommit,blob
+
+/**
+* @name create
+* @function createRule
+* @memberof rulessDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 rulesDB.create = function(req, response){
   var respuestaJson = {};
@@ -35,6 +47,15 @@ rulesDB.create = function(req, response){
   }
 }
 
+/**
+* @name getAll
+* @function getAllRules
+* @memberof rulessDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
+
 rulesDB.getAll = function(req, response){
   var respuestaJson = {};
   var results = [];
@@ -53,6 +74,15 @@ rulesDB.getAll = function(req, response){
       }
     })
 }
+
+/**
+* @name getOne
+* @function getOneRule
+* @memberof rulessDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 rulesDB.getOne = function(req, response){
   var respuestaJson = {};
@@ -73,6 +103,15 @@ rulesDB.getOne = function(req, response){
       }
     })
 }
+
+/**
+* @name update
+* @function updateRule
+* @memberof rulessDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+* @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
+*/
 
 rulesDB.update = function(req, response){
   var respuestaJson = {};

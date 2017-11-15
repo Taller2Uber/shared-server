@@ -22,6 +22,18 @@ export class ServerService {
                .catch(this.handleError));
   }
 
+  createServer(serverName): Promise<Server>{
+    var headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    var t = localStorage.getItem("token");
+    headers.append("token", t);
+    return(this.http.post(this.serversURL,{name: serverName }  ,{ headers : headers })
+             .toPromise()
+             .then(response => response.json().server as Server)
+             .catch(this.handleError));
+  }
+
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :
     error.status ? `${error.status} - ${error.statusText}` : 'Server error';
