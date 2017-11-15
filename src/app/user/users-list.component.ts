@@ -11,6 +11,7 @@ import { UsersServiceService } from './users-service.service';
 export class UsersListComponent implements OnInit {
 
   users: User[]
+  userId;
 
   constructor(private usersService : UsersServiceService ) { }
 
@@ -22,6 +23,15 @@ export class UsersListComponent implements OnInit {
          return user;
        });
      });
+  }
+
+  buscarUser(){
+    var user;
+    this.usersService
+        .getOneUser(this.userId)
+        .then((user : User) =>{
+          this.users = [user];
+        })
   }
 
 }

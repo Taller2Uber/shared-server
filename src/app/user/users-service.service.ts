@@ -25,6 +25,20 @@ export class UsersServiceService {
                .catch(this.handleError));
   }
 
+  getOneUser(userId): Promise<User>{
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Content-type', 'application/json')
+    var t = localStorage.getItem('token');
+    headers.append("token", t);
+
+      return(this.http.get(this.usersURL + '/' + userId, {headers: headers})
+               .toPromise()
+               .then(response => response.json().user as User)
+               .catch(this.handleError));
+  }
+
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :
     error.status ? `${error.status} - ${error.statusText}` : 'Server error';
