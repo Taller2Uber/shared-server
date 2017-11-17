@@ -10,7 +10,8 @@ import { LoginComponentComponent } from './login/login-component.component';
 import { routing } from './app.routes';
 import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-menu-component.component';
 import { TripComponentComponent } from './trip-component/trip-component.component';
-import { RulesComponent } from './rules/rules.component'
+import { RulesComponent } from './rules/rules.component';
+import { BackofficeComponent } from './backoffice/backoffice.component'
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { RulesComponent } from './rules/rules.component'
     LoginComponentComponent,
     MainMenuComponentComponent,
     TripComponentComponent,
-    RulesComponent
+    RulesComponent,
+    BackofficeComponent
   ],
   imports: [
     BrowserModule,

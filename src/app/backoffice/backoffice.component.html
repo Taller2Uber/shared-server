@@ -1,0 +1,42 @@
+<div id="body" class="row">
+  <div class="col-md-5">
+    <h1>Usuarios de negocio</h1>
+
+    <p id="box">
+       <b id="titleBox"> Nombre de usuario </b>  <br>
+        <input type="text" [(ngModel)]="newUsername" name="newUsername" ><br>
+    </p>
+
+    <p id="box">
+       <b id="titleBox"> Password </b>  <br>
+        <input type="text" [(ngModel)]="newPassword" name="newPassword" ><br>
+    </p>
+
+    <p id="box">
+       <b id="titleBox"> Nombre </b>  <br>
+        <input type="text" [(ngModel)]="newName" name="newName" >   <button id="button" (click)="createUser()" type="button">Nuevo Usuario</button> <br>
+    </p>
+
+    <p id="box">
+       <b id="titleBox"> Apellido </b>  <br>
+        <input type="text" [(ngModel)]="newSurname" name="newSurname" >  <b style="color: red;"> {{errorMessage}} </b> <br>
+    </p>
+
+    <p id="box">
+       <b id="titleBox"> Rol </b>  <br>
+        <input type="text" [(ngModel)]="newRole" name="newRole" ><br>
+    </p>
+
+    <h2>Lista de usuarios</h2>
+    <ul class="list-group">
+        <div id="userBox" class="list-group-item"
+          *ngFor="let user of users">
+          Username: {{user.username}}<br/>
+          Nombre : {{user.name}} <br/>
+          Surname: {{user.surname}} <br/>
+          Id: {{user.password}} <br/>
+          role: {{user.role}} <br/>
+        </div>
+    </ul>
+  </div>
+</div>

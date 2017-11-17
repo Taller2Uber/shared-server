@@ -29,4 +29,8 @@ export class MainMenuComponentComponent implements OnInit {
     this.router.navigate(['/rules']);
   }
 
+  goToBackofficeUsers(){
+    this.router.navigate(['/business-users']);
+  }
+
 }
