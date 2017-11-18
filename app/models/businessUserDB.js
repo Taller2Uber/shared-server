@@ -32,13 +32,13 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
           var jsonBU = {"username":username, "password":password, "name":name, "surname":surname, "role":role };
           jsonBU.id = res.rows[0].id;
           jsonBU._ref = refCheck.generate(jsonBU) //NO USO EL TOKEN PARA EL REF
-          jsonBU.token = tokenGenerator.generateBU(res.rows[0].id, role, randomToken);
+          jsonBU.token = randomToken;
           connect().query('UPDATE businessusers SET _ref = $1, token = $2 WHERE id = $3', [jsonBU._ref, jsonBU.token, jsonBU.id], (err, res) =>{
             if(err){
               logger.error('Unexpected error: '+ err);
               response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
             }else{
-              respuestaJson = respuesta.addResult(respuestaJson, jsonBU);
+              respuestaJson = respuesta.addResult(respuestaJson,'user', jsonBU);
               response.status(201).json(respuesta.addDescription(respuestaJson, 'Alta correcta'));
             }
           })

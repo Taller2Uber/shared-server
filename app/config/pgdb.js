@@ -10,17 +10,6 @@ var async = require('asyncawait/async');
 var logger = require('../config/herokuLogger');
 require('dotenv').config();
 
-connectClient = async (function( client , response){
-  client.connect( (err) =>{
-    if( err ){
-      logger.info('Error critico. No se pudo conectar a la base de datos. Error: ' + err);
-      response.status(500).send('Unexpected error');
-      return false;
-    }else{
-      return true;
-    }
-  })
-})
 
 configDB = {
   user: process.env.DBUSER,

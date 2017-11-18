@@ -65,7 +65,7 @@ server.get("/api/business-users", function( req, res, err ){
 server.post("/api/business-users", function( req, res, err ){
     var respuestaJson = {};
     logger.info('Solicitud de creacion de un usuario de negocio');
-    var token = randtoken.generate(16);
+    var token = tokenGenerator.generateBU(req.body.role);
     tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU){
         if ( isBU == true ){
           databaseObject.createBU(res, req.body.username, req.body.password, req.body.name, req.body.surname, req.body.role, token);

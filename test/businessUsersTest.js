@@ -7,7 +7,7 @@ var should = chai.should();
 
 describe('BusinessUsersDatabase', () => {
   describe('Creo correctamente un usuario de negocio', ()=> {
-    it('Devuelve Alta correcta', (done) => {
+    it('Devuelve Alta correcta', function(done){
       let businessUserJson = {
         name: "Gustavo",
         username: "Gus",
@@ -28,7 +28,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Creo usuario de negocio sin un parametro', ()=> {
-    it('Devuelve error en precondiciones', (done) => {
+    it('Devuelve error en precondiciones', function(done){
       let businessUserJson = {
         name: "",
         username: "Gus",
@@ -49,7 +49,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Loggin incorrecto (sin password)', ()=> {
-    it('Devuelve status 400 Informacion faltante', (done) => {
+    it('Devuelve status 400 Informacion faltante', function(done){
       let businessUserJson = {
         username: "Gus"
         }
@@ -65,7 +65,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Loggin  com password incorrecto', ()=> {
-    it('Devuelve status 401 Unauthorized', (done) => {
+    it('Devuelve status 401 Unauthorized', function(done){
       let businessUserJson = {
         username: "Gus",
         password: "12"
@@ -82,7 +82,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener usuarios de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', (done) => {
+    it('Devuelve Unauthorized', function(done){
       chai.request(server).get('/api/business-users')
         .end((err, res) => {
           res.should.have.status(401);
@@ -96,7 +96,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento actualizar un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', (done) => {
+    it('Devuelve Unauthorized', function(done){
 
       chai.request(server).put('/api/business-users/3')
         .end((err, res) => {
@@ -110,7 +110,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', (done) => {
+    it('Devuelve Unauthorized', function(done){
       chai.request(server).get('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
@@ -122,7 +122,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento borrar un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', (done) => {
+    it('Devuelve Unauthorized', function(done){
       chai.request(server).delete('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
@@ -137,7 +137,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Obtengo todos los usuarios de negocio luego del login', ()=> {
-    it('Devuelve Status 200', (done) => {
+    it('Devuelve Status 200', function(done){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -154,7 +154,7 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Obtengo un usuario de negocio luego del login', ()=> {
-    it('Devuelve Status 200', (done) => {
+    it('Devuelve Status 200', function(done){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -170,7 +170,7 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Intento obtener un usuario de negocio luego del login enviando id incorrecto', ()=> {
-    it('Devuelve Status 500 Error', (done) => {
+    it('Devuelve Status 500 Error', function(done){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -183,10 +183,11 @@ describe('BusinessUserDatabase', () => {
     })
   })
 });
+
 /*
 describe('BusinessUserDatabase', () => {
   describe('Obtengo informacion personal luego del login', ()=> {
-    it('Devuelve Status 200', (done) => {
+    it('Devuelve Status 200', function(done){
       chai.request(server).get('/business-users/me').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoyNDd9.XxU-pxF_gcx0XEdvuPYJQniZtbu9dlyNGlQO7hC92-8')
       .end((err, results) => {
             results.should.have.status(200);
@@ -194,13 +195,13 @@ describe('BusinessUserDatabase', () => {
           });
     })
   })
-});*/
-
+});
+*/
 
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener informacion personal sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', (done) => {
+    it('Devuelve Unauthorized', function(done){
       chai.request(server).get('/api/business-users/me')
         .end((err, res) => {
           res.should.have.status(401);
@@ -215,7 +216,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Intento actualizar un usuario de negocio enviando id incorrecto', ()=> {
-    it('Devuelve Status 500 Internal error', (done) => {
+    it('Devuelve Status 500 Internal error', function(done){
       let loginJson = {
         username: "GAGimenez",
         password: "1234",
@@ -231,10 +232,11 @@ describe('BusinessUserDatabase', () => {
     })
   })
 });
-/*
+
+
 describe('BusinessUserDatabase', () => {
   describe('Intento borrar un usuario de negocio enviando id incorrecto', ()=> {
-    it('Devuelve Status 404 recurso solicitado no existente', (done) => {
+    it('Devuelve Status 404 recurso solicitado no existente', function(done){
       chai.request(server).delete('/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .end((err, results) => {
             results.should.have.status(404);
@@ -242,4 +244,4 @@ describe('BusinessUserDatabase', () => {
           });
     })
   })
-});*/
+});

@@ -40,7 +40,7 @@ appserverDB.createServer = function( response, name, token ){
               response.status(500).json(respuestaJson);
             }else{
               respuestaJson = respuesta.addEntityMetadata(respuestaJson);
-              response.status(200).json( respuesta.addResult(respuestaJson,'server', resu.rows[0]));
+              response.status(201).json( respuesta.addResult(respuestaJson,'server', resu.rows[0]));
             }
           })
         }

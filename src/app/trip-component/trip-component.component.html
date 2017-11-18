@@ -6,8 +6,13 @@
         <input type="text" [(ngModel)]="userId" name="userId" ><br>
     </p>
     <p id="buttonContent">
-     <button id="button" (click)="buscar()" type="button">Buscar</button>
+     <button id="button" (click)="buscar()" type="button">Buscar por id de usuario</button>
    </p>
+
+   <p id="buttonContent">
+    <button id="button" (click)="buscarPorAppserver()" type="button">Buscar por id del appServer</button>
+  </p>
+
     <ul class="list-group">
         <div id="tripBox" class="list-group-item"
           *ngFor="let trip of trips">
@@ -33,6 +38,20 @@
           <b>Cost</b>: {{lasttrip.cost.value}} <br/>
           <b>Direccion de inicio</b>: {{lasttrip.start.address.street}} <br/>
           <b>Direccion de fin</b>: {{lasttrip.end.address.street}} <br/>
+        </div>
+    </ul>
+
+    <h2> {{serverTripsMessage}} </h2>
+    <ul class="list-group">
+        <div id="tripBox" class="list-group-item"
+          *ngFor="let serverTrip of tripsFromServer">
+          <b>passenger</b> : {{serverTrip.passenger}} <br/>
+          <b>driver</b> : {{serverTrip.driver}} <br/>
+          <b>Id</b>: {{serverTrip.id}} <br/>
+          <b>Currency</b>: {{serverTrip.cost.currency}} <br/>
+          <b>Cost</b>: {{serverTrip.cost.value}} <br/>
+          <b>Direccion de inicio</b>: {{serverTrip.start.address.street}} <br/>
+          <b>Direccion de fin</b>: {{serverTrip.end.address.street}} <br/>
         </div>
     </ul>
 

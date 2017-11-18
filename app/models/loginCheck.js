@@ -43,7 +43,6 @@ loginCheck.buCheck = function( req, res ){
 loginCheck.serverCheck = function( token, callback ){
 
   var serverJson = tokenGenerator.process( token );
-  //const pool = new Pool(db.configDB);
   var results = [];
   var respuestaJson = {};
   respuestaJson = respuesta.addToken(respuestaJson, token);

@@ -4,6 +4,7 @@ var randtoken = require('rand-token');
 var tokenGenerator = require('../models/tokenGenerator');
 var loginCheck = require('../models/loginCheck')
 var respuesta = require('../models/respuesta')
+var tripsDB = require('../models/tripsDB')
 
 /**
  * @namespace appServerRoutes
@@ -71,11 +72,12 @@ appServerRoutes = function(server){
     respuestaJson = {};
     logger.info('Solicitud de alta de appserver');
     tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU){
-        if ( isBU == true ){
-          appserverDB.createServer(res, req.body.name, token );
-        }else{
+        if ( isBU != true ){
           respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
           res.status(401).json(respuestaJson);
+        }else{
+          var token = randtoken.generate(16);
+          appserverDB.createServer(res, req.body.name, token );
         }
     })
   });
@@ -146,6 +148,13 @@ appServerRoutes = function(server){
           }
       })
     });
+
+    server.get("/api/servers/:serverId/trips", function(req, res, err){
+      var respuestaJson = {}
+
+      tripsDB.getTripsFromServer(req, res);
+
+    })
 };
 
 module.exports = appServerRoutes;

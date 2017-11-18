@@ -45,7 +45,7 @@ tokenGenerator.checkBU = function( token, roles, callback ){
     }else{
       callback(false);
     }
-  }catch(error){
+  }catch(err){
       callback(false);
   }
 }

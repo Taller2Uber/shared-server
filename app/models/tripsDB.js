@@ -47,6 +47,7 @@ tripsDB.create = function( req, response, serverId ){
               paymentsDB.makePay(jsonPay, function(result){
                 if( !result ){
                   transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
+                  transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, req.body.trip.cost.value, response);
                 }
               })
               response.status(201).json(respuestaJson);
@@ -131,6 +132,26 @@ tripsDB.getTripsFromUser = function(req, response){
   var respuestaJson = {};
   var results = [];
   connect().query('SELECT * FROM trips WHERE (passenger = $1 OR driver = $1)',[req.params.userId], (err, res)=>{
+      if(err){
+          logger.error('Unexpected error');
+          response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+      }else{
+        res.rows.forEach(row =>{
+          results.push(row);
+        })
+        logger.info('Obtencion de todos los viajes');
+        logger.info(results.length)
+        respuestaJson = respuesta.addResult(respuestaJson, 'trips', results);
+        respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results);
+        response.status(200).json(respuestaJson);
+      }
+    })
+}
+
+tripsDB.getTripsFromServer = function(req, response){
+  var respuestaJson = {};
+  var results = [];
+  connect().query('SELECT * FROM trips WHERE applicationOwner = $1',[req.params.serverId], (err, res)=>{
       if(err){
           logger.error('Unexpected error');
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
