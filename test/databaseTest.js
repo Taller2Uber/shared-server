@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 
 describe('AppserversDatabase', () => {
   describe('Creo correctamente un appserver', ()=> {
-    it('Devuelve Alta correcta', function(done){
+    it('Devuelve Alta correcta', function(){
       let appserverJson = {
         name: "Gustavo"
         }
@@ -16,7 +16,6 @@ describe('AppserversDatabase', () => {
       .send(appserverJson)
         .end((err, res) => {
           res.should.have.status(201);
-        done();
         });
     })
   })
@@ -25,7 +24,7 @@ describe('AppserversDatabase', () => {
 
 describe('AppserversDatabase', () => {
   describe('Intento crear appserver sin nombre',() => {
-    it('Devuelve parametros faltantes...', function(done){
+    it('Devuelve parametros faltantes...', function(){
       let appserverJson = {
         name: ''
       }
@@ -33,7 +32,6 @@ describe('AppserversDatabase', () => {
       .send(appserverJson)
       .end((err, res) => {
         res.should.have.status(400);
-      done();
       })
     })
   });
@@ -41,11 +39,10 @@ describe('AppserversDatabase', () => {
 
 describe('AppserversDatabase', () => {
   describe('Obtener todos los appservers',() => {
-    it('Devuelve Ok', function(done){
+    it('Devuelve Ok', function(){
       chai.request(server).get('/api/servers').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, res) => {
         res.should.have.status(200);
-      done();
       })
     })
   });
@@ -53,11 +50,10 @@ describe('AppserversDatabase', () => {
 
 describe('AppserversDatabase', () => {
   describe('Obtener appserver inexistente',() => {
-    it('Devuelve status 404 server inexistente', function(done){
+    it('Devuelve status 404 server inexistente', function(){
       chai.request(server).get('/api/servers/1').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, res) => {
         res.should.have.status(404);
-      done();
       })
     })
   });

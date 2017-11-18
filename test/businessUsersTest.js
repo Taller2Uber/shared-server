@@ -7,7 +7,7 @@ var should = chai.should();
 
 describe('BusinessUsersDatabase', () => {
   describe('Creo correctamente un usuario de negocio', ()=> {
-    it('Devuelve Alta correcta', function(done){
+    it('Devuelve Alta correcta', function(){
       let businessUserJson = {
         name: "Gustavo",
         username: "Gus",
@@ -19,7 +19,6 @@ describe('BusinessUsersDatabase', () => {
       .send(businessUserJson).end((err, res) => {
           res.should.have.status(201);
           res.body.should.have.property("description", 'Alta correcta');
-        done();
         });
     })
   })
@@ -28,7 +27,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Creo usuario de negocio sin un parametro', ()=> {
-    it('Devuelve error en precondiciones', function(done){
+    it('Devuelve error en precondiciones', function(){
       let businessUserJson = {
         name: "",
         username: "Gus",
@@ -41,7 +40,6 @@ describe('BusinessUsersDatabase', () => {
         .end((err, res) => {
           res.should.have.status(400);
           res.body.error.should.have.property("message", 'Incumplimiento de precondiciones');
-        done();
         });
     })
   })
@@ -49,14 +47,13 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Loggin incorrecto (sin password)', ()=> {
-    it('Devuelve status 400 Informacion faltante', function(done){
+    it('Devuelve status 400 Informacion faltante', function(){
       let businessUserJson = {
         username: "Gus"
         }
       chai.request(server).post('/api/token').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(400);
-        done();
         });
     })
   })
@@ -65,7 +62,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Loggin  com password incorrecto', ()=> {
-    it('Devuelve status 401 Unauthorized', function(done){
+    it('Devuelve status 401 Unauthorized', function(){
       let businessUserJson = {
         username: "Gus",
         password: "12"
@@ -73,7 +70,6 @@ describe('BusinessUsersDatabase', () => {
       chai.request(server).post('/api/token').send(businessUserJson)
         .end((err, res) => {
           res.should.have.status(401);
-        done();
         });
     })
   })
@@ -82,12 +78,11 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener usuarios de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', function(done){
+    it('Devuelve Unauthorized', function(){
       chai.request(server).get('/api/business-users')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
-        done();
         });
     })
   })
@@ -96,12 +91,11 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento actualizar un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', function(done){
+    it('Devuelve Unauthorized', function(){
 
       chai.request(server).put('/api/business-users/3')
         .end((err, res) => {
           res.should.have.status(401);
-        done();
         });
     })
   })
@@ -110,11 +104,10 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', function(done){
+    it('Devuelve Unauthorized', function(){
       chai.request(server).get('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
-        done();
         });
     })
   })
@@ -122,12 +115,11 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento borrar un usuario de negocio sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', function(done){
+    it('Devuelve Unauthorized', function(){
       chai.request(server).delete('/api/business-users/2')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
-        done();
         });
     })
   })
@@ -137,7 +129,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Obtengo todos los usuarios de negocio luego del login', ()=> {
-    it('Devuelve Status 200', function(done){
+    it('Devuelve Status 200', function(){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -145,7 +137,6 @@ describe('BusinessUserDatabase', () => {
       chai.request(server).get('/api/business-users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
           .end((err, res) => {
             res.should.have.status(200);
-            done();
           });
     })
   })
@@ -154,7 +145,7 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Obtengo un usuario de negocio luego del login', ()=> {
-    it('Devuelve Status 200', function(done){
+    it('Devuelve Status 200', function(){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -162,7 +153,6 @@ describe('BusinessUserDatabase', () => {
       chai.request(server).get('/api/business-users/4').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, results) => {
             results.should.have.status(200);
-            done();
           });
     })
   })
@@ -170,7 +160,7 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Intento obtener un usuario de negocio luego del login enviando id incorrecto', ()=> {
-    it('Devuelve Status 500 Error', function(done){
+    it('Devuelve Status 500 Error', function(){
       let loginJson = {
         username: "GAGimenez",
         password: "1234"
@@ -178,7 +168,6 @@ describe('BusinessUserDatabase', () => {
       chai.request(server).get('/api/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
       .end((err, results) => {
             results.should.have.status(500);
-            done();
           });
     })
   })
@@ -201,12 +190,11 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUsersDatabase', () => {
   describe('Intento obtener informacion personal sin estar loggeado', ()=> {
-    it('Devuelve Unauthorized', function(done){
+    it('Devuelve Unauthorized', function(){
       chai.request(server).get('/api/business-users/me')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.error.should.have.property("message",'Unauthorized');
-        done();
         });
     })
   })
@@ -216,7 +204,7 @@ describe('BusinessUsersDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Intento actualizar un usuario de negocio enviando id incorrecto', ()=> {
-    it('Devuelve Status 500 Internal error', function(done){
+    it('Devuelve Status 500 Internal error', function(){
       let loginJson = {
         username: "GAGimenez",
         password: "1234",
@@ -227,7 +215,6 @@ describe('BusinessUserDatabase', () => {
       chai.request(server).put('/api/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .send().end((err, results) => {
             results.should.have.status(400);
-            done();
           });
     })
   })
@@ -236,11 +223,10 @@ describe('BusinessUserDatabase', () => {
 
 describe('BusinessUserDatabase', () => {
   describe('Intento borrar un usuario de negocio enviando id incorrecto', ()=> {
-    it('Devuelve Status 404 recurso solicitado no existente', function(done){
+    it('Devuelve Status 404 recurso solicitado no existente', function(){
       chai.request(server).delete('/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .end((err, results) => {
             results.should.have.status(404);
-            done();
           });
     })
   })
