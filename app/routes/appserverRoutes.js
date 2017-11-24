@@ -31,7 +31,7 @@ appServerRoutes = function(server){
     logger.info('Solicitud de obtener todos los appservers');
     var respuestaJson = {};
     var results = [];
-    tokenGenerator.checkBU( req.headers.token, ['user'], function (isBU){
+    tokenGenerator.checkBU( req.headers.token, ['user', 'manager'], function (isBU){
         if ( isBU == true ){
           appserverDB.getAllServers(res, results);
         }else{

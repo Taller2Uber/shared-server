@@ -34,6 +34,17 @@ export class ServerService {
              .catch(this.handleError));
   }
 
+  deleteServer(serverId){
+    var headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    var t = localStorage.getItem("token");
+    headers.append("token", t);
+    this.http.delete('http://localhost:3000/api/servers/' + serverId,{ headers : headers })
+             .toPromise()
+             .then(response => response.json().server as Server)
+             .catch(this.handleError);
+  }
+
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :
     error.status ? `${error.status} - ${error.statusText}` : 'Server error';

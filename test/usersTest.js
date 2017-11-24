@@ -3,6 +3,7 @@ var server = require('../server');
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var should = chai.should();
+var expect = chai.expect;
 
 chai.use(chaiHttp);
 
@@ -115,59 +116,119 @@ describe('App Users database', () => {
     })
   })
 });
-/*
+
+
 describe('App Users database', () => {
   describe('Intento actualizar usuario con parametros faltantes', ()=> {
     it('Devuelve Status 400 Incumplimiento de precondiciones', (done) => {
-      let appserverJson = {
-        username: "GAGimenez",
-        password: "1234"
-        }
         let userJson = {
           lastname : "Mercado",
           email : "gabi@gmail.com",
           birthdate : "1/1/1986",
           type : "passenger",
-          country : "Argentina",
           username : "Gabi",
           password : "1234"
         }
-      var session = chai.request.agent(server);
-      session.post('/login').send(appserverJson)
-      .then( function(res){
-        session.put('/users/3').send(userJson)
+        chai.request(server).put('/api/users/3')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
           .end((err, res) => {
-            res.should.have.status(400);
+            expect(res).to.have.status(400);
+            done();
           });
-          done();
-    })
-  })
-})});
+        })
+      })
+});
+
+
 
 describe('App Users database', () => {
   describe('Intento validar usuario sin enviar password', ()=> {
     it('Devuelve Status 400 Incumplimiento de precondiciones', (done) => {
-      let appserverJson = {
-        username: "GAGimenez",
-        password: "1234"
-        }
         let userJson = {
-          firstname : "Gabriel",
-          lastname : "Mercado",
-          email : "gabi@gmail.com",
-          birthdate : "1/1/1986",
-          type : "passenger",
-          country : "Argentina",
           username : "Gabi"
         }
-      var session = chai.request.agent(server);
-      session.post('/login').send(appserverJson)
-      .then( function(res){
-        session.post('/users/validate').send(userJson)
+        chai.request(server).post('/api/users/validate')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
           .end((err, res) => {
-            res.should.have.status(400);
+            expect(res).to.have.status(400);
+            done();
           });
-          done();
     })
   })
-})});*/
+});
+
+describe('App Users database', () => {
+  describe('Intento validar usuario con credenciales correctas', ()=> {
+    it('Devuelve Status 200 Incumplimiento de precondiciones', (done) => {
+        let userJson = {
+          username : "Gabi",
+          password: "1234"
+        }
+        chai.request(server).post('/api/users/validate')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+          .end((err, res) => {
+            expect(res).to.have.status(200);
+            done();
+          });
+    })
+  })
+});
+
+describe('App Users database', () => {
+  describe('Intento validar usuario con fbToken invalido', ()=> {
+    it('Devuelve Status 401, credenciales incorrectas', (done) => {
+        let userJson = {
+          facebookAuthToken : "a"
+        }
+        chai.request(server).post('/api/users/validate')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+          .end((err, res) => {
+            expect(res).to.have.status(401);
+            done();
+          });
+    })
+  })
+});
+
+/*
+describe('App Users database', () => {
+  describe('Intento validar usuario con fbToken valido pero que no pertenece a la aplicacion', ()=> {
+    it('Devuelve Status 200, Token correcto pero usuario inexistente', (done) => {
+        let userJson = {
+          facebookAuthToken : "EAACJBqyemYEBAP3jPoFrcPYnF9YH1Ney81O0NNDmQtU6UdHCuVwAKQZAPLH4KBapN8vFznxMKB7TIv8MYNufJV8AV2NTib8uiUWxBliCRtYVuM8qSGZCJmZA16EbXChvXuWo17UigRZAgqdDfpC1wIwg4BSK6hgtry3bMllVEcSWhSdIpWvZCnNTfd4qSJO7vBJ9mDyOmZAVsZA6uWEBtU2JHesZBGcRbpJPaHtTEcSVQwZDZD"
+        }
+        chai.request(server).post('/api/users/validate')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+          .end((err, res) => {
+            expect(res).to.have.status(200);
+            done();
+          });
+    })
+  })
+});*/
+
+describe('App Users database', () => {
+  describe('Intento dar de alta usuario ', ()=> {
+    it('Devuelve Status 201, Alta correcta', (done) => {
+        let userJson = {
+          username: "userTest",
+          password: "passTest",
+          type: "driver",
+          firstname: "nameTest",
+          lastname: "lastNameTest",
+          country: "argentina",
+          email: "mail@mail.com",
+          birthdate: "12/12/1912",
+          fb:{
+            userid:""
+          }
+        }
+        chai.request(server).post('/api/users/')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+          .end((err, res) => {
+            expect(res).to.have.status(201);
+            done();
+          });
+    })
+  })
+});

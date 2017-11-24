@@ -1,7 +1,29 @@
 var RuleEngine = require('node-rules')
+var request = require('request')
 
 var weekdays = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
+var oneRules = [];
+var RuleArray;
+var oneRule = {};
+/*request({
+	url:"http://localhost:3000/api/rules/11",
+	method: "GET"
+	}, function(error, res, body){
+		var result = JSON.parse(body);
+		var ruleCode = result.rule.blob;
+		ruleCode.condition = Object.defineProperty(conditionFunction,'name', {value: 'condition'} );
+		ruleCode.consequence = Object.defineProperty(consequenceFunction, 'name', {value: 'consequence'})
+		ruleCode.on = true;
+		console.log(ruleCode)
+		RuleArray = new RuleEngine([],{ignoreFactChanges: true})
+		RuleArray.fromJSON(ruleCode)
+		//var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges: true});
+		console.log(RuleArray)
+		module.exports = RuleArray;
+})*/
+
+/*
 var oneRules = [
 	{
 		"priority": 6,
@@ -30,7 +52,7 @@ var oneRules = [
 		}
 	},
 	{
-		"priority": 2,
+		"priority": 1,
 		"name": "Costo minimo debe ser $50",
 		"condition": function(R) {
 			if( this.cost && this.discount ){
@@ -87,22 +109,6 @@ var oneRules = [
 		}
 	},
 	{
-		"priority": 1,
-		"name": "descuento de $100 por ser el primer viaje",
-		"condition" : function(R){
-			R.when(this && this.cantViajes < 1);
-		},
-		"consequence" : function(R){
-			if( this.cost >= 100){
-				this.cost -= 100;
-			}
-			else{
-				this.cost = 0;
-			}
-			R.stop();
-		}
-	},
-	{
 		"priority": 3,
 		"name" : "Recargo de 15% si hubo mas de 10 viajes en los ultimos 30 min",
 		"condition" : function(R){
@@ -114,7 +120,7 @@ var oneRules = [
 		}
 	},
 	{
-		"priority": 3,
+		"priority": 2,
 		"name" : "Descuento de 5% a partir del 5to viaje en el dia",
 		"condition" : function(R){
 			R.when(this && this.ownDailyTrips > 4);
@@ -137,26 +143,8 @@ var oneRules = [
 		"totalTrips": 30
 };
 */
-var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges : true});
+
+//var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges : true});
 
 
-distanceInKm = function(lat1, lon1, lat2, lon2, callback){
-  var R = 6371; // Radio terresetre
-  var dLat = deg2rad(lat2-lat1);
-  var dLon = deg2rad(lon2-lon1);
-  var a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-    ;
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  var d = R * c; //Distancia en KM
-  callback(d);
-}
-
-function deg2rad(deg) {
-  return deg * (Math.PI/180)
-}
-
-
-module.exports = RuleArray;
+//module.exports = RuleArray;

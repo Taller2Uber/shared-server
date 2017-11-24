@@ -39,6 +39,17 @@ export class UsersServiceService {
                .catch(this.handleError));
   }
 
+  deleteUser(userId){
+    var headers = new Headers();
+    headers.append('Content-type', 'application/json')
+    var t = localStorage.getItem('token');
+    headers.append("token", t);
+
+      this.http.delete(this.usersURL + '/' + userId, {headers: headers})
+               .toPromise()
+               .catch(this.handleError);
+  }
+
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :
     error.status ? `${error.status} - ${error.statusText}` : 'Server error';

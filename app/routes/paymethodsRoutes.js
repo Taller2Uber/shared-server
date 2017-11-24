@@ -8,7 +8,7 @@ paymethodsRoutes = function(server){
 
   server.get('/api/paymethods', function(req, res, err){
     logger.info('Obtencion de todos los metodos de pago');
-    loginCheck.check( req.headers.token, [], function( authorized){
+    loginCheck.check( req.headers.token, ['user'], function( authorized){
       if( authorized == true ){
         paymentsDB.getPaymethods(res);
       }else{

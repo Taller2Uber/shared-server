@@ -80,6 +80,7 @@ loginCheck.serverCheck = function( token, callback ){
 * @param callback objeto para devolver el resultado del check
 */
 
+/*
 loginCheck.businessUserCheck = function( token, callback ){
 
   var buJson = tokenGenerator.process( token );
@@ -107,6 +108,7 @@ loginCheck.businessUserCheck = function( token, callback ){
     callback(false, null);
   }
 }
+*/
 
 /**
 * @name check

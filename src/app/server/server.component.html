@@ -7,8 +7,8 @@
     <h2>Estado actual</h2>
     <ul class="list-group">
         <div id="serverBox" class="list-group-item"
-          *ngFor="let server of servers">
-          Nombre : {{server.name}} <br/>
+          *ngFor="let server of servers; let i = index">
+          Nombre : {{server.name}} <button id="button"  (click)="serverSelected(i)" type="button">Borrar</button> <br/>
           Id: {{server.id}} <br/>
           lastconnection: {{server.lastconnection}} <br/>
           activo: {{server.activo}}

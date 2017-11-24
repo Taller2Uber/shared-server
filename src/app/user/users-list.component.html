@@ -11,8 +11,8 @@
 
     <ul class="list-group">
       <li class="list-group-item"
-        *ngFor="let user of users">
-        <b> Id:  </b> {{user.id}} <br/>
+        *ngFor="let user of users; let i = index">
+        <b> Id:  </b> {{user.id}}  <button id="button" (click)="deleteUser(i)"  type="button">Borrar</button> <br/>
         <b> Nombre : </b> {{user.firstname}} <br/>
         <b> Apellido:  </b> {{user.lastname}} <br/>
         <b> Nombre de usuario:  </b> {{user.username}} <br/>

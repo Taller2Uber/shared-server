@@ -2,6 +2,7 @@ node_modules/
 coverage/
 app/routes/doc/
 app/models/doc/
+dist
 
 Anotaciones Checkpoint2
 

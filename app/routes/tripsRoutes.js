@@ -115,7 +115,13 @@ tripsRoutes = function(server){
   server.post('/api/trips/estimate', function(req, res, err){
     logger.info('Solicitud para estimar el costo de un viaje');
 
-    tripDB.estimate(req, res);
+    loginCheck.check(req.headers.token, [], function(authorized, serverJson){
+      if(authorized){
+        tripDB.estimate(req, res, serverJson.id);
+      }else{
+        res.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
+      }
+    })
 
   })
 
@@ -128,6 +134,12 @@ tripsRoutes = function(server){
         }else{
           res.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
         }
+    })
+  })
+
+  server.get('/totalTrips/:userId', function(req, res, err){
+    tripDB.getTotalNumberOfTrips( req.params.userId, function(resultado){
+        res.status(200).json(resultado);
     })
   })
 

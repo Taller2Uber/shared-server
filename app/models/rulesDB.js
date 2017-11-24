@@ -3,6 +3,8 @@ var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
 var refHash = require('./refCheck')
 var RuleArray = require('./cotizacionDB')
+var RuleEngine = require('node-rules')
+
 
 /**
  * @class Clase para manejar la base de datos de reglas
@@ -21,19 +23,27 @@ function rulesDB(){}
 
 rulesDB.create = function(req, response){
   var respuestaJson = {};
-  if( !req.body.active || !req.body.language || !req.body.lastcommit || !req.body.blob){
+  if( !req.body.active || !req.body.language || !req.body.blob){
     logger.error('Incumplimiento de precondiciones');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
+    var ruleJson = JSON.parse('{"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}')
+    var conditionFunction = new Function('R', ruleJson.condition)
+    ruleJson.condition = Object.defineProperty(conditionFunction,'name', {value: 'condition'} );
+    var consequenceFunction = new Function('R', ruleJson.consequence)
+    ruleJson.consequence = Object.defineProperty(consequenceFunction,'name', {value: 'consequence'} );
+    var R1 = new RuleEngine([ruleJson]);
+    var store = R1.toJSON()
+    console.log(store)
     var rule = {
       active: req.body.active,
       language: req.body.language,
       lastcommit: req.body.lastcommit,
-      blob: req.body.blob
+      blob: store
     };
     var ruleRef = refHash.generate( rule );
     connect().query('INSERT INTO rules (active, language, lastcommit, blob, _ref) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [rule.active, rule.language, JSON.stringify(rule.lastcommit), rule.blob, ruleRef], (err, res)=>{
+      [rule.active, rule.language, JSON.stringify(rule.lastcommit), JSON.stringify(rule.blob), ruleRef], (err, res)=>{
         if(err){
           logger.error('Unexpected error:' + err);
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -66,6 +76,10 @@ rulesDB.getAll = function(req, response){
       }else{
         res.rows.forEach(row =>{
           results.push(row);
+          if(row.id == 5){
+            console.log(row.blob);
+
+          }
         })
         logger.info('Obtencion de todas las reglas');
         respuestaJson = respuesta.addResult(respuestaJson, 'rules', results);

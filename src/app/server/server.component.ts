@@ -46,4 +46,11 @@ export class ServerComponent implements OnInit {
         })
   }
 
+  serverSelected(i){
+    console.log(this.servers[i].id);
+    this.serverService.deleteServer(this.servers[i].id);
+    this.servers = [];
+    this.ngOnInit();
+  }
+
 }
