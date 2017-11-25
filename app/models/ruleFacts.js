@@ -2,6 +2,9 @@ var respuesta = require('./respuesta')
 var request = require('request')
 var RuleEngine = require('node-rules')
 
+var weekdays = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+
+
 function ruleFacts(){}
 
 distanceInKm = function(lat1, lon1, lat2, lon2, callback){
@@ -25,16 +28,19 @@ function deg2rad(deg) {
 ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,callback ){
   var fact = {}
   fact.cost = 0;
+  fact.gain = 0; // ganancia del conductor.
   fact.discount = 1;
+  fact.driverDiscount = 1; //porcentaje de pago del conductor.
   fact.tripOk = true;
   fact.balance = factt.passenger.balance;
   fact.fecha = factt.fecha;
   fact.waitTime = factt.waitTime;
   fact.travelTime = factt.travelTime;
+  fact.passenger = factt.passenger;
+  fact.driver = factt.driver;
   fact.mail = 'gustavo@gmail.com';
   distanceInKm( startAddress.location.lat, startAddress.location.lon, endAddress.location.lat, endAddress.location.lon, function(resultado){
     fact.distance = resultado;
-    console.log(resultado);
   })
   var RuleArray;
 
@@ -53,6 +59,8 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
       RuleArray.fromJSON(array);
   		console.log(RuleArray)
       RuleArray.execute( fact, function( coti ){
+        console.log("ganancia del conductor: " + coti.gain * coti.driverDiscount)
+        console.log("porcentaje conductor: " + coti.driverDiscount)
         callback(coti);
       })
   })

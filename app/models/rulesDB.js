@@ -36,7 +36,6 @@ rulesDB.create = function(req, response){
     console.log(ruleJson)
     var R1 = new RuleEngine([ruleJson]);
     var store = R1.toJSON()
-    //console.log(store)
     var rule = {
       active: req.body.active,
       language: req.body.language,
