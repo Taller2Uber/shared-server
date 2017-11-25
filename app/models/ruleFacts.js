@@ -27,9 +27,11 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   fact.cost = 0;
   fact.discount = 1;
   fact.tripOk = true;
-  fact.balance = -1;
+  fact.balance = factt.passenger.balance;
   fact.fecha = factt.fecha;
-  fact.mail = 'gustavo@llevame.com';
+  fact.waitTime = factt.waitTime;
+  fact.travelTime = factt.travelTime;
+  fact.mail = 'gustavo@gmail.com';
   distanceInKm( startAddress.location.lat, startAddress.location.lon, endAddress.location.lat, endAddress.location.lon, function(resultado){
     fact.distance = resultado;
     console.log(resultado);
