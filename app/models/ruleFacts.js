@@ -45,7 +45,7 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   var RuleArray;
 
   request({
-  	url:"http://localhost:3000/api/rules",
+  	url:"https://taller2-grupo7-shared.herokuapp.com/api/rules",
   	method: "GET"
   	}, function(error, res, body){
       var rules = JSON.parse(body);
