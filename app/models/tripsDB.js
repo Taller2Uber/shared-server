@@ -33,7 +33,7 @@ tripsDB.create = function( req, response, serverId ){
         logger.error('Incumplimiento de precondiciones');
         response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
       }else{
-        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end", createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP) RETURNING *',
+        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, end, createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP) RETURNING *',
           [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end)],(err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err)
