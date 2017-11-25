@@ -11,7 +11,8 @@ import { routing } from './app.routes';
 import { MainMenuComponentComponent } from './mainMenu/main-menu-component/main-menu-component.component';
 import { TripComponentComponent } from './trip-component/trip-component.component';
 import { RulesComponent } from './rules/rules.component';
-import { BackofficeComponent } from './backoffice/backoffice.component'
+import { BackofficeComponent } from './backoffice/backoffice.component';
+import { CreateRulesComponent } from './create-rules/create-rules.component'
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { BackofficeComponent } from './backoffice/backoffice.component'
     MainMenuComponentComponent,
     TripComponentComponent,
     RulesComponent,
-    BackofficeComponent
+    BackofficeComponent,
+    CreateRulesComponent
   ],
   imports: [
     BrowserModule,

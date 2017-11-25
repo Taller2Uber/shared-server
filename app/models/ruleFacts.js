@@ -1,4 +1,3 @@
-//var RuleArray = require('./cotizacionDB')
 var respuesta = require('./respuesta')
 var request = require('request')
 var RuleEngine = require('node-rules')
@@ -28,31 +27,49 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   fact.cost = 0;
   fact.discount = 1;
   fact.tripOk = true;
-  fact.balance = 1;
+  fact.balance = -1;
   fact.fecha = factt.fecha;
-  fact.mail = '';
+  fact.mail = 'gustavo@llevame.com';
   distanceInKm( startAddress.location.lat, startAddress.location.lon, endAddress.location.lat, endAddress.location.lon, function(resultado){
     fact.distance = resultado;
     console.log(resultado);
   })
   var RuleArray;
+
   request({
-  	url:"http://localhost:3000/api/rules/11",
+  	url:"http://localhost:3000/api/rules",
   	method: "GET"
   	}, function(error, res, body){
-  		var result = JSON.parse(body);
-  		var ruleCode = result.rule.blob;
-  		/*ruleCode.condition = Object.defineProperty(ruleCode.condition,'name', {value: 'condition'} );
-  		ruleCode.consequence = Object.defineProperty(ruleCode.consequence, 'name', {value: 'consequence'})*/
-  		ruleCode.on = true;
-  		RuleArray = new RuleEngine([],{ignoreFactChanges: true})
-  		RuleArray.fromJSON(ruleCode)
-  		//var RuleArray = new RuleEngine(oneRules, {ignoreFactChanges: true});
+      var rules = JSON.parse(body);
+      var array = []
+      RuleArray = new RuleEngine([],{ignoreFactChanges: true})
+      for (var rule of rules.rules){
+        var ruleCode = rule.blob;
+        ruleCode.on = true;
+        array.push(ruleCode[0])
+      }
+      RuleArray.fromJSON(array);
   		console.log(RuleArray)
       RuleArray.execute( fact, function( coti ){
         callback(coti);
       })
   })
+
+  /*
+  request({
+  	url:"http://localhost:3000/api/rules/14",
+  	method: "GET"
+  	}, function(error, res, body){
+  		var result = JSON.parse(body);
+  		var ruleCode = result.rule.blob;
+  		ruleCode.on = true;
+  		RuleArray = new RuleEngine([],{ignoreFactChanges: true})
+  		RuleArray.fromJSON(ruleCode)
+  		console.log(RuleArray)
+      RuleArray.execute( fact, function( coti ){
+        callback(coti);
+      })
+  })*/
 }
 
 module.exports = ruleFacts;

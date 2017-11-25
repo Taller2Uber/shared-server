@@ -7,6 +7,7 @@ import { ServerComponent } from './server/server.component';
 import {TripComponentComponent} from './trip-component/trip-component.component'
 import {RulesComponent} from './rules/rules.component'
 import {BackofficeComponent} from './backoffice/backoffice.component'
+import {CreateRulesComponent} from './create-rules/create-rules.component'
 
 // Route Configuration
 export const routes: Routes = [
@@ -17,7 +18,9 @@ export const routes: Routes = [
   { path: 'servers', component: ServerComponent},
   { path: 'trips', component: TripComponentComponent },
   { path:'rules', component: RulesComponent },
-  {path: 'business-users', component: BackofficeComponent}
+  {path: 'business-users', component: BackofficeComponent},
+  {path: 'create-rules', component: CreateRulesComponent}
+
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);

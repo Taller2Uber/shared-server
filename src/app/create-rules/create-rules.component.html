@@ -1,0 +1,24 @@
+<h1 align="center">
+  Crear regla
+</h1>
+
+<h3>Regla</h3>  <h3 align="right"> <b> Ejemplo</b> </h3>
+<textarea  [(ngModel)]="blob" rows="20" cols="40" > </textarea> <textarea style="float:right" rows="20" cols="40" readonly> {
+	"active":true,
+	"lastcommit": null,
+	"language":"node-rules",
+	"blob": {"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}
+}
+</textarea>
+<br/>
+<button (click)="crearRegla()"> Crear regla</button>
+<br/>
+<br/>
+<b>Variables que podes utilizar para crear la regla: </b> <br/>
+-a <br/>
+-b <br/>
+-c <br/>
+-d <br/>
+-e <br/>
+-f <br/>
+-g <br/>

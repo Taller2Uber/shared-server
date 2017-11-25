@@ -239,7 +239,11 @@ tripsDB.getBalanceFromUser = function(userId, currency, callback){
           callback(null);
         }else{
           logger.info('Obtencion de un viaje');
-          balance = res.rows[0].balance;
+          if( res.rows[0].balance ){
+            balance = res.rows[0].balance;
+          }else{
+            balance = [];
+          }
           for( var balanceItem of balance ){
             if( balanceItem.currency == currency ){
               if(balanceItem.value < 0){

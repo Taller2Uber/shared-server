@@ -33,4 +33,8 @@ export class MainMenuComponentComponent implements OnInit {
     this.router.navigate(['/business-users']);
   }
 
+  goToCreateRule(){
+    this.router.navigate(['/create-rules']);
+  }
+
 }

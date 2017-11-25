@@ -27,14 +27,16 @@ rulesDB.create = function(req, response){
     logger.error('Incumplimiento de precondiciones');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    var ruleJson = JSON.parse('{"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}')
+    //var ruleJson = JSON.parse('{"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}')
+    var ruleJson = JSON.parse(req.body.blob);
     var conditionFunction = new Function('R', ruleJson.condition)
     ruleJson.condition = Object.defineProperty(conditionFunction,'name', {value: 'condition'} );
     var consequenceFunction = new Function('R', ruleJson.consequence)
     ruleJson.consequence = Object.defineProperty(consequenceFunction,'name', {value: 'consequence'} );
+    console.log(ruleJson)
     var R1 = new RuleEngine([ruleJson]);
     var store = R1.toJSON()
-    console.log(store)
+    //console.log(store)
     var rule = {
       active: req.body.active,
       language: req.body.language,
@@ -76,10 +78,6 @@ rulesDB.getAll = function(req, response){
       }else{
         res.rows.forEach(row =>{
           results.push(row);
-          if(row.id == 5){
-            console.log(row.blob);
-
-          }
         })
         logger.info('Obtencion de todas las reglas');
         respuestaJson = respuesta.addResult(respuestaJson, 'rules', results);
