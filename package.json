@@ -58,7 +58,7 @@
     "typescript": "~2.2.0"
   },
   "scripts": {
-    "start": "node server.js & ng serve",
+    "start": "node server.js",
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly  -- -R spec --timeout 30000 && export CODECOV_TOKEN=f338b1d5-cee2-48ac-87da-df6e4d9e2aa5 && codecov"
   }
 }
