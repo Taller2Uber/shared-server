@@ -57,7 +57,6 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
         array.push(ruleCode[0])
       }
       RuleArray.fromJSON(array);
-  		console.log(RuleArray)
       RuleArray.execute( fact, function( coti ){
         console.log("ganancia del conductor: " + coti.gain * coti.driverDiscount)
         console.log("porcentaje conductor: " + coti.driverDiscount)

@@ -33,25 +33,60 @@ tripsDB.create = function( req, response, serverId ){
         logger.error('Incumplimiento de precondiciones');
         response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
       }else{
-        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, end, createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP ) RETURNING *',
-          [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end) ],(err, res)=>{
+        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end", createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP) RETURNING *',
+          [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end)],(err, res)=>{
           if(err){
             logger.error('Unexpected error: ' + err)
             response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
           }else{
-            logger.info('Alta correcta');
-            respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res.rows[0]);
-            respuestaJson = respuesta.addEntityMetadata(respuestaJson);
-            var jsonPay = {};
-            createJsonPayment(req, function(jsonPay){
-              paymentsDB.makePay(jsonPay, function(result){
-                if( !result ){
-                  transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
-                  transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, req.body.trip.cost.value, response);
-                }
+            var startAddress = JSON.parse(JSON.stringify(req.body.trip.start.address));
+            var endAddress = JSON.parse(JSON.stringify(req.body.trip.end.address));
+            var cost = JSON.parse(JSON.stringify(req.body.trip.cost));
+            var passenger = {}
+            var driver = {}
+            var fact = {}
+
+            tripsDB.getTotalNumberOfTrips(req.body.trip.driver,  function(result){
+              driver = result;
+              tripsDB.getTotalNumberOfTrips(req.body.trip.passenger, function(resu){
+                passenger = resu;
+                tripsDB.getBalanceFromUser(req.body.trip.passenger, req.body.trip.cost.currency, function(balance){
+                  passenger.balance = balance;
+                  tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
+                    fact.lastHour = fromLastHour;
+                    fact.lastHalf = fromLastHalf;
+                    fact.lastTen = fromLastTen;
+                    if(req.body.paymethod){
+                      fact.paymethod = req.body.paymethod.paymethod;
+                    }
+                    fact.fecha = new Date().getTime();
+                    fact.waitTime = req.body.trip.waitTime;
+                    fact.travelTime = req.body.trip.travelTime;
+                    fact.passenger = passenger;
+                    fact.driver = driver;
+                      ruleFacts.getEstimateFact(startAddress, endAddress, balance, fact, function(resultado){
+                        if(resultado.tripOk == true){
+                          cost.value = resultado.cost;
+                          logger.info('Alta correcta');
+                          respuestaJson = respuesta.addResult(respuestaJson, 'cost', cost);
+                          respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res.rows[0]);
+                          respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+                          var jsonPay = {};
+                          createJsonPayment(req, function(jsonPay){
+                            paymentsDB.makePay(jsonPay, function(result){
+                              if( !result ){
+                                transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
+                                transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, req.body.trip.cost.value, response);
+                              }
+                            })
+                            response.status(201).json(respuestaJson);
+                          })
+                        }
+                      })
+                    })
+                  })
+                })
               })
-              response.status(201).json(respuestaJson);
-            })
           }
         })
     }

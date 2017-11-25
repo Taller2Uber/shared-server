@@ -3,6 +3,7 @@ coverage/
 app/routes/doc/
 app/models/doc/
 dist
+app/config/
 
 Anotaciones Checkpoint2
 
