@@ -3,7 +3,7 @@ coverage/
 app/routes/doc/
 app/models/doc/
 dist
-app/config/
+app/config/pgdb.js
 
 Anotaciones Checkpoint2
 

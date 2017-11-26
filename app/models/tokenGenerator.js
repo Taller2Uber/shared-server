@@ -17,10 +17,11 @@ tokenGenerator.generateSV = function( Id, serverName, Token ){
 
 }
 
-tokenGenerator.generateBU = function( Role ){
+tokenGenerator.generateBU = function( Role, id ){
 
   var payload = {
-    role: Role
+    role: Role,
+    id: id
   }
 
   return (jwt.encode(payload, secret));
@@ -41,7 +42,7 @@ tokenGenerator.checkBU = function( token, roles, callback ){
   try{
     var decoded = jwt.decode( token, secret );
     if( roles.indexOf(decoded.role) > -1 ){
-      callback(true);
+      callback(true, decoded.id);
     }else{
       callback(false);
     }

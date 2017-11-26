@@ -38,7 +38,7 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   fact.travelTime = factt.travelTime;
   fact.passenger = factt.passenger;
   fact.driver = factt.driver;
-  fact.mail = 'gustavo@gmail.com';
+  fact.mail = factt.mail;
   distanceInKm( startAddress.location.lat, startAddress.location.lon, endAddress.location.lat, endAddress.location.lon, function(resultado){
     fact.distance = resultado;
   })

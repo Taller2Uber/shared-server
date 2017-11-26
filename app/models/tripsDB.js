@@ -26,70 +26,75 @@ function tripsDB(){}
 */
 
 tripsDB.create = function( req, response, serverId ){
-  var respuestaJson = {};
-  var trip = req.body.trip;
-  if(  !req.body.trip ||  !trip.start || !trip.end || !trip.cost || trip.totalTime < 0 || trip.waitTime < 0 || trip.travelTime < 0 || trip.distance < 0 || trip.route < 0 ||
-      !req.body.paymethod || !trip.driver || !trip.passenger ){
-        logger.error('Incumplimiento de precondiciones');
-        response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
-      }else{
-        connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end", createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP) RETURNING *',
-          [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end)],(err, res)=>{
-          if(err){
-            logger.error('Unexpected error: ' + err)
-            response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
-          }else{
-            var startAddress = JSON.parse(JSON.stringify(req.body.trip.start.address));
-            var endAddress = JSON.parse(JSON.stringify(req.body.trip.end.address));
-            var cost = JSON.parse(JSON.stringify(req.body.trip.cost));
-            var passenger = {}
-            var driver = {}
-            var fact = {}
+var respuestaJson = {};
+var trip = req.body.trip;
+if(  !req.body.trip ||  !trip.start || !trip.end || !trip.cost || trip.totalTime < 0 || trip.waitTime < 0 || trip.travelTime < 0 || trip.distance < 0 || trip.route < 0 ||
+    !req.body.paymethod || !trip.driver || !trip.passenger ){
+      logger.error('Incumplimiento de precondiciones');
+      response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones (parametros faltantes)'));
+    }else{
+      connect().query('INSERT INTO trips (cost, applicationOwner, driver, passenger, paymethod, route, totalTime, travelTime, waitTime, distance, start, "end", createdtime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP) RETURNING *',
+        [ JSON.stringify(trip.cost), serverId, trip.driver, trip.passenger, JSON.stringify(req.body.paymethod), JSON.stringify(trip.route), trip.totalTime, trip.travelTime, trip.waitTime, trip.distance, JSON.stringify(trip.start), JSON.stringify(trip.end)],(err, res)=>{
+        if(err){
+          logger.error('Unexpected error: ' + err)
+          response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+        }else{
+          var startAddress = JSON.parse(JSON.stringify(req.body.trip.start.address));
+          var endAddress = JSON.parse(JSON.stringify(req.body.trip.end.address));
+          var cost = JSON.parse(JSON.stringify(req.body.trip.cost));
+          var passenger = {}
+          var driver = {}
+          var fact = {}
+          var gainDriver = 0;
 
-            tripsDB.getTotalNumberOfTrips(req.body.trip.driver,  function(result){
-              driver = result;
-              tripsDB.getTotalNumberOfTrips(req.body.trip.passenger, function(resu){
-                passenger = resu;
-                tripsDB.getBalanceFromUser(req.body.trip.passenger, req.body.trip.cost.currency, function(balance){
-                  passenger.balance = balance;
-                  tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
-                    fact.lastHour = fromLastHour;
-                    fact.lastHalf = fromLastHalf;
-                    fact.lastTen = fromLastTen;
-                    if(req.body.paymethod){
-                      fact.paymethod = req.body.paymethod.paymethod;
-                    }
-                    fact.fecha = new Date().getTime();
-                    fact.waitTime = req.body.trip.waitTime;
-                    fact.travelTime = req.body.trip.travelTime;
-                    fact.passenger = passenger;
-                    fact.driver = driver;
-                      ruleFacts.getEstimateFact(startAddress, endAddress, balance, fact, function(resultado){
-                        if(resultado.tripOk == true){
-                          cost.value = resultado.cost;
-                          logger.info('Alta correcta');
-                          res.rows[0].cost.value = cost.value;
-                          respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res.rows[0]);
-                          respuestaJson = respuesta.addEntityMetadata(respuestaJson);
-                          var jsonPay = {};
-                          createJsonPayment(req, function(jsonPay){
-                            paymentsDB.makePay(jsonPay, function(result){
-                              if( !result ){
-                                transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - req.body.trip.cost.value, response);
-                                transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, req.body.trip.cost.value, response);
-                              }
-                            })
-                            response.status(201).json(respuestaJson);
+          tripsDB.getTotalNumberOfTrips(req.body.trip.driver,  function(result){
+            driver = result;
+            tripsDB.getTotalNumberOfTrips(req.body.trip.passenger, function(resu){
+              passenger = resu;
+              tripsDB.getBalanceFromUser(req.body.trip.passenger, req.body.trip.cost.currency, function(balance){
+                passenger.balance = balance;
+                tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
+                  fact.lastHour = fromLastHour;
+                  fact.lastHalf = fromLastHalf;
+                  fact.lastTen = fromLastTen;
+                  if(req.body.paymethod){
+                    fact.paymethod = req.body.paymethod.paymethod;
+                  }
+                  fact.fecha = new Date().getTime();
+                  fact.waitTime = req.body.trip.waitTime;
+                  fact.travelTime = req.body.trip.travelTime;
+                  fact.passenger = passenger;
+                  fact.driver = driver;
+                    ruleFacts.getEstimateFact(startAddress, endAddress, balance, fact, function(resultado){
+                      if(resultado.tripOk == true){
+                        cost.value = resultado.cost;
+                        gainDriver = resultado.driverDiscount * resultado.gain;
+                        logger.info('Alta correcta');
+                        res.rows[0].cost.value = cost.value;
+                        respuestaJson = respuesta.addResult(respuestaJson, 'Trip', res.rows[0]);
+                        respuestaJson = respuesta.addEntityMetadata(respuestaJson);
+                        var jsonPay = {};
+                        createJsonPayment(req, function(jsonPay){
+                          paymentsDB.makePay(jsonPay, function(result){
+                            if( !result ){
+                              transactionDB.addCost(req.body.trip.passenger, req.body.trip.cost.currency, - cost.value, response);
+                            }
+                            transactionDB.addCost(req.body.trip.driver, req.body.trip.cost.currency, gainDriver , response);
                           })
-                        }
-                      })
+                          response.status(201).json(respuestaJson);
+                        })
+                      }else{
+                        //AGREGAR ACA EL VIAJE RECHAZADO
+                        logger.info('Viaje rechazado')
+                      }
                     })
                   })
                 })
               })
+            })
           }
-        })
-    }
+      })
+  }
 }
 
 createJsonPayment = function( req, callback ){
@@ -222,6 +227,18 @@ tripsDB.getLastTenTrips = function(results, callback){
   callback(tripsOfLastTenMinutes)
 }
 
+tripsDB.getDailyTrips = function(results, callback){
+  var dailyTrips = 0;
+  for (var trip of results){
+    var thisDay = new Date();
+    thisDay.setHours(0);
+    if(trip.start.timestamp >= thisDay.getTime()){
+      dailyTrips += 1;
+    }
+  }
+  callback(dailyTrips);
+}
+
 tripsDB.getLastHalfTrips = function(results, callback){
   var tripsOfLastHalf = 0;
   for( var trip of results ){
@@ -258,6 +275,10 @@ tripsDB.getTotalNumberOfTrips = function(userId, callback){
 
         this.getLastHalfTrips(results, function(lastHalfTrips){
           respuestaJson.lastHalf = lastHalfTrips;
+        })
+
+        this.getDailyTrips(results, function(dailyTrips){
+          respuestaJson.dailyTrips = dailyTrips;
         })
         callback(respuestaJson)
       }
@@ -329,6 +350,18 @@ tripsDB.getLastGeneralTrips = function(callback){
     })
 }
 
+tripsDB.getPassengerMail = function(passenger, callback){
+  var mail = '';
+  connect().query('SELECT email FROM users WHERE id = $1', [passenger], (err, res)=>{
+    if(err){
+      logger.error('Error al obtener mail del pasajero ' + err);
+    }else{
+      callback(res.rows[0].email);
+    }
+  })
+
+}
+
 
 /**
 * @name estimate
@@ -358,18 +391,20 @@ tripsDB.estimate = function(req, response, serverId){
         passenger = resu;
         tripsDB.getBalanceFromUser(req.body.passenger, req.body.cost.currency, function(balance){
           passenger.balance = balance;
-          tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
-            fact.lastHour = fromLastHour;
-            fact.lastHalf = fromLastHalf;
-            fact.lastTen = fromLastTen;
-            if(req.body.paymethod){
-              fact.paymethod = req.body.paymethod.paymethod;
-            }
-            fact.fecha = new Date().getTime();
-            fact.waitTime = req.body.waitTime;
-            fact.travelTime = req.body.travelTime;
-            fact.passenger = passenger;
-            fact.driver = driver;
+          tripsDB.getPassengerMail(req.body.passenger, function(mail){
+            fact.mail = mail;
+            tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
+              fact.lastHour = fromLastHour;
+              fact.lastHalf = fromLastHalf;
+              fact.lastTen = fromLastTen;
+              if(req.body.paymethod){
+                fact.paymethod = req.body.paymethod.paymethod;
+              }
+              fact.fecha = new Date().getTime();
+              fact.waitTime = req.body.waitTime;
+              fact.travelTime = req.body.travelTime;
+              fact.passenger = passenger;
+              fact.driver = driver;
               ruleFacts.getEstimateFact(startAddress, endAddress, balance, fact, function(resultado){
                 if(resultado.tripOk == true){
                   var cost = {}
@@ -384,6 +419,7 @@ tripsDB.estimate = function(req, response, serverId){
                   response.status(402).json(respuestaJson);
                 }
               });
+            })
           })
         })
       })

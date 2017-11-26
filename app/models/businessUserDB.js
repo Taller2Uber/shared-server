@@ -19,7 +19,7 @@ function buDB(){}
 * @param name Nombre del nuevo appserver
 * @param token Clave unica de acceso para el nuevo appserver
 */
-buDB.createBU = function ( response, username, password, name, surname, role, randomToken ){
+buDB.createBU = function ( response, username, password, name, surname, role /*, randomToken*/ ){
   var respuestaJson = {};
   if( !username || !password || !name || !surname || !role ){
     logger.error('Incumplimiento de precondiciones (parámetros faltantes)');
@@ -32,7 +32,7 @@ buDB.createBU = function ( response, username, password, name, surname, role, ra
           var jsonBU = {"username":username, "password":password, "name":name, "surname":surname, "role":role };
           jsonBU.id = res.rows[0].id;
           jsonBU._ref = refCheck.generate(jsonBU) //NO USO EL TOKEN PARA EL REF
-          jsonBU.token = randomToken;
+          jsonBU.token = tokenGenerator.generateBU(role, res.rows[0].id);
           connect().query('UPDATE businessusers SET _ref = $1, token = $2 WHERE id = $3', [jsonBU._ref, jsonBU.token, jsonBU.id], (err, res) =>{
             if(err){
               logger.error('Unexpected error: '+ err);

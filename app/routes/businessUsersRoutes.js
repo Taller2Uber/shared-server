@@ -41,8 +41,9 @@ server.get("/api/business-users", function( req, res, err ){
     var respuestaJson = {};
     logger.info('Solicitud de obtencion de todos los usuarios de negocio');
     var results = [];
-    tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU){
+    tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU, id){
         if ( isBU == true ){
+          console.log("el id del user es: " + id)
           databaseObject.getAllBU( res, results );
         }else{
           respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
@@ -65,10 +66,10 @@ server.get("/api/business-users", function( req, res, err ){
 server.post("/api/business-users", function( req, res, err ){
     var respuestaJson = {};
     logger.info('Solicitud de creacion de un usuario de negocio');
-    var token = tokenGenerator.generateBU(req.body.role);
+    //var token = tokenGenerator.generateBU(req.body.role);
     tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU){
         if ( isBU == true ){
-          databaseObject.createBU(res, req.body.username, req.body.password, req.body.name, req.body.surname, req.body.role, token);
+          databaseObject.createBU(res, req.body.username, req.body.password, req.body.name, req.body.surname, req.body.role /*, token*/);
         }else{
           respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
           res.status(401).json(respuestaJson);
