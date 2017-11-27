@@ -24,6 +24,58 @@ describe('AppserversDatabase', () => {
   })
 });
 
+describe('AppserversDatabase', () => {
+  describe('Intento crear un appserver con token incorrecto', ()=> {
+    it('Devuelve status 401 Unauthorized', function(done){
+      let appserverJson = {
+        name: "Gustavo"
+        }
+      chai.request(server).post('/api/servers').set('token', 'e')
+      .send(appserverJson)
+      .end(function(err, res){
+        expect(res).to.have.status(401);
+        done()
+      })
+    })
+  })
+});
+
+describe('AppserversDatabase', () => {
+  describe('Obtengo ping siendo appserver', ()=> {
+    it('Devuelve token', function(done){
+      chai.request(server).post('/api/servers/ping').set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+      .end(function(err, res){
+        expect(res).to.be.an('object');
+        done()
+      })
+    })
+  })
+});
+
+describe('AppserversDatabase', () => {
+  describe('Intengo obtener ping con mal token', ()=> {
+    it('Devuelve status 401', function(done){
+      chai.request(server).post('/api/servers/ping').set('token', '89')
+      .end(function(err, res){
+        expect(res).to.have.status(401);
+        done()
+      })
+    })
+  })
+});
+
+describe('AppserversDatabase', () => {
+  describe('Intengo obtener ping sin enviar token', ()=> {
+    it('Devuelve Incumplimiento de precondiciones 400', function(done){
+      chai.request(server).post('/api/servers/ping')
+      .end(function(err, res){
+        expect(res).to.have.status(400);
+        done()
+      })
+    })
+  })
+});
+
 
 describe('AppserversDatabase', () => {
   describe('Intento crear appserver sin nombre',() => {

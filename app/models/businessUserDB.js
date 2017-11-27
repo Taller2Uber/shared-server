@@ -92,7 +92,7 @@ buDB.checkAuth = function( response, request ){
           response.status(401).json(respuestaJson);
         }else{
           logger.info('Credenciales correctas');
-          token = { token: tokenGenerator.generateBU( res.rows[0].role )};
+          token = { token: tokenGenerator.generateBU( res.rows[0].role, res.rows[0].id )};
           respuestaJson = respuesta.addResult(respuestaJson, 'token', token);
           response.status(201).json(respuestaJson);
         }

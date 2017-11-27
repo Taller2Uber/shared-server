@@ -89,6 +89,18 @@ describe('CarsDatabase', () => {
 });
 
 describe('CarsDatabase', () => {
+  describe('Intento borrar un auto inexistente', ()=> {
+    it('Devuelve 404, no existe el recurso solicitado', function(done){
+      chai.request(server).delete('/api/users/89/cars/90').set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+      .end(function(err, res){
+        expect(res).to.have.status(404);
+        done()
+      })
+    })
+  })
+});
+
+describe('CarsDatabase', () => {
   describe('Intento updatear un auto con ref incorrecto', ()=> {
     it('Devuelve 409, conflicto con ref', function(done){
       let carJson = {

@@ -28,9 +28,16 @@ rulesRoutes = function(server){
    */
 
   server.post('/api/rules', function(req, res, err){
+    var respuestaJson = {}
     logger.info('Solicitud de alta de regla');
-
-    rulesDB.create(req, res);
+    tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU, id){
+        if ( isBU == true ){
+          rulesDB.create(req, res, id);
+        }else{
+          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          res.status(401).json(respuestaJson);
+        }
+    })
   })
 
   /**
@@ -81,7 +88,22 @@ rulesRoutes = function(server){
     rulesDB.runAll(req, res);
   })
 
+  server.put('/api/rules/:ruleId', function(req, res, err){
+    var respuestaJson = {}
+    logger.info('Solicitud de alta de regla');
+    tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU, id){
+      if ( isBU == true ){
+        rulesDB.update(req, res, id);
+      }else{
+        respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+        res.status(401).json(respuestaJson);
+      }
+    })
+
+  })
+
 }
+
 
 
 module.exports = rulesRoutes;

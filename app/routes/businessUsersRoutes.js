@@ -43,7 +43,6 @@ server.get("/api/business-users", function( req, res, err ){
     var results = [];
     tokenGenerator.checkBU( req.headers.token, ['admin'], function (isBU, id){
         if ( isBU == true ){
-          console.log("el id del user es: " + id)
           databaseObject.getAllBU( res, results );
         }else{
           respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')

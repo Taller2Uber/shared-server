@@ -63,11 +63,11 @@ describe('App Users database', () => {
 describe('App Users database', () => {
   describe('Obtengo informacion de un usuario en particular', ()=> {
     it('Devuelve Status 200 Informacion del usuario', (done) => {
-        chai.request(server).get('/api/users').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+        chai.request(server).get('/api/users/48').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
         .end((err, res) => {
-          res.should.have.status(200);
-          });
+          expect(res).to.have.status(200);
           done();
+          });
     })
   })
 });
@@ -83,8 +83,8 @@ describe('App Users database', () => {
         chai.request(server).delete('/api/users/1').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoibWFuYWdlciJ9.W7xeouAp5bshEoVvTDOg9K8OmZcCra7vJzPjomZz1JI')
         .end((err, res) => {
             res.should.have.status(404);
-          });
-          done();
+            done();
+        });
     })
   })
 });
@@ -133,6 +133,33 @@ describe('App Users database', () => {
         .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
           .end((err, res) => {
             expect(res).to.have.status(400);
+            done();
+          });
+        })
+      })
+});
+
+describe('App Users database', () => {
+  describe('Intento actualizar usuario con ref incorrecto', ()=> {
+    it('Devuelve Status 409 Conflicto con el ref', (done) => {
+        let userJson = {
+          country: "Argentina",
+          firstname : "gabi",
+          lastname : "Mercado",
+          email : "gabi@gmail.com",
+          birthdate : "1/1/1986",
+          type : "passenger",
+          username : "Gabi",
+          password : "1234",
+          _ref: "a",
+          fb : {
+            userid: ""
+          }
+        }
+        chai.request(server).put('/api/users/71')
+        .send(userJson).set('token', '897fdabec119c3ab5cd0d892a32cdeb1CK6pyw8mdTOMxYVptFVVPuBnJD8uvyVnAzylUBD6m5wq63FFnoyigSZPnN1+dByOVoXdNioGXRtSQwV6i9I+Unjb1+Ib3hBh3MYNDd/KSajQFmv7d6Nfq3xh56eO+mRz82JPPgySa1gl/TpWo+byRjyaSGVgidunGiAIim5lirVkReJyXfxwUxDh/9OCSgyobcKfYUX5fVHrEHnEdcZrAA==')
+          .end((err, res) => {
+            expect(res).to.have.status(409);
             done();
           });
         })

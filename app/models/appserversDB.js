@@ -177,6 +177,7 @@ appserverDB.updateServerInfo = function( response, request, userId ){
 * @param oldRef codigo de hash viejo del server
 * @param userId id del server al cual se le va a modificar el Token
 */
+/*
 appserverDB.renewToken = function( response, token, oldRef, userId ){
   var respuestaJson = {};
     connect().query('SELECT * FROM appservers WHERE id = $1',[userId], (err, res) =>{
@@ -214,7 +215,9 @@ appserverDB.renewToken = function( response, token, oldRef, userId ){
       }};
     })
 }
+*/
 
+/*
 appserverDB.pingRequest = function( response, newToken, serverId ){
   var respuestaJson = {};
     connect().query('UPDATE appservers SET token = $1 WHERE id = $2',[newToken, serverId], (err, res)=>{
@@ -229,5 +232,6 @@ appserverDB.pingRequest = function( response, newToken, serverId ){
       }
     })
 }
+*/
 
 module.exports = appserverDB;

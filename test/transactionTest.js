@@ -19,3 +19,50 @@ describe('transactionTest', () => {
     })
   })
 });
+
+describe('transactionTest', () => {
+  describe('Intento crear una transaccion', ()=> {
+    it('Devuelve status 201', function(done){
+      var transaction = {
+        "trip": 8,
+        "timestamp": 0,
+        "cost": {
+          "currency": "ARS",
+          "value": 200
+        },
+        "description": "pago",
+        "data": {}
+      }
+      chai.request(server)
+      .post('/api/users/48/transactions')
+      .send(transaction).set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
+      .end(function(err, res){
+        expect(res).to.have.status(201);
+        done()
+      })
+    })
+  })
+});
+
+describe('transactionTest', () => {
+  describe('Intento crear una transaccion con parametros faltantes', ()=> {
+    it('Devuelve status 400', function(done){
+      var transaction = {
+        "timestamp": 0,
+        "cost": {
+          "currency": "ARS",
+          "value": 200
+        },
+        "description": "pago",
+        "data": {}
+      }
+      chai.request(server)
+      .post('/api/users/48/transactions')
+      .send(transaction).set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciJ9.LSxbmkvdruuPEePOBfO6kdHISG_GTzt_EJK9B47Dhms')
+      .end(function(err, res){
+        expect(res).to.have.status(400);
+        done()
+      })
+    })
+  })
+});

@@ -229,11 +229,31 @@ describe('BusinessUserDatabase', () => {
   })
 });
 
+describe('BusinessUserDatabase', () => {
+  describe('Intento actualizar un usuario de negocio enviando ref incorrecto', ()=> {
+    it('Devuelve Status 409 ref incorrecto', function(done){
+      let loginJson = {
+        username: "GAGimenez",
+        password: "1234",
+        name: 'gustavo',
+        surname: 'gus',
+        role: 'admin',
+        _ref: "a"
+        }
+      chai.request(server).put('/api/business-users/250').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      .send(loginJson).end((err, res) => {
+            expect(res).to.have.status(409);
+            done()
+          });
+    })
+  })
+});
+
 
 describe('BusinessUserDatabase', () => {
   describe('Intento borrar un usuario de negocio enviando id incorrecto', ()=> {
     it('Devuelve Status 404 recurso solicitado no existente', function(done){
-      chai.request(server).delete('/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
+      chai.request(server).delete('/api/business-users/q').set('token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.dj_-4mL3GH79wZpvWBRtgyB8yPD_bi9wMy29b4IdYmU')
       .end((err, res) => {
             expect(res).to.have.status(404);
             done()
