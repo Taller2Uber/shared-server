@@ -149,6 +149,16 @@ appServerRoutes = function(server){
       })
     });
 
+    /**
+     * @name get(/servers/:serverId/trips)
+     * @description obtener los viajes dados de alta por un server.
+     * @memberof appServerRoutes
+     * @function GET trips
+     * @param request object
+     * @param results object
+     * @param error object
+     */
+
     server.get("/api/servers/:serverId/trips", function(req, res, err){
       var respuestaJson = {}
 

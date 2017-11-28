@@ -30,12 +30,12 @@
     <h2>Lista de usuarios</h2>
     <ul class="list-group">
         <div id="userBox" class="list-group-item"
-          *ngFor="let user of users">
-          Username: {{user.username}}<br/>
-          Nombre : {{user.name}} <br/>
-          Surname: {{user.surname}} <br/>
-          Id: {{user.password}} <br/>
-          role: {{user.role}} <br/>
+          *ngFor="let user of users; let i = index">
+          Id: <input type="text" [(ngModel)]="users[i].id" >  <button id="button"  (click)="deleteUser(i)" type="button">Borrar</button> <button id="button"  (click)="modifyUser(i)" type="button">Modificar</button> <br/>
+          Username: <input type="text" [(ngModel)]="users[i].username" ><br/>
+          Nombre : <input type="text" [(ngModel)]="users[i].name" ><br/>
+          Surname: <input type="text" [(ngModel)]="users[i].surname" ><br/>
+          role: <input type="text" [(ngModel)]="users[i].role" ><br/>
         </div>
     </ul>
   </div>

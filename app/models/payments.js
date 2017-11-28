@@ -7,7 +7,20 @@ require('dotenv').config();
 var request = require('request');
 var access_token;
 
+/**
+ * @class Clase para realizar la comunicacion con la api de pagos
+ */
+
 function paymentsDB(){}
+
+
+/**
+* @name getPaymethods
+* @function getPaymethods
+* @memberof paymentsDB
+* @author Gustavo Adrian Gimenez
+* @param response Objeto por el cual se realiza la devolucion a la llamada
+*/
 
 paymentsDB.getPaymethods = function(response){
   request({
@@ -35,15 +48,23 @@ paymentsDB.getPaymethods = function(response){
                     respuestaJson = respuesta.addCollectionMetadata(respuestaJson, paymethods.items);
                     response.status(200).json(respuestaJson);
                   }else{
-                    console.log(err);
+                    logger.error(err);
                   }
                 })
           }else{
-              console.log(err);
+              logger.error(err);
           }
       }
     );
 }
+
+/**
+* @name getToken
+* @function getToken
+* @memberof paymentsDB
+* @author Gustavo Adrian Gimenez
+* @param callback Objeto por el cual se devuelve el token obtenido luego de enviar las credenciales, y asi poder realizar requests.
+*/
 
 paymentsDB.getToken = function(callback){
   request({
@@ -64,6 +85,15 @@ paymentsDB.getToken = function(callback){
           })
 }
 
+
+/**
+* @name makePay
+* @function makePay
+* @memberof paymentsDB
+* @author Gustavo Adrian Gimenez
+* @param payJson Objeto que contiene la informacion que se enviara a la api de pagos para realizar el mismo.
+* @param callback Objeto por el cual se devuelve la respuesta obtenida de parte de la api de pagos.
+*/
 
 paymentsDB.makePay = function( payJson, callback ){
   request({

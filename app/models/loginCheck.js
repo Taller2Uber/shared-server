@@ -72,45 +72,6 @@ loginCheck.serverCheck = function( token, callback ){
 }
 
 /**
-* @name businessUserCheck
-* @function business user check
-* @memberof loginCheck
-* @author Gustavo Adrian Gimenez
-* @param token codigo recibido por parte del appserver para checkear credenciales
-* @param callback objeto para devolver el resultado del check
-*/
-
-/*
-loginCheck.businessUserCheck = function( token, callback ){
-
-  var buJson = tokenGenerator.process( token );
-  var results = [];
-  var respuestaJson = {}
-  if (buJson != null && buJson.hasOwnProperty('role')){
-      connect().query('SELECT token, role FROM businessusers WHERE id = $1', [buJson.id], function(err, res){
-        if(err){
-          logger.info('Unexpected error ' + err );
-        }else{
-        res.rows.forEach(row =>{
-          results.push(row);
-        })
-        if( results.length <= 0 ){
-          callback(false, null);
-        }else{
-          if( results[0].token === token ){
-            respuestaJson.role = results[0].role;
-            callback(true, respuestaJson);
-          }
-        }
-      }
-      })
-  }else{
-    callback(false, null);
-  }
-}
-*/
-
-/**
 * @name check
 * @function check
 * @memberof loginCheck

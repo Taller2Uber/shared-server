@@ -4,8 +4,22 @@ var RuleEngine = require('node-rules')
 
 var weekdays = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
+/**
+ * @class Clase para obtener el precio de un viaje, sea estimado o final, obteniendo las reglas desde la base de datos.
+ */
 
 function ruleFacts(){}
+
+/**
+* @name distanceInKm
+* @function distanceInKm
+* @memberof ruleFacts
+* @author Gustavo Adrian Gimenez
+* @param lat1
+* @param lon1
+* @param lat2
+* @param lon2
+*/
 
 distanceInKm = function(lat1, lon1, lat2, lon2, callback){
   var R = 6371; // Radio terresetre
@@ -24,6 +38,18 @@ distanceInKm = function(lat1, lon1, lat2, lon2, callback){
 function deg2rad(deg) {
   return deg * (Math.PI/180)
 }
+
+/**
+* @name distanceInKm
+* @function distanceInKm
+* @memberof ruleFacts
+* @author Gustavo Adrian Gimenez
+* @param startAddress Objeto direccion del inicio de viaje
+* @param endAddress Objeto direccion del fin de viaje
+* @param balance Balance del pasajero
+* @param factt Objeto que contiene los distintos parametros a tener en cuenta para la ejecucion de las reglas y obtencion del precio
+* @param callback Objeto para devolver un objeto con el precio obtenido.
+*/
 
 ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,callback ){
   var fact = {}

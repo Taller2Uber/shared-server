@@ -247,6 +247,16 @@ var transactionDB = require('../models/transactionDB')
     })
   });
 
+  /**
+   * @name get(/users/:userId/trips)
+   * @description obtener todos los viajes en los que se involucra un usuario (sea como pasajero o conductor).
+   * @memberof appUsersRoutes
+   * @function GET trips
+   * @param request object
+   * @param results object
+   * @param error object
+   */
+
   server.get('/api/users/:userId/trips', function(req, res, err){
     logger.info('Solicitud para obtener los viajes de un usuario');
     loginCheck.check( req.headers.token, ['user'], function( authorized){
@@ -258,13 +268,46 @@ var transactionDB = require('../models/transactionDB')
     })
   });
 
+
+  /**
+   * @name post(/users/:userId/addcost)
+   * @description Agregar credito al balance de un pasajero.
+   * @memberof appUsersRoutes
+   * @function POST addcost
+   * @param request object
+   * @param results object
+   * @param error object
+   */
+
   server.post('/api/users/:userId/addcost', function(req, res, err){
     transactionDB.addCost(req.params.userId, req.body.currency, req.body.value, res);
   })
 
+
+  /**
+   * @name post(/users/:userId/transactions)
+   * @description Crear una transaccion a un pasajero
+   * @memberof appUsersRoutes
+   * @function POST transactions
+   * @param request object
+   * @param results object
+   * @param error object
+   */
+
   server.post('/api/users/:userId/transactions', function(req, res, err){
     transactionDB.create(req, res);
   })
+
+
+  /**
+   * @name get(/users/:userId/transactions)
+   * @description Obtener las transacciones de un pasajero
+   * @memberof appUsersRoutes
+   * @function GET transactions
+   * @param request object
+   * @param results object
+   * @param error object
+   */
 
   server.get('/api/users/:userId/transactions', function(req, res, err){
     transactionDB.getAll(req, res);

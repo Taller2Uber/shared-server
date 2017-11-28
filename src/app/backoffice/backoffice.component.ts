@@ -42,4 +42,14 @@ export class BackofficeComponent implements OnInit {
     }
   }
 
+  modifyUser(i){
+    if( this.users[i].name != null && this.users[i].surname != null && this.users[i].username != null && this.users[i].password != null && this.users[i].role != null ){
+      this.service.modifyUser(this.users[i].name, this.users[i].surname, this.users[i].username, this.users[i].password, this.users[i].role, this.users[i]._ref, this.users[i].id);
+    }
+  }
+
+  deleteUser(i){
+    this.service.deleteUser( this.users[i].id);
+  }
+
 }

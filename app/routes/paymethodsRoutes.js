@@ -3,8 +3,26 @@ var respuesta = require('../models/respuesta')
 var paymentsDB = require('../models/payments')
 var loginCheck = require('../models/loginCheck')
 
+/**
+ * @namespace paymethodsRoutes
+ */
+
+ /**
+  * @constructor
+  * @param {Object} server Servidor express.
+  */
 
 paymethodsRoutes = function(server){
+
+  /**
+   * @name get(/paymethods)
+   * @description obtener todos los metodos de pago disponibles.
+   * @memberof paymethodsRoutes
+   * @function GET paymethods
+   * @param request object
+   * @param results object
+   * @param error object
+   */
 
   server.get('/api/paymethods', function(req, res, err){
     logger.info('Obtencion de todos los metodos de pago');
@@ -30,11 +48,6 @@ paymethodsRoutes = function(server){
 
   })
 
-  server.get('/api/testToken', function(req, res, err){
-    paymentsDB.getToken(function(token){
-      console.log('paso')
-    })
-  })
 }
 
 module.exports = paymethodsRoutes;

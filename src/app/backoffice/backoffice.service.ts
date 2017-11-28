@@ -35,6 +35,31 @@ export class BackofficeService {
              .catch(this.handleError);
   }
 
+  modifyUser(name, surname, username, password, role, _ref, id){
+    var headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    var t = localStorage.getItem("token");
+    headers.append("token", t);
+    this.http.put(this.buUrl + '/' + id, {name: name, surname: surname, username: username, password: password, role: role, _ref: _ref}
+                                  ,{ headers : headers })
+             .toPromise()
+             .then(response => response.json().user as BackofficeUser)
+             .catch(this.handleError);
+  }
+
+  deleteUser(id){
+    var headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    var t = localStorage.getItem("token");
+    headers.append("token", t);
+    this.http.delete(this.buUrl + '/' + id, { headers : headers })
+             .toPromise()
+             .then(response => response.json())
+             .catch(this.handleError);
+  }
+
 
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :

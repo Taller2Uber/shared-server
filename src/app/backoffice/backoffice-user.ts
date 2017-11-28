@@ -5,4 +5,5 @@ export class BackofficeUser {
   role: string;
   name: string;
   surname: string;
+  _ref: string;
 }
