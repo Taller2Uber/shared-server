@@ -59,7 +59,6 @@ tokenGenerator.generateBU = function( Role, id ){
 */
 
 tokenGenerator.process = function( token ){
-
   try{
     jsonDecrypted =  encryptor.decrypt(token);
   }catch (err){

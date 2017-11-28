@@ -41,7 +41,6 @@ loginCheck.buCheck = function( req, res ){
 */
 
 loginCheck.serverCheck = function( token, callback ){
-
   var serverJson = tokenGenerator.process( token );
   var results = [];
   var respuestaJson = {};
@@ -63,7 +62,7 @@ loginCheck.serverCheck = function( token, callback ){
             }
           })
           respuestaJson = respuesta.addResult(respuestaJson, results[0]);
-          callback(true, serverJson);
+          callback(true, respuestaJson);
         }
       })
   }else{
