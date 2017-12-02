@@ -106,7 +106,7 @@ describe('TripsDatabase', () => {
             }
           ],
           "cost": {
-            "currency": "ARG",
+            "currency": "USD",
             "value": 20
           }
       },
