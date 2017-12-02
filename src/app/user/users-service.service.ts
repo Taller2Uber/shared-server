@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { User } from './user'
+import {url} from '../urlvar'
 
 @Injectable()
 export class UsersServiceService {
-  private usersURL = 'http://localhost:3000/api/users';
+  private usersURL = url + 'api/users';
 
 
   constructor(private http: Http) { }

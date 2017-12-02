@@ -59,15 +59,17 @@ transactionDB.addCost = function(userId, currency, value, response){
   balanceItem.currency = currency;
   balanceItem.value = value;
     connect().query('SELECT balance FROM users WHERE id = $1', [userId], (err, res)=> {
-      if( res.rows[0].balance != null ){
-        Balance = res.rows[0].balance;
-        var contador = -1;
-        var index = -1;
-        for( var item of Balance ){
-          contador = contador + 1;
-          if( item.currency == balanceItem.currency ){
-            index = contador;
-            balanceItem.value += item.value;
+      if(res.rows[0]){
+        if( res.rows[0].balance != null ){
+          Balance = res.rows[0].balance;
+          var contador = -1;
+          var index = -1;
+          for( var item of Balance ){
+            contador = contador + 1;
+            if( item.currency == balanceItem.currency ){
+              index = contador;
+              balanceItem.value += item.value;
+            }
           }
         }
       }

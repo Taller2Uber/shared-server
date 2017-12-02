@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Token } from './token'
+import {url} from '../urlvar'
 
 
 @Injectable()
 export class LoginServiceService {
-  private tokenURL = 'http://localhost:3000/api/token';
+  private tokenURL = url + 'api/token';
 
   constructor(private http : Http) {   }
 

@@ -3,4 +3,6 @@ export class Rule {
   active: boolean;
   language: string;
   lastcommit: JSON;
+  _ref:string;
+  id: string;
 }

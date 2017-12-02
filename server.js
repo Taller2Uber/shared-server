@@ -43,10 +43,12 @@ server.use(function(req, res, next) {
     next();
 });
 
-server.use(express.static(__dirname  ,'src','app'));
+//server.use(express.static(__dirname  ,'src','app'));
+server.use(express.static(__dirname + '/dist'));
 
 server.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'src', 'index.html'))
+  //res.sendFile(path.join(__dirname, 'src', 'index.html'))
+  res.sendFile(path.join(__dirname + '/dist/index.html'));
 });
 
 require('./app/routes/appserverRoutes')(server);

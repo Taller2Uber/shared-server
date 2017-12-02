@@ -84,10 +84,10 @@ tokenGenerator.checkBU = function( token, roles, callback ){
     if( roles.indexOf(decoded.role) > -1 ){
       callback(true, decoded.id);
     }else{
-      callback(false);
+      callback(null);
     }
   }catch(err){
-      callback(false);
+      callback(null);
   }
 }
 

@@ -20,7 +20,7 @@ export class LoginComponentComponent implements OnInit {
 
   ngOnInit() {}
 
-  action(event){
+  action(){
     this.loginError = "";
     this.loginService
     .getToken(this.user, this.password)

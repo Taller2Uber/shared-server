@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Headers } from '@angular/http'
 import {BackofficeUser} from './backoffice-user'
+import {url} from '../urlvar'
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class BackofficeService {
-  private buUrl = 'http://localhost:3000/api/business-users'
+  private buUrl = url + 'api/business-users'
 
   constructor( private http: Http ) { }
 

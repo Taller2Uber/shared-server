@@ -52,7 +52,7 @@ if(  !req.body.trip ||  !trip.start || !trip.end || !trip.cost || trip.totalTime
             tripsDB.getTotalNumberOfTrips(req.body.trip.passenger, function(resu){
               passenger = resu;
               tripsDB.getBalanceFromUser(req.body.trip.passenger, req.body.trip.cost.currency, function(balance){
-                passenger.balance = balance;
+                fact.balance = balance;
                 tripsDB.getLastGeneralTrips(function(fromLastHour, fromLastHalf, fromLastTen){
                   fact.lastHour = fromLastHour;
                   fact.lastHalf = fromLastHalf;
@@ -220,7 +220,7 @@ tripsDB.getLastTenTrips = function(results, callback){
     var tenBefore = new Date()
     tenBefore.setMinutes( tenBefore.getMinutes() - 10 );
     var now = new Date();
-    if(trip.start.timestamp >= tenBefore.getTime() && trip.start.timestamp <= now.getTime()){
+    if(trip.createdtime >= tenBefore.getTime() && trip.start.timestamp <= now.getTime()){
       tripsOfLastTenMinutes += 1;
     }
   }
@@ -232,7 +232,7 @@ tripsDB.getDailyTrips = function(results, callback){
   for (var trip of results){
     var thisDay = new Date();
     thisDay.setHours(0);
-    if(trip.start.timestamp >= thisDay.getTime()){
+    if(trip.createdtime >= thisDay.getTime()){
       dailyTrips += 1;
     }
   }
@@ -245,7 +245,7 @@ tripsDB.getLastHalfTrips = function(results, callback){
     var halfBefore = new Date()
     halfBefore.setMinutes( halfBefore.getMinutes() - 30 );
     var now = new Date();
-    if(trip.start.timestamp >= halfBefore.getTime() && trip.start.timestamp <= now.getTime()){
+    if(trip.createdtime >= halfBefore.getTime() && trip.start.timestamp <= now.getTime()){
       tripsOfLastHalf += 1;
     }
   }
@@ -295,22 +295,26 @@ tripsDB.getBalanceFromUser = function(userId, currency, callback){
           callback(null);
         }else{
           logger.info('Obtencion de un viaje');
-          if( res.rows[0].balance ){
-            balance = res.rows[0].balance;
-          }else{
-            balance = [];
-          }
-          for( var balanceItem of balance ){
-            if( balanceItem.currency == currency ){
-              if(balanceItem.value < 0){
-                negativeBalance = true;
+          if( res.rows[0] ){
+            if(res.rows[0].balance){
+              balance = res.rows[0].balance;
+            }else{
+              balance = [];
+            }
+            for( var balanceItem of balance ){
+              if( balanceItem.currency == currency ){
+                if(balanceItem.value < 0){
+                  negativeBalance = true;
+                }
               }
             }
-          }
-          if( negativeBalance == true ){
-            callback(-1);
+            if( negativeBalance == true ){
+              callback(-1);
+            }else{
+              callback(1);
+            }
           }else{
-            callback(1);
+            callback(-1);
           }
         }
       })
@@ -430,7 +434,7 @@ tripsDB.estimate = function(req, response, serverId){
 tripsDB.getLastTrips = function(req, response){
   var respuestaJson = {}
   var results = [];
-  connect().query('SELECT * FROM trips ORDER BY createdtime DESC LIMIT $1', [req.body.numberOfTrips], (err, res)=>{
+  connect().query('SELECT * FROM trips ORDER BY id DESC LIMIT $1', [req.body.numberOfTrips], (err, res)=>{
       if(err){
           logger.error('Unexpected error');
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));

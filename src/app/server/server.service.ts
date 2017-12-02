@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { Server } from './server';
 import { Http, Response } from '@angular/http';
 import { Headers } from '@angular/http'
+import {url} from '../urlvar'
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class ServerService {
-  private serversURL = 'http://localhost:3000/api/servers';
+  private serversURL = url + 'api/servers';
 
   constructor (private http: Http) {}
 

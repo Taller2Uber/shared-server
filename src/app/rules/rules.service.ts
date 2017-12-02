@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Rule } from './rule'
+import {url} from '../urlvar'
 
 @Injectable()
 export class RulesService {
-  private rulesURL = 'http://localhost:3000/api/rules'
+  private rulesURL = url + 'api/rules'
+
 
   constructor(private http: Http) { }
 
@@ -14,6 +16,7 @@ export class RulesService {
     .then(response => response.json() as Rule)
     .catch(this.handleError));
   }
+
 
   private handleError (error: any): Promise<any> {
     let errMsg = (error.message) ? error.message :

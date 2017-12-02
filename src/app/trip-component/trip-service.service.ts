@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { Trip } from './trip';
 import { Http, Response } from '@angular/http';
 import { Headers } from '@angular/http'
+import {url} from '../urlvar'
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class TripServiceService {
-  private tripsURL = 'http://localhost:3000/api/users/';
-  private lastTripsURL = 'http://localhost:3000/api/trips/lasttrips';
-  private tripsServersURL = 'http://localhost:3000/api/servers/'
+  private tripsURL =  url +  'api/users/';
+  private lastTripsURL = url + 'api/trips/lasttrips';
+  private tripsServersURL = url + 'api/servers/'
 
   constructor(private http : Http) {}
 

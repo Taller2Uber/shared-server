@@ -64,6 +64,7 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   fact.travelTime = factt.travelTime;
   fact.passenger = factt.passenger;
   fact.driver = factt.driver;
+  console.log(fact.passenger)
   fact.mail = factt.mail;
   distanceInKm( startAddress.location.lat, startAddress.location.lon, endAddress.location.lat, endAddress.location.lon, function(resultado){
     fact.distance = resultado;
@@ -71,16 +72,18 @@ ruleFacts.getEstimateFact = function(startAddress, endAddress, balance, factt,ca
   var RuleArray;
 
   request({
-  	url:"https://taller2-grupo7-shared.herokuapp.com/api/rules",
+  	url:"http://localhost:3000/api/rules",
   	method: "GET"
   	}, function(error, res, body){
       var rules = JSON.parse(body);
       var array = []
       RuleArray = new RuleEngine([],{ignoreFactChanges: true})
       for (var rule of rules.rules){
-        var ruleCode = rule.blob;
-        ruleCode.on = true;
-        array.push(ruleCode[0])
+        if(rule.active === true){
+          var ruleCode = rule.blob;
+          ruleCode.on = true;
+          array.push(ruleCode[0])
+        }
       }
       RuleArray.fromJSON(array);
       RuleArray.execute( fact, function( coti ){

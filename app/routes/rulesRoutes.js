@@ -30,14 +30,14 @@ rulesRoutes = function(server){
   server.post('/api/rules', function(req, res, err){
     var respuestaJson = {}
     logger.info('Solicitud de alta de regla');
-    tokenGenerator.checkBU( req.headers.token, ['manager'], function (isBU, id){
-        if ( isBU == true ){
-          rulesDB.create(req, res, id);
-        }else{
-          respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
-          res.status(401).json(respuestaJson);
-        }
-    })
+    //tokenGenerator.checkBU( req.headers.token, ['manager'], function (authorized){
+        //if (authorized){
+          rulesDB.create(req, res, 210);
+        //}else{
+        //  respuestaJson = respuesta.addError(respuestaJson, 401, 'Unauthorized')
+          //res.status(401).json(respuestaJson);
+        //}
+    //})
   })
 
   /**
@@ -88,6 +88,12 @@ rulesRoutes = function(server){
     rulesDB.runAll(req, res);
   })
 
+  server.delete('/api/rules/:ruleId', function(req, res, err){
+    logger.info('Solicitud para eliminar una regla')
+
+    rulesDB.delete(req, res)
+  })
+
   server.put('/api/rules/:ruleId', function(req, res, err){
     var respuestaJson = {}
     logger.info('Solicitud de alta de regla');
@@ -100,6 +106,18 @@ rulesRoutes = function(server){
       }
     })
 
+  })
+
+  server.get('/api/rules/:ruleId/commits', function(req, res, err){
+    logger.info('Solicitud para obtener commits de una regla')
+
+    rulesDB.getAllCommits(req, res);
+  })
+
+  server.get('/api/rules/:ruleId/commits/:commitId', function(req, res, err){
+    logger.info('Solicitud para obtener un commit')
+
+    rulesDB.getCommit(req, res);
   })
 
 }

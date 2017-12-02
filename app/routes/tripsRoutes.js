@@ -93,9 +93,9 @@ tripsRoutes = function(server){
     var respuestaJson = {};
     logger.info('Solicitud para dar de alta un viaje');
 
-    loginCheck.check( req.headers.token, [],  function(authorized, serverJson){
+    loginCheck.check( req.headers.token, [],  function(authorized, serverJson, serverId){
         if(authorized){
-          tripDB.create( req, res, serverJson.id );
+          tripDB.create( req, res, serverId );
         }else{
           res.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
         }
@@ -115,9 +115,9 @@ tripsRoutes = function(server){
   server.post('/api/trips/estimate', function(req, res, err){
     logger.info('Solicitud para estimar el costo de un viaje');
 
-    loginCheck.check(req.headers.token, [], function(authorized, serverJson){
+    loginCheck.check(req.headers.token, [], function(authorized, serverJson, serverId){
       if(authorized){
-        tripDB.estimate(req, res, serverJson.id);
+        tripDB.estimate(req, res, serverId);
       }else{
         res.status(401).json(respuesta.addError(respuestaJson, 401, 'Unauthorized'));
       }
@@ -127,7 +127,7 @@ tripsRoutes = function(server){
 
   server.post('/api/trips/lasttrips', function(req, res, err){
     logger.info('Solicitud para obtener los ultimos viajes creados')
-
+    respuestaJson = {}
     tokenGenerator.checkBU( req.headers.token, ['user'],  function(authorized){
         if(authorized){
           tripDB.getLastTrips(req, res);

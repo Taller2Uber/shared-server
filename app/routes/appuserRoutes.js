@@ -55,9 +55,9 @@ var transactionDB = require('../models/transactionDB')
  */
   server.post('/api/users', function(req, res, err){
     logger.info('Solicitud para dar de alta un usuario');
-    loginCheck.check( req.headers.token, [''], function( authorized, serverJson){
+    loginCheck.check( req.headers.token, [''], function( authorized, serverJson, serverId){
       if( authorized == true ){
-        usersDB.createUser( res, req, serverJson.id );
+        usersDB.createUser( res, req, serverId );
       }else{
         res.status(409).json({'message':'Unauthorized'});
       }

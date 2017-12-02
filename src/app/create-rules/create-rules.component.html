@@ -3,22 +3,54 @@
 </h1>
 
 <h3>Regla</h3>  <h3 align="right"> <b> Ejemplo</b> </h3>
-<textarea  [(ngModel)]="blob" rows="20" cols="40" > </textarea> <textarea style="float:right" rows="20" cols="40" readonly> {
-	"active":true,
-	"lastcommit": null,
-	"language":"node-rules",
-	"blob": {"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}
-}
+<textarea  [(ngModel)]="blob" rows="20" cols="40" > </textarea> <textarea style="float:right" rows="20" cols="40" readonly>
+	{"priority" : 6,"name": "Balance negativo no puede viajar", "condition": "R.when(this && this.balance < 0);","consequence": "this.tripOk = false; R.stop();"}
 </textarea>
 <br/>
 <button (click)="crearRegla()"> Crear regla</button>
 <br/>
 <br/>
-<b>Variables que podes utilizar para crear la regla: </b> <br/>
--a <br/>
--b <br/>
--c <br/>
--d <br/>
--e <br/>
--f <br/>
--g <br/>
+  <b>Variables que podes utilizar para crear la regla: </b> <br/>
+  <table style="width:100%">
+    <tr>
+      <td>this.lastHour  </td>
+      <td>this.lastHalf </td>
+      <td>this.lastTen </td>
+      <td>this.paymethod </td>
+    </tr>
+  <tr>
+    <td>this.fecha </td>
+    <td>this.waitTime </td>
+    <td>this.travelTime </td>
+    <td>this.balance </td>
+  </tr>
+  <tr>
+    <td>this.passenger.totalTrips </td>
+    <td>this.passenger.lastHalf </td>
+    <td>this.passenger.lastTen</td>
+    <td>this.passenger.dailyTrips</td>
+  </tr>
+  <tr>
+    <td>this.driver.totalTrips</td>
+    <td>this.driver.lastHalf</td>
+    <td>this.driver.lastTen</td>
+    <td>this.passenger.dailyTrips</td>
+  </tr>
+  <tr>
+    <td>this.mail</td>
+  </tr>
+</table>
+<br/>
+
+
+<button (click)="getReglas()"> Obtener reglas</button> <br/>
+
+<ul class="list-group">
+    <div id="ruleBox" class="list-group-item"
+      *ngFor="let rule of rules; let i = index">
+      Id: {{rule.id}}   <button id="button"  (click)="deleteRegla(i)" type="button">Borrar</button> <br/>
+      activa:  <input type="text" [(ngModel)]="rules[i].active" > <button id="button"  (click)="updateRegla(i)" type="button">Modificar</button>  <br/>
+      blob: {{rule.blob[0] | json}}<br/>
+      language: {{rule.language}} <br/>
+    </div>
+</ul>

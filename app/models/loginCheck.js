@@ -62,7 +62,7 @@ loginCheck.serverCheck = function( token, callback ){
             }
           })
           respuestaJson = respuesta.addResult(respuestaJson, results[0]);
-          callback(true, respuestaJson);
+          callback(true, respuestaJson, serverJson.id);
         }
       })
   }else{
@@ -81,9 +81,9 @@ loginCheck.serverCheck = function( token, callback ){
 */
 
 loginCheck.check = function( token, roles, callback ){
-  this.serverCheck( token, function( isServer, serverJson ){
+  this.serverCheck( token, function( isServer, serverJson, serverId ){
     if( isServer == true ){
-      callback(true, serverJson);
+      callback(true, serverJson, serverId);
     }else{ tokenGenerator.checkBU( token, roles, function( isBU ){
       if (isBU == true){
         callback(true, null);

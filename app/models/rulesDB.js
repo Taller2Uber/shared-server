@@ -16,7 +16,7 @@ function rulesDB(){}
 /**
 * @name create
 * @function createRule
-* @memberof rulessDB
+* @memberof rulesDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto por el cual se realiza la devolucion a la llamada
 * @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
@@ -34,12 +34,10 @@ rulesDB.create = function(req, response, userId){
     var consequenceFunction = new Function('R', ruleJson.consequence)
     ruleJson.consequence = Object.defineProperty(consequenceFunction,'name', {value: 'consequence'} );
     var lastCommit = {}
-    console.log('Antes de obtener el businessUser')
     connect().query('SELECT * FROM businessusers WHERE id = $1', [userId], (err, res)=>{
       if(err){
         logger.error('Error al obtener datos del usuario: ' + err );
       }else{
-        console.log('Antes del lastCommit')
         lastCommit.author = res.rows[0];
         lastCommit.message = 'Mensaje de prueba',
         lastCommit.timestamp = new Date().getTime();
@@ -51,7 +49,6 @@ rulesDB.create = function(req, response, userId){
           lastcommit: lastCommit,
           blob: store
         };
-        console.log('antes del ruleRef')
         var ruleRef = refHash.generate( rule );
         connect().query('INSERT INTO rules (active, language, lastcommit, blob, _ref) VALUES ($1, $2, $3, $4, $5) RETURNING *',
         [rule.active, rule.language, JSON.stringify(rule.lastcommit), JSON.stringify(rule.blob), ruleRef], (err, res)=>{
@@ -73,7 +70,7 @@ rulesDB.create = function(req, response, userId){
 /**
 * @name getAll
 * @function getAllRules
-* @memberof rulessDB
+* @memberof rulesDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto por el cual se realiza la devolucion a la llamada
 * @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
@@ -101,7 +98,7 @@ rulesDB.getAll = function(req, response){
 /**
 * @name getOne
 * @function getOneRule
-* @memberof rulessDB
+* @memberof rulesDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto por el cual se realiza la devolucion a la llamada
 * @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
@@ -130,7 +127,7 @@ rulesDB.getOne = function(req, response){
 /**
 * @name update
 * @function updateRule
-* @memberof rulessDB
+* @memberof rulesDB
 * @author Gustavo Adrian Gimenez
 * @param response Objeto por el cual se realiza la devolucion a la llamada
 * @param request Objeto que contiene informacion de la llamada realizada por el cliente a la api
@@ -139,11 +136,11 @@ rulesDB.getOne = function(req, response){
 rulesDB.update = function(req, response, userId){
   var respuestaJson = {};
 
-  if( !req.body.active || !req.body.language || !req.body.blob || !req.body._ref){
+  if( !req.body.active || !req.body.language || !req.body._ref){
     logger.error('Incumplimiento de precondiciones');
     response.status(400).json(respuesta.addError(respuestaJson, 400, 'Incumplimiento de precondiciones'));
   }else{
-    connect().query('SELECT _ref FROM rules WHERE id = $1', [req.params.ruleId], (err, res)=>{
+    connect().query('SELECT _ref, blob FROM rules WHERE id = $1', [req.params.ruleId], (err, res)=>{
         if(err){
           logger.error('Unexpected error: ' + err);
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
@@ -152,28 +149,19 @@ rulesDB.update = function(req, response, userId){
             logger.error('Conflicto en el update (mal valor de ref)');
             response.status(404).json(respuesta.addError(respuestaJson, 404, 'Conflicto en el update(mal valor de ref)'));
           }else{
-            var ruleJson = JSON.parse(req.body.blob);
-            var conditionFunction = new Function('R', ruleJson.condition)
-            ruleJson.condition = Object.defineProperty(conditionFunction,'name', {value: 'condition'} );
-            var consequenceFunction = new Function('R', ruleJson.consequence)
-            ruleJson.consequence = Object.defineProperty(consequenceFunction,'name', {value: 'consequence'} );
-            logger.info('Actualizacion de regla');
-            var R1 = new RuleEngine([ruleJson]);
-            var store = R1.toJSON()
-            var rule = {
-              active: req.body.active,
-              language: req.body.language,
-              lastcommit: lastCommit,
-              blob: store
-            };
+            var newRule = {}
+            newRule.id = req.params.ruleId;
+            newRule.active = req.body.active;
+            newRule.language = req.body.language;
+            newRule.blob = res.rows[0].blob;
             var newRef = refHash.generate(newRule);
-            connect().query('UPDATE rules SET active = $1, language = $2, lastcommit = $3, blob = $4, _ref = $5 WHERE id = $6 RETURNING *',
-            [newRule.active, newRule.language, JSON.stringify(newRule.lastcommit), JSON.stringify(rule.blob), newRef, req.params.ruleId], (err, resu) =>{
+            connect().query('UPDATE rules SET active = $1, language = $2, _ref = $3 WHERE id = $4 RETURNING *',
+            [newRule.active, newRule.language, newRef, req.params.ruleId], (err, resu) =>{
               if(err){
                 logger.error('Unexpected error: ' + err);
                 response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
               }else{
-                respuestaJson = respuesta.ddResult(respuestaJson, resu.rows[0]);
+                respuestaJson = respuesta.addResult(respuestaJson, resu.rows[0]);
                 respuestaJson = respuesta.addEntityMetadata(respuestaJson);
                 response.status(200).json(respuestaJson);
                 //Guardo el commit
@@ -183,9 +171,9 @@ rulesDB.update = function(req, response, userId){
                   }else{
                     var lastCommit = {};
                     lastCommit.author = res.rows[0];
-                    lastCommit.message = 'Mensaje de prueba',
+                    lastCommit.message = 'Test',
                     lastCommit.timestamp = new Date().getTime();
-                    connect().query('INSERT INTO commmits (author, message, ruleid, timestamp) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)', [lastCommit.author, lastCommit.message, resu.id], (err, res)=>{
+                    connect().query('INSERT INTO commits (author, message, ruleid, timestamp) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)', [lastCommit.author, lastCommit.message, req.params.ruleId], (err, res)=>{
                         if(err){
                           logger.error('Error al generar el registro del commit: ' + err);
                         }
@@ -235,10 +223,59 @@ rulesDB.runAll = function(req, response){
     })
 }
 
+rulesDB.delete = function(req, response){
+  var respuestaJson = {}
+
+  connect().query('DELETE FROM rules WHERE id = $1', [req.params.ruleId], (err, res)=>{
+    if(err){
+      logger.error(err);
+      respuestaJson = respuesta.addError(respuestaJson, 500, 'Unexpected error');
+      response.status(500).json(respuestaJson);
+    }else{
+      respuestaJson = respuesta.addDescription(respuestaJson, 'Baja correcta')
+      response.status(200).json(respuestaJson)
+    }
+  })
+}
+
 rulesDB.run = function(req, response){}
 
-rulesDB.getAllCommits = function(req, response){}
+rulesDB.getAllCommits = function(req, response){
+  var respuestaJson = {}
+  var results = []
 
-rulesDB.getCommit = function(req, response){}
+  connect().query('SELECT * FROM commits WHERE ruleid = $1', [req.params.ruleId], (err, res)=>{
+    if(err){
+      logger.error('Unexpected error: ' + err);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    }else{
+      res.rows.forEach(row =>{
+        results.push(row);
+      })
+      respuestaJson = respuesta.addResult(respuestaJson, 'commits', results)
+      respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results)
+      response.status(200).json(respuestaJson);
+    }
+  })
+}
+
+rulesDB.getCommit = function(req, response){
+  var respuestaJson = {}
+  var results = []
+
+  connect().query('SELECT * FROM commits WHERE id = $1 AND ruleid = $2', [req.params.commitId, req.params.ruleId], (err, res)=>{
+    if(err){
+      logger.error('Unexpected error: ' + err);
+      response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
+    }else{
+      res.rows.forEach(row =>{
+        results.push(row);
+      })
+      respuestaJson = respuesta.addResult(respuestaJson, 'commits', results)
+      respuestaJson = respuesta.addCollectionMetadata(respuestaJson, results)
+      response.status(200).json(respuestaJson);
+    }
+  })
+}
 
 module.exports = rulesDB;

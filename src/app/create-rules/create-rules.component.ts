@@ -13,6 +13,7 @@ export class CreateRulesComponent implements OnInit {
   public blob;
   public rule;
   public resultRule;
+  public rules : Rule[];
   constructor(private service: CreaterulesService) { }
 
   ngOnInit() {
@@ -29,6 +30,21 @@ export class CreateRulesComponent implements OnInit {
     .then((resultRule : Rule)=>{
       this.resultRule = resultRule;
     })
+  }
+
+  getReglas(){
+    this.service.getRules()
+    .then((rules : Rule[] ) => {
+      this.rules = rules;
+    })
+  }
+
+  updateRegla(i){
+    this.service.updateRule( this.rules[i].id, this.rules[i].language, this.rules[i].active, this.rules[i]._ref );
+  }
+
+  deleteRegla(i){
+    this.service.deleteRule(this.rules[i].id);
   }
 
 }
