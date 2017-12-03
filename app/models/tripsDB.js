@@ -103,6 +103,9 @@ createJsonPayment = function( req, callback ){
   jsonPayment.currency = req.body.trip.cost.currency;
   jsonPayment.value = req.body.trip.cost.value;
   jsonPayment.paymentMethod = req.body.paymethod.parameters;
+  if( req.body.paymethod.paymethod ){
+    jsonPayment.paymethod.method = req.body.paymethod.paymethod;
+  }
   callback(jsonPayment);
 }
 

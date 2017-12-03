@@ -1,6 +1,7 @@
 const connect = require('../config/pgdb')
 var respuesta = require('./respuesta')
 var logger = require('../config/herokuLogger')
+var paymentsDB = require('./payments')
 
 /**
  * @class Clase para manejar la base de datos de transacciones
@@ -31,9 +32,24 @@ transactionDB.create = function(req, response){
           response.status(500).json(respuesta.addError(respuestaJson, 500, 'Unexpected error'));
         }else{
           logger.info('Alta correcta');
+          var jsonPayment = {}
+
+          createPayment(req, function(jsonPayment){
+            paymentsDB.makePay(jsonPayment, function(result){
+              if(result){
+                transactionDB.addCost(req.params.userId, req.body.cost.currency, req.body.cost.value, response);
+                connect().query('UPDATE trips SET paymethod = $1 WHERE id = $2', [ JSON.stringify(req.body.data.paymethod) ,req.body.trip ], (err, res)=>{
+                  if(err){
+                    logger.error('Error al actualizar metodo de pago en el viaje: ' + err);
+                  }else{
+                    logger.info('Viaje actualizado')
+                  }
+                })
+              }
+            })
+          })
           respuestaJson = respuesta.addResult(respuestaJson, 'transaction', res.rows[0]);
           respuestaJson = respuesta.addEntityMetadata(respuestaJson);
-          this.addCost(req.params.userId, req.body.cost.currency, req.body.cost.value, response);
           response.status(201).json(respuestaJson);
         }
       })
@@ -124,6 +140,18 @@ transactionDB.getAll = function(req, response){
         response.status(200).json(respuestaJson);
       }
     })
+}
+
+createPayment = function( req, callback ){
+  var jsonPayment = {};
+  jsonPayment.transaction_id = null;
+  jsonPayment.currency = req.body.cost.currency;
+  jsonPayment.value = req.body.cost.value;
+  jsonPayment.paymentMethod = req.body.data.paymethod.parameters;
+  if( req.body.data.paymethod.paymethod ){
+    jsonPayment.paymentMethod.method = req.body.data.paymethod.paymethod;
+  }
+  callback(jsonPayment);
 }
 
 module.exports = transactionDB;
