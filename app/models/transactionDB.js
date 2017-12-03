@@ -147,9 +147,11 @@ createPayment = function( req, callback ){
   jsonPayment.transaction_id = null;
   jsonPayment.currency = req.body.cost.currency;
   jsonPayment.value = req.body.cost.value;
-  jsonPayment.paymentMethod = req.body.data.paymethod.parameters;
-  if( req.body.data.paymethod.paymethod ){
-    jsonPayment.paymentMethod.method = req.body.data.paymethod.paymethod;
+  if( req.body.data.paymethod ){
+    jsonPayment.paymentMethod = req.body.data.paymethod.parameters;
+    if( req.body.data.paymethod.paymethod ){
+      jsonPayment.paymentMethod.method = req.body.data.paymethod.paymethod;
+    }
   }
   callback(jsonPayment);
 }
